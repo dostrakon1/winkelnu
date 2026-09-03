@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, Daisycon-readiness, gecontroleerde onboarding, persistence-backed orchestration, due-feed batch execution, health-classificatie, production composition, beveiligde scheduler-trigger, lease-heartbeats, end-to-end importcorrelatie, bounded feed-traversal, storefront freshnessbeleid, een schaalbaar Supabase ranking read model, production security/go-live readiness, partneracceptatie, bol Affiliate readiness, productfeed mapping, partner operations, een interne operatorinterface, menselijke Supabase Auth, role/audit authorization, veilige geaudite feed-recoverywrites met server-side idempotency en read-only operator action history.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, Daisycon-readiness, gecontroleerde onboarding, persistence-backed orchestration, due-feed batch execution, health-classificatie, production composition, beveiligde scheduler-trigger, lease-heartbeats, end-to-end importcorrelatie, bounded feed-traversal, storefront freshnessbeleid, een schaalbaar Supabase ranking read model, production security/go-live readiness, partneracceptatie, bol Affiliate readiness, productfeed mapping, partner operations, een interne operatorinterface, menselijke Supabase Auth, role/audit authorization, veilige geaudite feed-recoverywrites met server-side idempotency en read-only operator observability.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
@@ -29,6 +29,7 @@ Afgerond / geïmplementeerd:
 - M0.36 — Audited Feed Recovery Actions & Safe Mutation Contracts
 - M0.37 — Recovery Confirmation, Idempotency & Operator Feedback
 - M0.38 — Operator Action History & Recovery Observability
+- M0.39 — Operator Audit Filtering, Correlation & Incident Context
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
@@ -50,7 +51,9 @@ M0.36 voegt de eerste echte recoverywrites toe: `retry`, `pause` en `resume`. De
 
 M0.37 maakt deze recoveryacties operationeel veiliger. Pauzeren vereist bevestiging, knoppen tonen pending-state en Server Actions geven zichtbare success/duplicate/error feedback. `IdempotentOperatorActionService` claimt vóór audit/mutation een unieke request key in migration `0013_operator_action_idempotency.sql`. Een dubbel submit met dezelfde key voert daarom geen tweede mutation en geen tweede auditketen uit.
 
-M0.38 voegt read-only operator action history toe. `/intern/operations` toont de laatste terminale recovery-outcomes naast incidenten: actor, rol, actie, merchant/feed, status en tijdstip. Vrije auditmetadata en ruwe foutteksten worden bewust niet aan de UI doorgegeven.
+M0.38 voegt read-only operator action history toe. `/intern/operations` toont terminale recovery-outcomes naast incidenten: actor, rol, actie, merchant/feed, status en tijdstip. Vrije auditmetadata en ruwe foutteksten worden bewust niet aan de UI doorgegeven.
+
+M0.39 maakt die observability bruikbaar tijdens incidentonderzoek. History is server-side filterbaar op actor, actie, outcome, merchant en feed. Feedincidenten tonen daarnaast maximaal drie recente operatoracties die exact overeenkomen op `merchantId + sourceKey`, zodat herstelcontext direct naast de huidige feedstatus staat.
 
 Voor human operator auth zijn onder andere nodig:
 
@@ -75,7 +78,7 @@ npm run verify:supabase
 npm run verify:production-readiness
 ```
 
-Zie [`docs/architecture/OPERATOR_ACTION_HISTORY_AND_RECOVERY_OBSERVABILITY.md`](docs/architecture/OPERATOR_ACTION_HISTORY_AND_RECOVERY_OBSERVABILITY.md), [`docs/architecture/RECOVERY_CONFIRMATION_IDEMPOTENCY_AND_OPERATOR_FEEDBACK.md`](docs/architecture/RECOVERY_CONFIRMATION_IDEMPOTENCY_AND_OPERATOR_FEEDBACK.md), [`docs/architecture/AUDITED_FEED_RECOVERY_ACTIONS.md`](docs/architecture/AUDITED_FEED_RECOVERY_ACTIONS.md), [`docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md`](docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md), [`docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md`](docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
+Zie [`docs/architecture/OPERATOR_AUDIT_FILTERING_CORRELATION_AND_INCIDENT_CONTEXT.md`](docs/architecture/OPERATOR_AUDIT_FILTERING_CORRELATION_AND_INCIDENT_CONTEXT.md), [`docs/architecture/OPERATOR_ACTION_HISTORY_AND_RECOVERY_OBSERVABILITY.md`](docs/architecture/OPERATOR_ACTION_HISTORY_AND_RECOVERY_OBSERVABILITY.md), [`docs/architecture/RECOVERY_CONFIRMATION_IDEMPOTENCY_AND_OPERATOR_FEEDBACK.md`](docs/architecture/RECOVERY_CONFIRMATION_IDEMPOTENCY_AND_OPERATOR_FEEDBACK.md), [`docs/architecture/AUDITED_FEED_RECOVERY_ACTIONS.md`](docs/architecture/AUDITED_FEED_RECOVERY_ACTIONS.md), [`docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md`](docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md), [`docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md`](docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Volgende technische fase
-**M0.39 — Operator Audit Filtering, Correlation & Incident Context**: recente acties filterbaar en beter koppelbaar maken aan feeds/incidenten, zonder nieuwe mutations toe te voegen.
+**M0.40 — Operational Timeline & Feed State Transition Context**: feed health/orchestration state en menselijke recovery-outcomes samenbrengen in een compacte chronologische timeline, zonder nieuwe write-capabilities toe te voegen.
