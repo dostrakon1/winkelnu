@@ -1,36 +1,22 @@
 # Supabase Setup — Winkelnu
 
-Status: prepared, not yet connected to a live Supabase project.
+Status: repository-ready, not yet connected to a live Supabase project.
 
 ## Purpose
 Winkelnu keeps application/domain IDs separate from PostgreSQL relational UUID primary keys. The application uses stable `external_key` values while Postgres uses UUIDs for foreign-key integrity.
 
 ## Required migration order
-Apply migrations in filename order:
+Apply every migration in filename order, currently `0001` through `0015`. Do not skip migrations.
 
-1. `0001_catalog_foundation.sql`
-2. `0002_catalog_quality_observability.sql`
-3. `0003_domain_external_keys.sql`
-4. `0004_affiliate_click_attribution.sql`
-5. `0005_affiliate_integration_registry.sql`
-6. `0006_import_orchestration.sql`
-7. `0007_import_heartbeat_and_correlation.sql`
-8. `0008_catalog_ranking_read_model.sql`
-9. `0009_production_security_and_readiness.sql`
-10. `0010_due_feed_discovery_bootstrap.sql`
-11. `0011_operator_roles_and_audit_boundary.sql`
-12. `0012_feed_recovery_actions.sql`
-13. `0013_operator_action_idempotency.sql`
+The later operations migrations establish due-feed bootstrap, human operator audit, recovery RPCs, server-side idempotency, operations-security readiness and the 90-day minimum idempotency retention policy.
 
-Do not skip migrations. `0010` makes new active feed sources discoverable before orchestration exists. `0011` establishes the append-only human audit trail. `0012` adds service-role-only retry/pause/resume recovery RPCs. `0013` adds the server-only idempotency ledger that atomically claims each human mutation request before execution.
-
-## Server environment
-Required when `CATALOG_PERSISTENCE=supabase`:
+## Activation environment contract
+Required before a preview environment can switch to Supabase persistence:
 
 ```env
-CATALOG_PERSISTENCE=supabase
+CATALOG_PERSISTENCE=memory
 SUPABASE_URL=https://<project-ref>.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=<server-only-secret>
+SUPABASE_SERVICE_ROLE_KEY=<server-only-service-role-key>
 SUPABASE_PROJECT_ID=<project-ref>
 NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<publishable-key>
@@ -38,65 +24,103 @@ WINKELNU_OPERATOR_EMAILS=owner@example.com
 WINKELNU_OPERATOR_ROLES=owner@example.com:owner
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` is privileged and must never use a `NEXT_PUBLIC_` prefix. Partner credentials follow the same rule. Registry rows contain only `env:` references, never actual secrets.
+Start with `CATALOG_PERSISTENCE=memory`. Switch a preview deployment to `supabase` only after migrations and live verification succeed.
 
-For the operations trigger, configure either `CRON_SECRET` or `WINKELNU_IMPORT_TRIGGER_SECRET`. Human operator sessions use Supabase Auth and the server-side email/role policy; they do not use the machine Bearer secret.
+`SUPABASE_SERVICE_ROLE_KEY` is privileged and must never use a `NEXT_PUBLIC_` prefix. Partner credentials follow the same rule. The URL and publishable key belong only to the Supabase Auth session boundary. Registry rows contain only `env:` references, never actual partner secrets.
+
+For the machine operations trigger, configure either `CRON_SECRET` or `WINKELNU_IMPORT_TRIGGER_SECRET`. Human operator sessions use Supabase Auth and the server-side email/role policy; they never use the machine Bearer secret.
+
+## Preflight environment verification
+With the real preview values loaded locally or in a protected deployment shell:
+
+```bash
+npm run verify:activation-env
+```
+
+This fails closed when:
+- any required activation value is missing;
+- the server and public Supabase URLs point at different projects;
+- `SUPABASE_PROJECT_ID` does not match the project URL;
+- the service-role and publishable keys are identical;
+- persistence is neither `memory` nor `supabase`;
+- no operator is allowlisted;
+- an operator role is malformed, unsupported or assigned outside the allowlist;
+- no allowlisted operator has the `owner` role.
+
+The script reports only non-secret metadata. It never prints either Supabase key.
 
 ## Repository-side verification
 ```bash
 npm run check:db-contract
+npm run check
 ```
 
-This validates committed schema contracts including RLS tables, orchestration/heartbeat functions, due-feed discovery, ranking/readiness RPCs, operator audit, recovery functions and the operator-action idempotency table.
+These validate the committed schema/security contracts and the application build without requiring live Supabase credentials.
 
-## Live connection smoke test
-After all migrations are applied:
+## Live connection and readiness verification
+After migrations `0001`–`0015` are applied to the preview project:
 
 ```bash
-SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run verify:supabase
+npm run verify:activation-env
+npm run verify:supabase
+npm run verify:production-readiness
 ```
 
+`verify:production-readiness` must report the expected 15 RLS-protected tables plus the operations-security contract from M0.45.
+
 ## Generate live database types
+Only after the real project schema is up to date:
+
 ```bash
 SUPABASE_PROJECT_ID=<project-ref> npm run types:supabase
 ```
 
-Generate types from the real project after migration application; do not invent live schema output.
+Generated types must come from the actual Supabase project. Do not invent or hand-author live schema output.
 
-## Activation sequence
-1. Create the Supabase project.
-2. Apply migrations `0001` through `0013` in filename order.
-3. Add server and auth environment variables locally/Vercel.
-4. Run `npm run verify:supabase`.
-5. Run `npm run types:supabase`.
-6. Run `npm run check`.
-7. Keep `CATALOG_PERSISTENCE=memory` until migration state is verified.
-8. Seed required categories.
-9. Register affiliate networks/programs using secret references only.
-10. Link real feed sources to merchant integrations.
-11. Verify a newly active feed with no orchestration row is returned by `list_due_feed_imports()`.
-12. Validate partner onboarding with a non-destructive preview import.
-13. Switch persistence in a preview environment first.
-14. Verify catalog ranking/freshness and `/uit/<offer-id>` attribution.
-15. Verify lease acquire, heartbeat, completion and trigger correlation.
-16. Create an explicit Supabase Auth operator user; do not enable public signup.
-17. Verify operator allowlist/role mapping and login/logout.
-18. Verify `operator_audit_events` accepts service-role INSERT/SELECT and rejects UPDATE/DELETE.
-19. Verify retry, pause and resume through the audited operator service in preview.
-20. Submit the same recovery request key twice and confirm only the first mutation executes while the second is reported as duplicate.
-21. Only then enable recurring production imports and human recovery actions.
+## One-time user actions required for first preview activation
+The repository cannot create or administer the user's Supabase account/project by itself. The user must provide or configure only these external prerequisites:
+
+1. Create one Supabase preview project for Winkelnu.
+2. Obtain the project ref, project URL, publishable key and service-role key from that project.
+3. Keep the service-role key private; never paste it into a public issue, commit, screenshot or browser-exposed variable.
+4. Apply migrations `0001`–`0015` to the preview project, or provide an authorized Supabase execution path that can apply them.
+5. Create the first explicit Supabase Auth operator account; public signup remains disabled/not part of the design.
+6. Provide the chosen operator email so it can be placed in `WINKELNU_OPERATOR_EMAILS` and assigned an `owner` role.
+
+Once those prerequisites exist, the repository can perform the remaining verification and activation sequence.
+
+## Preview activation sequence
+1. Keep `CATALOG_PERSISTENCE=memory`.
+2. Load the real preview environment values securely.
+3. Run `npm run verify:activation-env`.
+4. Apply/confirm migrations `0001`–`0015`.
+5. Run `npm run verify:supabase`.
+6. Run `npm run verify:production-readiness`.
+7. Generate project-derived database types.
+8. Run `npm run check`.
+9. Seed only the required reference/category data.
+10. Verify due-feed discovery and ranking RPC semantics.
+11. Verify the first human operator login/logout and owner role resolution.
+12. Verify audit append-only behavior, idempotency, safe recovery errors and denied-action behavior.
+13. Register one test/approved merchant integration using secret references only.
+14. Run a non-destructive preview import.
+15. Verify correlation, quality evidence, offers, ranking and affiliate redirect attribution.
+16. Only then set `CATALOG_PERSISTENCE=supabase` in the preview deployment.
+17. Re-run smoke/readiness checks against that deployment.
+18. Do not enable recurring production imports until the production promotion checklist separately passes.
 
 ## Security properties
 - Service-role and partner credentials are server-only.
 - Human Auth uses the publishable key only for the session boundary.
-- Storefront components do not directly query Supabase.
-- Worker/ranking/due-feed/recovery RPCs are service-role-only.
+- Storefront components do not directly query privileged Supabase tables.
+- Worker/ranking/due-feed/recovery RPCs are service-role-only where designed.
 - New feed sources can bootstrap before orchestration state exists.
 - Operator role defaults to `read_only` when no explicit role assignment exists.
 - Operator audit records are append-only and never contain credentials/tokens.
-- Human recovery mutations must pass both the idempotency claim and audited action boundary.
-- A duplicate recovery submit cannot perform a second mutation for the same request key.
-- Public signup is not part of the operator architecture.
+- Authorization occurs before an idempotency claim, with a second permission check at the audited boundary.
+- Browser-facing recovery failures are sanitized.
+- `operator_action_requests` has a 90-day minimum retention policy and no automatic deletion capability.
+- Public operator signup is not part of the architecture.
 
 ## Not yet possible without project access
 The following remain external completion gates:
@@ -104,7 +128,7 @@ The following remain external completion gates:
 - executing live connection/readiness checks;
 - generating project-derived TypeScript database types;
 - validating RLS and RPC grants against the real project;
-- creating the first operator Auth account;
+- creating/verifying the first operator Auth account;
 - executing a real due-feed bootstrap query;
 - inserting and verifying real operator audit/idempotency records;
 - executing retry/pause/resume against a real feed source;
