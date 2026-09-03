@@ -10,6 +10,7 @@ const migrationPaths = [
   'supabase/migrations/0006_import_orchestration.sql',
   'supabase/migrations/0007_import_heartbeat_and_correlation.sql',
   'supabase/migrations/0008_catalog_ranking_read_model.sql',
+  'supabase/migrations/0009_production_security_and_readiness.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -40,6 +41,7 @@ const requiredFunctions = [
   'complete_feed_import_success',
   'complete_feed_import_failure',
   'catalog_ranked_products',
+  'winkelnu_production_readiness',
 ]
 
 const failures = []
@@ -47,6 +49,8 @@ const failures = []
 for (const table of requiredTables) {
   const pattern = new RegExp(`(?:create\\s+table\\s+if\\s+not\\s+exists\\s+${table}\\b|create\\s+table\\s+${table}\\b)`, 'i')
   if (!pattern.test(migrations)) failures.push(`Missing required table declaration: ${table}`)
+  const rls = new RegExp(`alter\\s+table\\s+${table}\\s+enable\\s+row\\s+level\\s+security`, 'i')
+  if (!rls.test(migrations)) failures.push(`Missing RLS enablement: ${table}`)
 }
 
 for (const [table, column] of requiredColumns) {
@@ -68,4 +72,4 @@ if (failures.length > 0) {
   process.exit(1)
 }
 
-console.log(`Database contract OK: ${requiredTables.length} tables, ${requiredColumns.length} critical columns and ${requiredFunctions.length} functions verified.`)
+console.log(`Database contract OK: ${requiredTables.length} RLS-protected tables, ${requiredColumns.length} critical columns and ${requiredFunctions.length} functions verified.`)
