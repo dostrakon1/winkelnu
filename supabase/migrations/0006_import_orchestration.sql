@@ -69,6 +69,7 @@ begin
       last_started_at = p_acquired_at,
       updated_at = p_acquired_at
   where fio.feed_source_id = v_feed_source_id
+    and (fio.next_run_at is null or fio.next_run_at <= p_acquired_at)
     and (fio.lease_token is null or fio.lease_expires_at is null or fio.lease_expires_at <= p_acquired_at);
 
   if not found then
@@ -127,7 +128,7 @@ create or replace function complete_feed_import_failure(
 language plpgsql
 security definer
 set search_path = public
-as $$
+as $$;
 begin
   update feed_import_orchestration fio
   set next_run_at = p_next_run_at,
