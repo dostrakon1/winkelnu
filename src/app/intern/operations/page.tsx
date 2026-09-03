@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { signOutOperator } from '@/app/intern/login/actions'
+import { pauseFeed, resumeFeed, retryFeed } from '@/app/intern/operations/recovery-actions'
 import { buildOperationsDashboard } from '@/application/affiliate/operations-dashboard'
 import { PartnerOperationsReadService } from '@/application/affiliate/partner-operations-read-model'
 import { InternalOperationsDashboard } from '@/components/internal/operations-dashboard'
@@ -35,6 +36,9 @@ export default async function InternalOperationsPage() {
       operatorEmail={operator.email}
       operatorRole={operator.role}
       signOutAction={signOutOperator}
+      retryFeedAction={retryFeed}
+      pauseFeedAction={pauseFeed}
+      resumeFeedAction={resumeFeed}
     />
   )
 }
