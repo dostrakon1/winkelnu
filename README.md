@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, een realistische providerfixture, Daisycon-readiness, gecontroleerde partner-onboarding en persistence-backed import orchestration.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, een realistische providerfixture, Daisycon-readiness, gecontroleerde partner-onboarding, persistence-backed import orchestration en een bounded due-feed batchworker met health-classificatie.
 
 Afgerond / geïmplementeerd:
 - M0.1 — Repository Alignment & Verification
@@ -27,6 +27,7 @@ Afgerond / geïmplementeerd:
 - M0.18 — First Real Partner Integration Readiness — Daisycon
 - M0.19 — Partner Onboarding & Import Orchestration
 - M0.20 — Import Scheduling, Concurrency Lease & Failure Recovery
+- M0.21 — Due Feed Discovery, Worker Batch Execution & Operational Health
 
 ## Stack
 - Next.js 16 — App Router
@@ -52,7 +53,7 @@ npm run check
 ```
 
 ## Architectuur in één lijn
-`merchant feed → integration registry → source resolver → provider adapter → validatie → matching → import run → canonical product + merchant offer → repository → CatalogService → storefront`
+`merchant feed → integration registry → source resolver → provider adapter → validatie → matching → import run → orchestration lease → catalog repository → CatalogService → storefront`
 
 Outbound affiliateklikken lopen via `/uit/<offer-id>` met server-side offerresolutie en privacy-minimale click-attributie.
 
@@ -60,7 +61,9 @@ M0.18 kiest Daisycon als eerste echte readiness-target. De echte account-, progr
 
 M0.19 voegt gecontroleerde onboarding toe: `registered → preview_ready → preview_passed → approved → active`. Previewimports gebruiken dezelfde validatie/matching als productie maar voeren nooit stale-offer-deactivatie uit.
 
-M0.20 voegt per feed source een duurzame orchestration-state toe met `next_run_at`, failure history en een expirerende lease. Lease-acquisitie gebeurt atomair in PostgreSQL. Een tweede worker kan dezelfde feed niet tegelijk draaien, een gecrashte worker verliest zijn lock na expiry, een stale worker kan niet met een oud token completen en mislukte imports krijgen exponentiële backoff. Storefrontverkeer is nooit de scheduler.
+M0.20 voegt per feed source een duurzame orchestration-state toe met `next_run_at`, failure history en een expirerende atomische lease. Dubbele workers kunnen dezelfde feed niet tegelijk importeren; failures krijgen exponentiële backoff en storefrontverkeer is nooit de scheduler.
+
+M0.21 voegt due-feed discovery en een bounded batchworker toe. Discovery is alleen kandidaatselectie: iedere feed moet nog steeds de M0.20-lease winnen. Standaard worden maximaal 10 feeds per batch verwerkt, met een harde cap van 50. Een failure in één bron stopt andere bronnen niet. Health wordt afgeleid als `healthy`, `delayed`, `failing` of `attention_required` en heeft nooit invloed op storefrontbeschikbaarheid.
 
 PostgreSQL UUIDs blijven interne relationele sleutels; duurzame Winkelnu-identiteiten gebruiken `external_key`.
 
@@ -70,7 +73,7 @@ Ontwikkeling gebruikt standaard `CATALOG_PERSISTENCE=memory`. Live Supabase vere
 Zie [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Kernprincipe
-Winkelnu wordt feedgedreven gebouwd. Externe providerdata wordt eerst vertaald, gevalideerd en gematcht voordat zij publieke catalogusdata kan worden. Productidentiteit, offers, importkwaliteit, persistence, discovery/search, affiliate-attributie, partnercontext, concrete adapters, onboarding en scheduling blijven afzonderlijke verantwoordelijkheden.
+Winkelnu wordt feedgedreven gebouwd. Externe providerdata wordt eerst vertaald, gevalideerd en gematcht voordat zij publieke catalogusdata kan worden. Productidentiteit, offers, importkwaliteit, persistence, discovery/search, affiliate-attributie, partnercontext, concrete adapters, onboarding, scheduling en worker execution blijven afzonderlijke verantwoordelijkheden.
 
 ## Volgende technische fase
-**M0.21 — Due Feed Discovery, Worker Batch Execution & Operational Health**: due sources veilig in batches selecteren, de volledige resolver/adapter/import/orchestration-keten uitvoeren en operationele health/escalatie voor langdurig falende feeds toevoegen.
+**M0.22 — Production Import Composition & Authenticated Operations Trigger**: wire due discovery to the real integration registry, adapter registry and catalog repository, then expose a server-only authenticated worker entrypoint/command with structured batch and health output.
