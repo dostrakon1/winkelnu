@@ -13,19 +13,24 @@ function fail(error: { message: string } | null, context: string): void {
   if (error) throw new Error(`${context}: ${error.message}`)
 }
 
+function requireRow<T>(data: T | null, context: string): T {
+  if (data === null) throw new Error(`${context}: expected a database row but received none.`)
+  return data
+}
+
 export class SupabaseCatalogRepository implements CatalogReadRepository, CatalogWriteRepository {
   private readonly db = createSupabaseServerClient()
 
   private async merchantUuid(externalKey: string): Promise<string> {
     const { data, error } = await this.db.from('merchants').select('id').eq('external_key', externalKey).single()
     fail(error, `Resolve merchant ${externalKey}`)
-    return data.id
+    return requireRow(data, `Resolve merchant ${externalKey}`).id
   }
 
   private async productUuid(externalKey: string): Promise<string> {
     const { data, error } = await this.db.from('products').select('id').eq('external_key', externalKey).single()
     fail(error, `Resolve product ${externalKey}`)
-    return data.id
+    return requireRow(data, `Resolve product ${externalKey}`).id
   }
 
   private async categoryUuid(externalKey?: string): Promise<string | null> {
@@ -38,7 +43,7 @@ export class SupabaseCatalogRepository implements CatalogReadRepository, Catalog
   private async importRunUuid(externalKey: string): Promise<string> {
     const { data, error } = await this.db.from('import_runs').select('id').eq('external_key', externalKey).single()
     fail(error, `Resolve import run ${externalKey}`)
-    return data.id
+    return requireRow(data, `Resolve import run ${externalKey}`).id
   }
 
   async getProductBySlug(slug: string): Promise<ProductWithOffers | null> {
@@ -60,7 +65,7 @@ export class SupabaseCatalogRepository implements CatalogReadRepository, Catalog
 
     const { data: offerRows, error: offersError } = await this.db
       .from('offers')
-      .select('*')
+      .select('*, merchants(external_key)')
       .eq('product_id', row.id)
       .eq('is_active', true)
       .order('price', { ascending: true })
@@ -69,7 +74,7 @@ export class SupabaseCatalogRepository implements CatalogReadRepository, Catalog
     const offers: Offer[] = (offerRows ?? []).map((offer) => ({
       id: offer.external_key,
       productId: product.id,
-      merchantId: '',
+      merchantId: offer.merchants?.external_key ?? '',
       merchantProductId: offer.merchant_product_id,
       price: money(offer.price),
       shippingCost: offer.shipping_cost == null ? undefined : money(offer.shipping_cost),
@@ -86,7 +91,7 @@ export class SupabaseCatalogRepository implements CatalogReadRepository, Catalog
   }
 
   async listProducts(input?: { categorySlug?: string; limit?: number; offset?: number }): Promise<Product[]> {
-    let query = this.db.from('products').select('*').eq('status', 'published').order('updated_at', { ascending: false })
+    let query = this.db.from('products').select('*, categories(external_key)').eq('status', 'published').order('updated_at', { ascending: false })
     if (input?.categorySlug) {
       const { data: category, error } = await this.db.from('categories').select('id').eq('slug', input.categorySlug).maybeSingle()
       fail(error, `Resolve category slug ${input.categorySlug}`)
@@ -106,14 +111,19 @@ export class SupabaseCatalogRepository implements CatalogReadRepository, Catalog
       gtin: row.primary_gtin ?? undefined,
       mpn: row.mpn ?? undefined,
       imageUrl: row.primary_image_url ?? undefined,
-      categoryId: undefined,
+      categoryId: row.categories?.external_key ?? undefined,
     }))
   }
 
   async listCategories(): Promise<Category[]> {
-    const { data, error } = await this.db.from('categories').select('*').eq('is_active', true).order('name')
+    const { data, error } = await this.db.from('categories').select('*, parent:categories!categories_parent_id_fkey(external_key)').eq('is_active', true).order('name')
     fail(error, 'List categories')
-    return (data ?? []).map((row) => ({ id: row.external_key, slug: row.slug, name: row.name, parentId: undefined }))
+    return (data ?? []).map((row) => ({
+      id: row.external_key,
+      slug: row.slug,
+      name: row.name,
+      parentId: row.parent?.external_key ?? undefined,
+    }))
   }
 
   async listActiveMerchants(): Promise<Merchant[]> {
@@ -205,10 +215,11 @@ export class SupabaseCatalogRepository implements CatalogReadRepository, Catalog
       is_active: true,
     }, { onConflict: 'merchant_id,source_key' }).select('id').single()
     fail(sourceError, `Ensure feed source ${importRun.sourceKey}`)
+    const sourceRow = requireRow(source, `Ensure feed source ${importRun.sourceKey}`)
 
     const { error } = await this.db.from('import_runs').insert({
       external_key: importRun.id,
-      feed_source_id: source.id,
+      feed_source_id: sourceRow.id,
       status: importRun.status,
       started_at: importRun.startedAt,
       finished_at: importRun.finishedAt ?? null,
