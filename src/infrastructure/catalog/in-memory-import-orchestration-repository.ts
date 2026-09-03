@@ -12,14 +12,7 @@ export class InMemoryImportOrchestrationRepository implements ImportOrchestratio
     return this.states.get(key(input.merchantId, input.sourceKey)) ?? null
   }
 
-  async acquireLease(input: {
-    merchantId: string
-    sourceKey: string
-    owner: string
-    token: string
-    acquiredAt: string
-    expiresAt: string
-  }): Promise<FeedImportLease | null> {
+  async acquireLease(input: { merchantId: string; sourceKey: string; owner: string; token: string; acquiredAt: string; expiresAt: string }): Promise<FeedImportLease | null> {
     const stateKey = key(input.merchantId, input.sourceKey)
     const current = this.states.get(stateKey)
     const acquiredAt = Date.parse(input.acquiredAt)
@@ -40,6 +33,14 @@ export class InMemoryImportOrchestrationRepository implements ImportOrchestratio
     }
     this.states.set(stateKey, lease)
     return lease
+  }
+
+  async renewLease(input: { merchantId: string; sourceKey: string; token: string; renewedAt: string; expiresAt: string }): Promise<void> {
+    const stateKey = key(input.merchantId, input.sourceKey)
+    const current = this.states.get(stateKey)
+    if (!current || current.leaseToken !== input.token) throw new Error('Import lease token no longer owns this source.')
+    if (!current.leaseExpiresAt || Date.parse(current.leaseExpiresAt) <= Date.parse(input.renewedAt)) throw new Error('Import lease has already expired.')
+    this.states.set(stateKey, { ...current, leaseExpiresAt: input.expiresAt })
   }
 
   async completeSuccess(input: { merchantId: string; sourceKey: string; token: string; finishedAt: string; nextRunAt: string }): Promise<void> {
