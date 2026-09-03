@@ -20,39 +20,66 @@ export default async function HomePage() {
       <div className="bg-[image:var(--wn-gradient-market)] text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="text-sm font-bold uppercase tracking-[0.24em]">Winkelnu.nl</Link>
-          <p className="hidden text-sm text-white/72 sm:block">Ontdek. Vergelijk. Kies je winkel.</p>
+          <p className="hidden text-sm text-white/75 sm:block">Ontdek. Vergelijk. Kies je winkel.</p>
         </div>
       </div>
 
       <section className="relative overflow-hidden border-b border-[color:rgba(18,59,58,0.10)] bg-[image:var(--wn-gradient-welcome)]">
         <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)]" aria-hidden="true" />
         <div className="relative mx-auto max-w-6xl px-6 py-16 sm:py-24 lg:py-28">
-          <div className="max-w-3xl">
-            <p className="mb-4 text-sm font-bold uppercase tracking-[0.22em] text-[var(--wn-warm)]">Slim winkelen begint hier</p>
-            <h1 className="text-5xl font-bold tracking-tight text-[var(--wn-ink)] sm:text-7xl">
-              Slimmer ontdekken en vergelijken.
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-[color:rgba(30,36,35,0.72)] sm:text-xl">
-              Eén plek om producten en actuele aanbiedingen van verschillende winkels overzichtelijk te vergelijken.
-            </p>
-          </div>
+          <div className="grid items-end gap-12 lg:grid-cols-[minmax(0,1fr)_18rem]">
+            <div className="max-w-3xl">
+              <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-[var(--wn-warm)] sm:text-sm">Slim winkelen begint hier</p>
+              <h1 className="text-5xl font-bold tracking-[-0.045em] text-[var(--wn-ink)] sm:text-7xl">
+                Slimmer ontdekken en vergelijken.
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-[color:rgba(30,36,35,0.72)] sm:text-xl">
+                Eén plek om producten en actuele aanbiedingen van verschillende winkels overzichtelijk te vergelijken.
+              </p>
 
-          <form
-            action="/zoeken"
-            method="get"
-            className="mt-9 flex max-w-2xl gap-3 rounded-2xl border border-[color:rgba(18,59,58,0.14)] bg-white p-2 shadow-[0_18px_50px_rgba(18,59,58,0.10)]"
-          >
-            <input
-              type="search"
-              name="q"
-              aria-label="Zoek producten"
-              placeholder="Waar ben je naar op zoek?"
-              className="min-w-0 flex-1 rounded-xl bg-transparent px-4 py-3 text-sm text-[var(--wn-ink)] outline-none placeholder:text-[color:rgba(30,36,35,0.45)]"
-            />
-            <button className="rounded-xl bg-[var(--wn-petrol)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--wn-petrol-deep)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-warm)]">
-              Zoeken
-            </button>
-          </form>
+              <form
+                action="/zoeken"
+                method="get"
+                className="mt-9 flex max-w-3xl gap-3 rounded-2xl border border-[color:rgba(18,59,58,0.14)] bg-white p-2 shadow-[0_20px_55px_rgba(18,59,58,0.12)]"
+              >
+                <input
+                  type="search"
+                  name="q"
+                  aria-label="Zoek producten"
+                  placeholder="Waar ben je naar op zoek?"
+                  className="min-w-0 flex-1 rounded-xl bg-transparent px-4 py-3.5 text-sm text-[var(--wn-ink)] outline-none placeholder:text-[color:rgba(30,36,35,0.45)]"
+                />
+                <button className="rounded-xl bg-[var(--wn-petrol)] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[var(--wn-petrol-deep)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-warm)]">
+                  Zoeken
+                </button>
+              </form>
+
+              <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-[color:rgba(30,36,35,0.62)] sm:text-sm">
+                <span>Prijs + bekende verzending</span>
+                <span>Meerdere winkels naast elkaar</span>
+                <span>Je rekent af bij de winkel zelf</span>
+              </div>
+            </div>
+
+            <aside className="hidden rounded-3xl border border-[color:rgba(18,59,58,0.12)] bg-[color:rgba(255,255,255,0.72)] p-5 shadow-[0_20px_55px_rgba(18,59,58,0.08)] backdrop-blur lg:block">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-petrol)]">Winkelnu vergelijkt</p>
+              <div className="mt-5 space-y-4">
+                <div>
+                  <p className="text-sm text-[color:rgba(30,36,35,0.56)]">Prijs</p>
+                  <div className="mt-1 h-2 rounded-full bg-[var(--wn-petrol-soft)]"><div className="h-2 w-[86%] rounded-full bg-[var(--wn-petrol)]" /></div>
+                </div>
+                <div>
+                  <p className="text-sm text-[color:rgba(30,36,35,0.56)]">Verzendkosten</p>
+                  <div className="mt-1 h-2 rounded-full bg-[var(--wn-petrol-soft)]"><div className="h-2 w-[62%] rounded-full bg-[var(--wn-warm)]" /></div>
+                </div>
+                <div>
+                  <p className="text-sm text-[color:rgba(30,36,35,0.56)]">Beschikbaarheid</p>
+                  <div className="mt-1 h-2 rounded-full bg-[var(--wn-petrol-soft)]"><div className="h-2 w-[74%] rounded-full bg-[#4f7a63]" /></div>
+                </div>
+              </div>
+              <p className="mt-5 text-sm leading-6 text-[color:rgba(30,36,35,0.66)]">Rustig vergelijken, daarna rechtstreeks door naar de winkel.</p>
+            </aside>
+          </div>
 
           {categories.length > 0 ? (
             <section className="mt-10" aria-labelledby="categories-heading">
@@ -78,11 +105,15 @@ export default async function HomePage() {
 
       <section className="bg-[image:var(--wn-gradient-morning)]">
         <div className="mx-auto max-w-6xl px-6 py-14 sm:py-18">
-          <div className="flex items-end justify-between gap-6">
+          <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
               <p className="text-sm font-semibold text-[var(--wn-warm)]">Ontdek producten</p>
               <h2 className="mt-2 text-3xl font-bold tracking-tight text-[var(--wn-ink)]">Aanbiedingen uit meerdere winkels</h2>
+              <p className="mt-2 text-sm text-[color:rgba(30,36,35,0.58)]">Vergelijk op bekende totaalprijs, beschikbaarheid en winkel.</p>
             </div>
+            <Link href="/zoeken" className="text-sm font-semibold text-[var(--wn-petrol)] underline decoration-[var(--wn-warm)] decoration-2 underline-offset-4">
+              Bekijk alle producten
+            </Link>
           </div>
 
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
