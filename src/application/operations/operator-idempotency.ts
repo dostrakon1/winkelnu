@@ -1,3 +1,4 @@
+import { operatorCan } from '@/application/auth/operator-authorization'
 import type { AuditedOperatorActionInput } from '@/application/operations/operator-audit'
 import { AuditedOperatorActionService } from '@/application/operations/operator-audit'
 
@@ -27,6 +28,12 @@ export class IdempotentOperatorActionService {
   async run<T>(requestKey: string, input: AuditedOperatorActionInput<T>): Promise<IdempotentOperatorActionResult<T>> {
     const normalizedKey = requestKey.trim()
     if (!normalizedKey) throw new Error('Missing operator action request key.')
+
+    // Authorization must happen before the idempotency ledger is touched.
+    // AuditedOperatorActionService repeats the same check as defense in depth.
+    if (!operatorCan(input.actor.role, input.permission)) {
+      throw new Error(`Operator role ${input.actor.role} is not allowed to ${input.permission}.`)
+    }
 
     const claimed = await this.requests.tryClaim({
       requestKey: normalizedKey,
