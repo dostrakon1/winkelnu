@@ -23,6 +23,7 @@ export class ImportOrchestrationService {
     now?: () => string
     token?: () => string
     leaseDurationMs?: number
+    heartbeatIntervalMs?: number
     successDelayMs?: number
     retryBaseMs?: number
     retryMaxMs?: number
@@ -30,16 +31,21 @@ export class ImportOrchestrationService {
     const now = input.now ?? (() => new Date().toISOString())
     const token = input.token ?? (() => globalThis.crypto.randomUUID())
     const leaseDurationMs = input.leaseDurationMs ?? 15 * 60_000
+    const heartbeatIntervalMs = input.heartbeatIntervalMs ?? Math.min(5 * 60_000, Math.floor(leaseDurationMs / 3))
     const successDelayMs = input.successDelayMs ?? 60 * 60_000
     const retryBaseMs = input.retryBaseMs ?? 5 * 60_000
     const retryMaxMs = input.retryMaxMs ?? 6 * 60 * 60_000
     const startedAt = now()
+    let lastHeartbeatAt = Date.parse(startedAt)
     const lease = await this.repository.acquireLease({ merchantId: input.merchantId, sourceKey: input.sourceKey, owner: input.owner, token: token(), acquiredAt: startedAt, expiresAt: isoAfter(startedAt, leaseDurationMs) })
     if (!lease) return { status: 'skipped_locked' }
 
     const heartbeat = async () => {
       const renewedAt = now()
+      const renewedAtMs = Date.parse(renewedAt)
+      if (renewedAtMs - lastHeartbeatAt < heartbeatIntervalMs) return
       await this.repository.renewLease({ merchantId: input.merchantId, sourceKey: input.sourceKey, token: lease.leaseToken, renewedAt, expiresAt: isoAfter(renewedAt, leaseDurationMs) })
+      lastHeartbeatAt = renewedAtMs
     }
 
     try {
