@@ -4,16 +4,16 @@ import { ImportOrchestrationService } from '@/application/catalog/import-orchest
 import { ImportWorkerService } from '@/application/catalog/import-worker-service'
 import { ProductionImportCompositionService } from '@/application/catalog/production-import-composition'
 import { SupabaseAffiliateIntegrationRegistryRepository } from '@/infrastructure/affiliate/supabase-affiliate-integration-registry-repository'
-import { SupabaseCatalogRepository } from '@/infrastructure/catalog/supabase-catalog-repository'
 import { SupabaseDueFeedDiscoveryRepository } from '@/infrastructure/catalog/supabase-due-feed-discovery-repository'
 import { SupabaseImportOrchestrationRepository } from '@/infrastructure/catalog/supabase-import-orchestration-repository'
+import { SupabaseProductionCatalogRepository } from '@/infrastructure/catalog/supabase-production-catalog-repository'
 import { registerDaisyconJsonAdapter, mapDaisyconStandardProductRecord } from '@/infrastructure/feeds/daisycon/register-daisycon-adapter'
 import { PartnerFeedAdapterRegistry } from '@/infrastructure/feeds/partner-adapter-registry'
 
 export function createProductionImportWorker() {
   if (process.env.CATALOG_PERSISTENCE !== 'supabase') throw new Error('Production import worker requires CATALOG_PERSISTENCE=supabase.')
 
-  const catalog = new SupabaseCatalogRepository()
+  const catalog = new SupabaseProductionCatalogRepository()
   const affiliateRegistry = new SupabaseAffiliateIntegrationRegistryRepository()
   const orchestrationRepository = new SupabaseImportOrchestrationRepository()
   const discovery = new SupabaseDueFeedDiscoveryRepository()
