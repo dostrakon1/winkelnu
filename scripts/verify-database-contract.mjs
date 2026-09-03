@@ -6,6 +6,7 @@ const migrationPaths = [
   'supabase/migrations/0002_catalog_quality_observability.sql',
   'supabase/migrations/0003_domain_external_keys.sql',
   'supabase/migrations/0004_affiliate_click_attribution.sql',
+  'supabase/migrations/0005_affiliate_integration_registry.sql',
 ]
 
 const migrations = (
@@ -23,6 +24,8 @@ const requiredTables = [
   'import_rejects',
   'product_match_reviews',
   'affiliate_click_events',
+  'affiliate_networks',
+  'merchant_affiliate_integrations',
 ]
 
 const requiredColumns = [
@@ -39,6 +42,14 @@ const requiredColumns = [
   ['affiliate_click_events', 'merchant_id'],
   ['affiliate_click_events', 'source_path'],
   ['affiliate_click_events', 'occurred_at'],
+  ['affiliate_networks', 'external_key'],
+  ['affiliate_networks', 'kind'],
+  ['merchant_affiliate_integrations', 'external_key'],
+  ['merchant_affiliate_integrations', 'merchant_id'],
+  ['merchant_affiliate_integrations', 'affiliate_network_id'],
+  ['merchant_affiliate_integrations', 'secret_ref'],
+  ['merchant_affiliate_integrations', 'tracking_config'],
+  ['feed_sources', 'affiliate_integration_id'],
 ]
 
 const failures = []
