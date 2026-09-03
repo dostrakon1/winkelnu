@@ -54,11 +54,20 @@ export class SupabasePartnerOperationsReadRepository implements PartnerOperation
             leaseToken: state.lease_token ?? undefined,
             leaseExpiresAt: state.lease_expires_at ?? undefined,
           } : undefined
+          const leaseActive = Boolean(orchestration?.leaseExpiresAt && Date.parse(orchestration.leaseExpiresAt) > Date.parse(now))
           return {
             sourceKey: feed.source_key,
             sourceType: feed.source_type,
             isActive: feed.is_active,
             health: orchestration ? classifyFeedHealth(orchestration, now) : undefined,
+            orchestration: orchestration ? {
+              failureCount: orchestration.failureCount,
+              lastStartedAt: orchestration.lastStartedAt,
+              lastSucceededAt: orchestration.lastSucceededAt,
+              nextRunAt: orchestration.nextRunAt,
+              leaseActive,
+              leaseExpiresAt: orchestration.leaseExpiresAt,
+            } : undefined,
           }
         }),
       }
