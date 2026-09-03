@@ -1,5 +1,7 @@
 import { CatalogService } from '@/application/catalog/catalog-service'
+import { ScalableCatalogService } from '@/application/catalog/supabase-scalable-catalog-service'
 import { createCatalogRepository } from '@/infrastructure/catalog/create-catalog-repository'
+import { SupabaseCatalogRankingReadModel } from '@/infrastructure/catalog/supabase-catalog-ranking-read-model'
 import { createSyntheticCatalogRepository } from '@/infrastructure/catalog/synthetic-catalog'
 
 export async function createStorefrontCatalogService(): Promise<CatalogService> {
@@ -9,5 +11,6 @@ export async function createStorefrontCatalogService(): Promise<CatalogService> 
     return new CatalogService(await createSyntheticCatalogRepository())
   }
 
-  return new CatalogService(createCatalogRepository())
+  const repository = createCatalogRepository()
+  return new ScalableCatalogService(repository, new SupabaseCatalogRankingReadModel())
 }
