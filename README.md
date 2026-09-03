@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, Daisycon-readiness, gecontroleerde onboarding, persistence-backed orchestration, due-feed batch execution, health-classificatie, production composition, beveiligde scheduler-trigger, lease-heartbeats, end-to-end importcorrelatie, bounded feed-traversal, storefront freshnessbeleid, een schaalbaar Supabase ranking read model, production security/go-live readiness, een formele first-partner production acceptance gate, een bol Affiliate readiness-profiel en een header-driven bol productfeed transport/mappingcontract.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, Daisycon-readiness, gecontroleerde onboarding, persistence-backed orchestration, due-feed batch execution, health-classificatie, production composition, beveiligde scheduler-trigger, lease-heartbeats, end-to-end importcorrelatie, bounded feed-traversal, storefront freshnessbeleid, een schaalbaar Supabase ranking read model, production security/go-live readiness, een formele first-partner production acceptance gate, een bol Affiliate readiness-profiel, een header-driven bol productfeed transport/mappingcontract en een partner portfolio operations-model.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
@@ -20,6 +20,7 @@ Afgerond / geïmplementeerd:
 - M0.27 — First Production Partner Activation & Live Catalog Acceptance Gate
 - M0.28 — bol Affiliate Integration Readiness & Acceptance Profile
 - M0.29 — bol Product Feed Transport & Real Mapping Validation
+- M0.30 — Partner Portfolio Operations & Activation Registry
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
@@ -34,6 +35,8 @@ Daisycon blijft de eerste kandidaat voor een volledige live acceptance run. M0.2
 M0.29 maakt de productfeedkant repository-ready zonder accountdetails te verzinnen. `BolProductFeedTransport` definieert een streaming transportboundary; `.csv.gz` feedbestanden worden herkend, de officiële `|`-gescheiden eerste headerregel wordt schema-inspecteerbaar gemaakt en `BolProductFeedMappingProfile` bindt Winkelnu-velden uitsluitend aan headers die in een echt feedmonster zijn aangetroffen. `validateBolProductFeedSample()` voert daarna schema-, row-, tracking- en kandidaatvalidatie uit met standaard minimaal 95% acceptance.
 
 De tests gebruiken synthetische headernamen om de mappingengine te bewijzen; dit is nadrukkelijk geen claim over de actuele officiële bol-kolomnamen. De live FTP-client wordt pas gebouwd/geactiveerd wanneer de huidige account-specifieke connection instructions, IPv4-whitelist, credentials en een echte huidige feedheader beschikbaar zijn.
+
+M0.30 brengt Daisycon, bol en toekomstige partners in één operationeel portfolio samen. `buildPartnerPortfolio()` combineert activation status, vereiste evidence en bestaande `FeedHealth` tot expliciete blockers en een `nextAction`. `production_approved` blijft een acceptance-status; daadwerkelijke `readyForProduction` vereist daarnaast complete productie-evidence én een gezonde live feed. Ontbrekende feedhealth wordt bewust `not_running`, nooit impliciet groen.
 
 `buildBolAffiliateTrackingUrl()` vormt de trackingboundary. `assessBolAffiliateReadiness()` voegt bovenop de generieke M0.27-gate bol-specifieke eisen toe voor exact Site_ID, bronvermelding, Nederlandse ervaring, freshness van prijs/beschikbaarheid/levertijd en verwijdering van bol-content wanneer toegang eindigt.
 
@@ -57,7 +60,7 @@ npm run verify:supabase
 npm run verify:production-readiness
 ```
 
-Zie [`docs/architecture/FIRST_PARTNER_PRODUCTION_ACCEPTANCE_GATE.md`](docs/architecture/FIRST_PARTNER_PRODUCTION_ACCEPTANCE_GATE.md), [`docs/architecture/BOL_AFFILIATE_INTEGRATION_READINESS.md`](docs/architecture/BOL_AFFILIATE_INTEGRATION_READINESS.md), [`docs/architecture/BOL_PRODUCT_FEED_TRANSPORT_AND_MAPPING.md`](docs/architecture/BOL_PRODUCT_FEED_TRANSPORT_AND_MAPPING.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
+Zie [`docs/architecture/FIRST_PARTNER_PRODUCTION_ACCEPTANCE_GATE.md`](docs/architecture/FIRST_PARTNER_PRODUCTION_ACCEPTANCE_GATE.md), [`docs/architecture/BOL_AFFILIATE_INTEGRATION_READINESS.md`](docs/architecture/BOL_AFFILIATE_INTEGRATION_READINESS.md), [`docs/architecture/BOL_PRODUCT_FEED_TRANSPORT_AND_MAPPING.md`](docs/architecture/BOL_PRODUCT_FEED_TRANSPORT_AND_MAPPING.md), [`docs/architecture/PARTNER_PORTFOLIO_OPERATIONS.md`](docs/architecture/PARTNER_PORTFOLIO_OPERATIONS.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Volgende technische fase
-**M0.30 — Partner Portfolio Operations & Activation Registry**: Daisycon en bol activationstatus, bewijsstukken en blockers in één operationeel model samenbrengen voordat we verdere affiliate-netwerken toevoegen.
+**M0.31 — Internal Partner Operations Read Model & Secure Ops Surface**: het portfolio-model koppelen aan echte registry/orchestrationdata en via een server-only interne read surface beschikbaar maken, zonder publieke adminroute of browser-databaseaccess.
