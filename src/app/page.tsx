@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ProductCard } from '@/components/storefront/product-card'
 import { SectionHeader } from '@/components/storefront/section-header'
+import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 import { WinkelnuSearchField } from '@/components/storefront/winkelnu-search-field'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
@@ -64,7 +65,7 @@ export default async function HomePage() {
           </div>
 
           {categories.length > 0 ? (
-            <section className="mt-10" aria-labelledby="categories-heading">
+            <section id="categorieen" className="mt-10 scroll-mt-6" aria-labelledby="categories-heading">
               <p className="text-sm font-medium text-[color:rgba(30,36,35,0.62)]">Categorieën</p>
               <h2 id="categories-heading" className="wn-heading mt-2 text-2xl">Ontdek wat bij je past</h2>
               <div className="mt-5 flex flex-wrap gap-3">
@@ -116,6 +117,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <WinkelnuFooter />
     </main>
   )
 }
