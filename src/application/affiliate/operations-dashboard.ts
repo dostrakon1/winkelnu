@@ -1,7 +1,7 @@
 import type { PartnerOperationsReadModel } from './partner-operations-read-model'
 
 export type OperationsIncidentSeverity = 'critical' | 'high' | 'medium' | 'low'
-export type OperationsIncidentKind = 'feed_attention' | 'feed_failure' | 'feed_delay' | 'feed_not_running' | 'missing_credentials' | 'integration_inactive'
+export type OperationsIncidentKind = 'feed_attention' | 'feed_failure' | 'feed_delay' | 'feed_not_running' | 'feed_paused' | 'missing_credentials' | 'integration_inactive'
 
 export type OperationsIncident = {
   id: string
@@ -29,12 +29,7 @@ export type OperationsDashboard = {
   incidents: OperationsIncident[]
 }
 
-const severityOrder: Record<OperationsIncidentSeverity, number> = {
-  critical: 0,
-  high: 1,
-  medium: 2,
-  low: 3,
-}
+const severityOrder: Record<OperationsIncidentSeverity, number> = { critical: 0, high: 1, medium: 2, low: 3 }
 
 export function buildOperationsDashboard(model: PartnerOperationsReadModel): OperationsDashboard {
   const incidents: OperationsIncident[] = []
@@ -42,111 +37,37 @@ export function buildOperationsDashboard(model: PartnerOperationsReadModel): Ope
 
   for (const integration of model.integrations) {
     if (integration.integrationStatus === 'active' && !integration.hasSecretReference) {
-      incidents.push({
-        id: `${integration.integrationId}:missing-credentials`,
-        severity: 'critical',
-        kind: 'missing_credentials',
-        integrationId: integration.integrationId,
-        merchantId: integration.merchantId,
-        merchantName: integration.merchantName,
-        title: `${integration.merchantName}: credentials ontbreken`,
-        detail: 'De actieve affiliate-integratie heeft geen server-side secret reference.',
-        operatorAction: 'Configureer de vereiste partnercredential als server-only env secret en registreer alleen de env: reference.',
-      })
+      incidents.push({ id: `${integration.integrationId}:missing-credentials`, severity: 'critical', kind: 'missing_credentials', integrationId: integration.integrationId, merchantId: integration.merchantId, merchantName: integration.merchantName, title: `${integration.merchantName}: credentials ontbreken`, detail: 'De actieve affiliate-integratie heeft geen server-side secret reference.', operatorAction: 'Configureer de vereiste partnercredential als server-only env secret en registreer alleen de env: reference.' })
     }
 
     if (integration.integrationStatus !== 'active') {
-      incidents.push({
-        id: `${integration.integrationId}:inactive`,
-        severity: integration.integrationStatus === 'pending' ? 'medium' : 'low',
-        kind: 'integration_inactive',
-        integrationId: integration.integrationId,
-        merchantId: integration.merchantId,
-        merchantName: integration.merchantName,
-        title: `${integration.merchantName}: integratie ${integration.integrationStatus}`,
-        detail: `De integratie staat op ${integration.integrationStatus} en neemt niet normaal deel aan productie-imports.`,
-        operatorAction: integration.integrationStatus === 'pending'
-          ? 'Rond onboarding en acceptance evidence af voordat activatie wordt toegestaan.'
-          : 'Controleer of deze status bewust is; activeer alleen na een nieuwe acceptance check.',
-      })
+      incidents.push({ id: `${integration.integrationId}:inactive`, severity: integration.integrationStatus === 'pending' ? 'medium' : 'low', kind: 'integration_inactive', integrationId: integration.integrationId, merchantId: integration.merchantId, merchantName: integration.merchantName, title: `${integration.merchantName}: integratie ${integration.integrationStatus}`, detail: `De integratie staat op ${integration.integrationStatus} en neemt niet normaal deel aan productie-imports.`, operatorAction: integration.integrationStatus === 'pending' ? 'Rond onboarding en acceptance evidence af voordat activatie wordt toegestaan.' : 'Controleer of deze status bewust is; activeer alleen na een nieuwe acceptance check.' })
     }
 
     for (const feed of integration.feeds) {
       feeds += 1
-      if (!feed.isActive) continue
+      if (!feed.isActive) {
+        incidents.push({ id: `${integration.integrationId}:${feed.sourceKey}:paused`, severity: 'low', kind: 'feed_paused', integrationId: integration.integrationId, merchantId: integration.merchantId, merchantName: integration.merchantName, sourceKey: feed.sourceKey, title: `${integration.merchantName}: feed gepauzeerd`, detail: 'Deze feed is expliciet uitgeschakeld en wordt niet door de scheduler geïmporteerd.', operatorAction: 'Hervat de feed alleen nadat de oorzaak is gecontroleerd; hervatten plant direct een nieuwe import in.' })
+        continue
+      }
 
       if (!feed.health) {
-        incidents.push({
-          id: `${integration.integrationId}:${feed.sourceKey}:not-running`,
-          severity: 'high',
-          kind: 'feed_not_running',
-          integrationId: integration.integrationId,
-          merchantId: integration.merchantId,
-          merchantName: integration.merchantName,
-          sourceKey: feed.sourceKey,
-          title: `${integration.merchantName}: feed nog niet uitgevoerd`,
-          detail: 'Voor deze actieve feed is nog geen orchestration/health-observatie beschikbaar.',
-          operatorAction: 'Voer eerst een gecontroleerde preview/import uit en verifieer scheduler/orchestration state.',
-        })
+        incidents.push({ id: `${integration.integrationId}:${feed.sourceKey}:not-running`, severity: 'high', kind: 'feed_not_running', integrationId: integration.integrationId, merchantId: integration.merchantId, merchantName: integration.merchantName, sourceKey: feed.sourceKey, title: `${integration.merchantName}: feed nog niet uitgevoerd`, detail: 'Voor deze actieve feed is nog geen orchestration/health-observatie beschikbaar.', operatorAction: 'Voer eerst een gecontroleerde preview/import uit en verifieer scheduler/orchestration state.' })
         continue
       }
 
       const health = feed.health
       if (health.status === 'attention_required') {
-        incidents.push({
-          id: `${integration.integrationId}:${feed.sourceKey}:attention`,
-          severity: 'critical',
-          kind: 'feed_attention',
-          integrationId: integration.integrationId,
-          merchantId: integration.merchantId,
-          merchantName: integration.merchantName,
-          sourceKey: feed.sourceKey,
-          title: `${integration.merchantName}: feed vereist direct aandacht`,
-          detail: health.lastError ?? `Feed heeft ${health.failureCount} opeenvolgende fouten.`,
-          operatorAction: 'Pauzeer zo nodig de feed, inspecteer de laatste importfout en herstel vóór een nieuwe run.',
-        })
+        incidents.push({ id: `${integration.integrationId}:${feed.sourceKey}:attention`, severity: 'critical', kind: 'feed_attention', integrationId: integration.integrationId, merchantId: integration.merchantId, merchantName: integration.merchantName, sourceKey: feed.sourceKey, title: `${integration.merchantName}: feed vereist direct aandacht`, detail: health.lastError ?? `Feed heeft ${health.failureCount} opeenvolgende fouten.`, operatorAction: 'Pauzeer zo nodig de feed, inspecteer de laatste importfout en herstel vóór een nieuwe run.' })
       } else if (health.status === 'failing') {
-        incidents.push({
-          id: `${integration.integrationId}:${feed.sourceKey}:failing`,
-          severity: 'high',
-          kind: 'feed_failure',
-          integrationId: integration.integrationId,
-          merchantId: integration.merchantId,
-          merchantName: integration.merchantName,
-          sourceKey: feed.sourceKey,
-          title: `${integration.merchantName}: feed faalt`,
-          detail: health.lastError ?? 'De laatste feedimport is mislukt.',
-          operatorAction: 'Inspecteer mapping/transport/credentialfout en voer daarna een gecontroleerde retry uit.',
-        })
+        incidents.push({ id: `${integration.integrationId}:${feed.sourceKey}:failing`, severity: 'high', kind: 'feed_failure', integrationId: integration.integrationId, merchantId: integration.merchantId, merchantName: integration.merchantName, sourceKey: feed.sourceKey, title: `${integration.merchantName}: feed faalt`, detail: health.lastError ?? 'De laatste feedimport is mislukt.', operatorAction: 'Inspecteer mapping/transport/credentialfout en voer daarna een gecontroleerde retry uit.' })
       } else if (health.status === 'delayed') {
-        incidents.push({
-          id: `${integration.integrationId}:${feed.sourceKey}:delayed`,
-          severity: 'medium',
-          kind: 'feed_delay',
-          integrationId: integration.integrationId,
-          merchantId: integration.merchantId,
-          merchantName: integration.merchantName,
-          sourceKey: feed.sourceKey,
-          title: `${integration.merchantName}: feed vertraagd`,
-          detail: `De geplande import is langer dan de operationele drempel achterstallig${health.nextRunAt ? ` (next ${health.nextRunAt})` : ''}.`,
-          operatorAction: 'Controleer scheduler-trigger, lease-status en workerbeschikbaarheid.',
-        })
+        incidents.push({ id: `${integration.integrationId}:${feed.sourceKey}:delayed`, severity: 'medium', kind: 'feed_delay', integrationId: integration.integrationId, merchantId: integration.merchantId, merchantName: integration.merchantName, sourceKey: feed.sourceKey, title: `${integration.merchantName}: feed vertraagd`, detail: `De geplande import is langer dan de operationele drempel achterstallig${health.nextRunAt ? ` (next ${health.nextRunAt})` : ''}.`, operatorAction: 'Controleer scheduler-trigger, lease-status en workerbeschikbaarheid.' })
       }
     }
   }
 
   incidents.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity] || a.merchantName.localeCompare(b.merchantName) || a.id.localeCompare(b.id))
 
-  return {
-    generatedAt: model.generatedAt,
-    totals: {
-      integrations: model.integrations.length,
-      activeIntegrations: model.integrations.filter((integration) => integration.integrationStatus === 'active').length,
-      feeds,
-      incidents: incidents.length,
-      critical: incidents.filter((incident) => incident.severity === 'critical').length,
-      high: incidents.filter((incident) => incident.severity === 'high').length,
-    },
-    incidents,
-  }
+  return { generatedAt: model.generatedAt, totals: { integrations: model.integrations.length, activeIntegrations: model.integrations.filter((integration) => integration.integrationStatus === 'active').length, feeds, incidents: incidents.length, critical: incidents.filter((incident) => incident.severity === 'critical').length, high: incidents.filter((incident) => incident.severity === 'high').length }, incidents }
 }
