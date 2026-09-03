@@ -112,13 +112,14 @@ export async function importFeed(input: {
           decidedAt: now(),
         })
 
-        if (!match.canonicalProductId) {
+        const canonicalProductId = match.canonicalProductId
+        if (!canonicalProductId) {
           matches.push(match)
           await rejectRecord(candidate.merchantProductId, ['No canonical product identity could be determined.'])
           continue
         }
 
-        const existingSourceProductId = canonicalProductSources.get(match.canonicalProductId)
+        const existingSourceProductId = canonicalProductSources.get(canonicalProductId)
         if (existingSourceProductId && existingSourceProductId !== candidate.merchantProductId) {
           match = {
             ...match,
@@ -127,7 +128,7 @@ export async function importFeed(input: {
             confidence: match.confidence === 'certain' ? 'high' : 'review',
           }
         } else {
-          canonicalProductSources.set(match.canonicalProductId, candidate.merchantProductId)
+          canonicalProductSources.set(canonicalProductId, candidate.merchantProductId)
         }
 
         matches.push(match)
@@ -146,7 +147,7 @@ export async function importFeed(input: {
           await input.repository.addMatchReview(review)
         }
 
-        const productId = match.canonicalProductId
+        const productId = canonicalProductId
         const offerId = `offer:${input.merchant.id}:${candidate.merchantProductId}`
 
         const product: Product = {
