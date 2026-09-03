@@ -6,17 +6,9 @@ import { validateFeedCandidate } from '@/domain/catalog/validate-feed-candidate'
 import type { Merchant, Offer, Product } from '@/domain/catalog/types'
 
 function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
+  return value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
-
-function safeIdPart(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9:_-]+/g, '-')
-}
+function safeIdPart(value: string): string { return value.toLowerCase().replace(/[^a-z0-9:_-]+/g, '-') }
 
 export type ImportFeedResult = {
   importRun: ImportRun
@@ -34,200 +26,68 @@ export async function importFeed(input: {
   merchant: Merchant
   categoryIdBySourceCategory?: Record<string, string>
   now?: () => string
+  deactivateMissingOffers?: boolean
 }): Promise<ImportFeedResult> {
   const now = input.now ?? (() => new Date().toISOString())
   const startedAt = now()
   const importRunId = `import:${safeIdPart(input.adapter.sourceKey)}:${safeIdPart(input.merchant.id)}:${Date.parse(startedAt)}`
+  let importRun: ImportRun = { id: importRunId, sourceKey: input.adapter.sourceKey, merchantId: input.merchant.id, status: 'running', startedAt, recordsSeen: 0, recordsAccepted: 0, recordsRejected: 0, offersDeactivated: 0, reviewRequired: 0, errorSummary: [] }
 
-  let importRun: ImportRun = {
-    id: importRunId,
-    sourceKey: input.adapter.sourceKey,
-    merchantId: input.merchant.id,
-    status: 'running',
-    startedAt,
-    recordsSeen: 0,
-    recordsAccepted: 0,
-    recordsRejected: 0,
-    offersDeactivated: 0,
-    reviewRequired: 0,
-    errorSummary: [],
-  }
-
-  // Persistence adapters may require the merchant relation to exist before an import run can resolve its feed source.
   await input.repository.upsertMerchant(input.merchant)
   await input.repository.createImportRun(importRun)
 
   let cursor: string | undefined
-  let imported = 0
-  let rejected = 0
-  let offersDeactivated = 0
-  let reviewRequired = 0
+  let imported = 0, rejected = 0, offersDeactivated = 0, reviewRequired = 0
   const issues: ImportFeedResult['issues'] = []
   const matches: ProductMatchDecision[] = []
   const seenMerchantProductIds = new Set<string>()
   const canonicalProductSources = new Map<string, string>()
 
   const rejectRecord = async (merchantProductId: string, messages: string[]) => {
-    rejected += 1
-    issues.push({ merchantProductId, messages })
-
-    const reject: ImportReject = {
-      id: `reject:${importRunId}:${safeIdPart(merchantProductId)}:${rejected}`,
-      importRunId,
-      sourceKey: input.adapter.sourceKey,
-      merchantProductId,
-      reasons: messages,
-      rejectedAt: now(),
-    }
+    rejected += 1; issues.push({ merchantProductId, messages })
+    const reject: ImportReject = { id: `reject:${importRunId}:${safeIdPart(merchantProductId)}:${rejected}`, importRunId, sourceKey: input.adapter.sourceKey, merchantProductId, reasons: messages, rejectedAt: now() }
     await input.repository.addImportReject(reject)
   }
 
   try {
     do {
       const page = await input.adapter.fetchPage({ cursor })
-
       for (const candidate of page.items) {
         importRun = { ...importRun, recordsSeen: importRun.recordsSeen + 1 }
-
-        if (seenMerchantProductIds.has(candidate.merchantProductId)) {
-          await rejectRecord(candidate.merchantProductId, ['Duplicate merchant product ID encountered in the same import run.'])
-          continue
-        }
+        if (seenMerchantProductIds.has(candidate.merchantProductId)) { await rejectRecord(candidate.merchantProductId, ['Duplicate merchant product ID encountered in the same import run.']); continue }
         seenMerchantProductIds.add(candidate.merchantProductId)
-
         const validation = validateFeedCandidate(candidate)
-        if (!validation.ok) {
-          await rejectRecord(
-            candidate.merchantProductId,
-            validation.issues.map((issue) => issue.message),
-          )
-          continue
-        }
+        if (!validation.ok) { await rejectRecord(candidate.merchantProductId, validation.issues.map((issue) => issue.message)); continue }
 
-        let match = decideStrongProductIdentity({
-          sourceKey: candidate.sourceKey,
-          merchantProductId: candidate.merchantProductId,
-          gtin: candidate.gtin,
-          mpn: candidate.mpn,
-          brand: candidate.brand,
-          decidedAt: now(),
-        })
-
+        let match = decideStrongProductIdentity({ sourceKey: candidate.sourceKey, merchantProductId: candidate.merchantProductId, gtin: candidate.gtin, mpn: candidate.mpn, brand: candidate.brand, decidedAt: now() })
         const canonicalProductId = match.canonicalProductId
-        if (!canonicalProductId) {
-          matches.push(match)
-          await rejectRecord(candidate.merchantProductId, ['No canonical product identity could be determined.'])
-          continue
-        }
-
+        if (!canonicalProductId) { matches.push(match); await rejectRecord(candidate.merchantProductId, ['No canonical product identity could be determined.']); continue }
         const existingSourceProductId = canonicalProductSources.get(canonicalProductId)
-        if (existingSourceProductId && existingSourceProductId !== candidate.merchantProductId) {
-          match = {
-            ...match,
-            reasons: [...match.reasons, 'Multiple merchant records in this import map to the same canonical product.'],
-            requiresReview: true,
-            confidence: match.confidence === 'certain' ? 'high' : 'review',
-          }
-        } else {
-          canonicalProductSources.set(canonicalProductId, candidate.merchantProductId)
-        }
-
+        if (existingSourceProductId && existingSourceProductId !== candidate.merchantProductId) match = { ...match, reasons: [...match.reasons, 'Multiple merchant records in this import map to the same canonical product.'], requiresReview: true, confidence: match.confidence === 'certain' ? 'high' : 'review' }
+        else canonicalProductSources.set(canonicalProductId, candidate.merchantProductId)
         matches.push(match)
 
         if (match.requiresReview) {
           reviewRequired += 1
-          const review: MatchReviewItem = {
-            id: `review:${importRunId}:${safeIdPart(candidate.merchantProductId)}`,
-            importRunId,
-            merchantId: input.merchant.id,
-            sourceKey: input.adapter.sourceKey,
-            decision: match,
-            status: 'pending',
-            createdAt: now(),
-          }
+          const review: MatchReviewItem = { id: `review:${importRunId}:${safeIdPart(candidate.merchantProductId)}`, importRunId, merchantId: input.merchant.id, sourceKey: input.adapter.sourceKey, decision: match, status: 'pending', createdAt: now() }
           await input.repository.addMatchReview(review)
         }
 
         const productId = canonicalProductId
-        const offerId = `offer:${input.merchant.id}:${candidate.merchantProductId}`
-
-        const product: Product = {
-          id: productId,
-          slug: `${slugify(candidate.title)}-${candidate.merchantProductId.toLowerCase()}`,
-          title: candidate.title,
-          description: candidate.description,
-          brand: candidate.brand,
-          gtin: candidate.gtin,
-          mpn: candidate.mpn,
-          imageUrl: candidate.imageUrls[0],
-          categoryId: candidate.sourceCategory
-            ? input.categoryIdBySourceCategory?.[candidate.sourceCategory]
-            : undefined,
-        }
-
-        const offer: Offer = {
-          id: offerId,
-          productId,
-          merchantId: input.merchant.id,
-          merchantProductId: candidate.merchantProductId,
-          price: candidate.price,
-          shippingCost: candidate.shippingCost,
-          availability: candidate.availability,
-          productUrl: candidate.productUrl,
-          affiliateUrl: candidate.affiliateUrl,
-          sourceUpdatedAt: candidate.sourceUpdatedAt,
-          importedAt: candidate.importedAt,
-          lastSeenAt: startedAt,
-          isActive: true,
-        }
-
-        await input.repository.upsertProduct(product)
-        await input.repository.upsertOffer(offer)
-        imported += 1
+        const product: Product = { id: productId, slug: `${slugify(candidate.title)}-${candidate.merchantProductId.toLowerCase()}`, title: candidate.title, description: candidate.description, brand: candidate.brand, gtin: candidate.gtin, mpn: candidate.mpn, imageUrl: candidate.imageUrls[0], categoryId: candidate.sourceCategory ? input.categoryIdBySourceCategory?.[candidate.sourceCategory] : undefined }
+        const offer: Offer = { id: `offer:${input.merchant.id}:${candidate.merchantProductId}`, productId, merchantId: input.merchant.id, merchantProductId: candidate.merchantProductId, price: candidate.price, shippingCost: candidate.shippingCost, availability: candidate.availability, productUrl: candidate.productUrl, affiliateUrl: candidate.affiliateUrl, sourceUpdatedAt: candidate.sourceUpdatedAt, importedAt: candidate.importedAt, lastSeenAt: startedAt, isActive: true }
+        await input.repository.upsertProduct(product); await input.repository.upsertOffer(offer); imported += 1
       }
-
       cursor = page.nextCursor
     } while (cursor)
 
-    offersDeactivated = await input.repository.deactivateMissingOffers({
-      merchantId: input.merchant.id,
-      seenBefore: startedAt,
-    })
-
-    importRun = {
-      ...importRun,
-      status: rejected > 0 || reviewRequired > 0 ? 'completed_with_errors' : 'completed',
-      finishedAt: now(),
-      recordsAccepted: imported,
-      recordsRejected: rejected,
-      offersDeactivated,
-      reviewRequired,
-      errorSummary: issues.flatMap((issue) => issue.messages).slice(0, 25),
-    }
+    if (input.deactivateMissingOffers !== false) offersDeactivated = await input.repository.deactivateMissingOffers({ merchantId: input.merchant.id, seenBefore: startedAt })
+    importRun = { ...importRun, status: rejected > 0 || reviewRequired > 0 ? 'completed_with_errors' : 'completed', finishedAt: now(), recordsAccepted: imported, recordsRejected: rejected, offersDeactivated, reviewRequired, errorSummary: issues.flatMap((issue) => issue.messages).slice(0, 25) }
     await input.repository.updateImportRun(importRun)
-
-    return {
-      importRun,
-      imported,
-      rejected,
-      offersDeactivated,
-      reviewRequired,
-      issues,
-      matches,
-    }
+    return { importRun, imported, rejected, offersDeactivated, reviewRequired, issues, matches }
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown import failure.'
-    importRun = {
-      ...importRun,
-      status: 'failed',
-      finishedAt: now(),
-      recordsAccepted: imported,
-      recordsRejected: rejected,
-      offersDeactivated,
-      reviewRequired,
-      errorSummary: [...importRun.errorSummary, message],
-    }
-    await input.repository.updateImportRun(importRun)
-    throw error
+    importRun = { ...importRun, status: 'failed', finishedAt: now(), recordsAccepted: imported, recordsRejected: rejected, offersDeactivated, reviewRequired, errorSummary: [...importRun.errorSummary, message] }
+    await input.repository.updateImportRun(importRun); throw error
   }
 }
