@@ -1,4 +1,5 @@
-import { buildSyntheticCatalog } from '@/infrastructure/catalog/synthetic-catalog'
+import Link from 'next/link'
+import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 function formatMoney(amount: string): string {
   return new Intl.NumberFormat('nl-NL', {
@@ -8,7 +9,8 @@ function formatMoney(amount: string): string {
 }
 
 export default async function HomePage() {
-  const catalog = await buildSyntheticCatalog()
+  const catalog = await createStorefrontCatalogService()
+  const products = await catalog.listProducts({ limit: 12 })
 
   return (
     <main className="min-h-screen">
@@ -23,58 +25,50 @@ export default async function HomePage() {
           </p>
         </div>
 
-        <div className="mt-10 flex flex-wrap gap-3 text-sm text-zinc-600">
-          <span className="rounded-full border border-zinc-200 bg-white px-4 py-2">
-            Demo-import: {catalog.importSummary.imported} producten
-          </span>
-          <span className="rounded-full border border-zinc-200 bg-white px-4 py-2">
-            Afgewezen: {catalog.importSummary.rejected}
-          </span>
-          <span className="rounded-full border border-zinc-200 bg-white px-4 py-2">
-            Merchant: {catalog.merchant.name}
-          </span>
-        </div>
-
         <section className="mt-16">
           <div className="flex items-end justify-between gap-6">
             <div>
-              <p className="text-sm font-medium text-zinc-500">Synthetic catalog vertical slice</p>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-zinc-950">Eerste producten door de volledige keten</h2>
+              <p className="text-sm font-medium text-zinc-500">Ontdek producten</p>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-zinc-950">Aanbiedingen uit meerdere winkels</h2>
             </div>
           </div>
 
           <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {catalog.products.map(({ product, offers }) => {
-              const offer = offers[0]
-              if (!offer) return null
+            {products.map(({ product, bestOffer, offerCount }) => {
+              if (!bestOffer) return null
 
               return (
                 <article key={product.id} className="flex flex-col rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-                  <div className="flex min-h-44 items-center justify-center rounded-2xl bg-zinc-100 px-6 text-center text-sm font-medium text-zinc-400">
+                  <Link href={`/product/${product.slug}`} className="flex min-h-44 items-center justify-center rounded-2xl bg-zinc-100 px-6 text-center text-sm font-medium text-zinc-400">
                     Productafbeelding volgt uit merchantfeed
-                  </div>
+                  </Link>
                   <div className="mt-6 flex-1">
                     <p className="text-sm font-medium text-zinc-500">{product.brand ?? 'Merk onbekend'}</p>
-                    <h3 className="mt-2 text-xl font-semibold tracking-tight text-zinc-950">{product.title}</h3>
+                    <h3 className="mt-2 text-xl font-semibold tracking-tight text-zinc-950">
+                      <Link href={`/product/${product.slug}`} className="hover:underline">
+                        {product.title}
+                      </Link>
+                    </h3>
                     <p className="mt-3 line-clamp-3 text-sm leading-6 text-zinc-600">{product.description}</p>
                   </div>
                   <div className="mt-6 border-t border-zinc-100 pt-5">
                     <div className="flex items-end justify-between gap-4">
                       <div>
-                        <p className="text-xs text-zinc-500">Bij {catalog.merchant.name}</p>
-                        <p className="mt-1 text-2xl font-bold text-zinc-950">{formatMoney(offer.price.amount)}</p>
+                        <p className="text-xs text-zinc-500">
+                          Vanaf {bestOffer.merchant?.name ?? 'webwinkel'} · {offerCount} {offerCount === 1 ? 'aanbieding' : 'aanbiedingen'}
+                        </p>
+                        <p className="mt-1 text-2xl font-bold text-zinc-950">{formatMoney(bestOffer.offer.price.amount)}</p>
                       </div>
                       <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                        Op voorraad
+                        {bestOffer.offer.availability === 'in_stock' ? 'Op voorraad' : 'Bekijk status'}
                       </span>
                     </div>
-                    <a
-                      href={offer.affiliateUrl}
-                      rel="nofollow sponsored"
+                    <Link
+                      href={`/product/${product.slug}`}
                       className="mt-5 flex w-full items-center justify-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800"
                     >
-                      Bekijk aanbieding
-                    </a>
+                      Vergelijk aanbiedingen
+                    </Link>
                   </div>
                 </article>
               )
