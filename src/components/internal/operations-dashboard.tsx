@@ -1,5 +1,7 @@
+import type { RecoveryActionState } from '@/app/intern/operations/recovery-actions'
 import type { OperationsDashboard, OperationsIncidentSeverity } from '@/application/affiliate/operations-dashboard'
 import { operatorCan, type OperatorRole } from '@/application/auth/operator-authorization'
+import { RecoveryActionForm } from '@/components/internal/recovery-action-form'
 
 const severityLabel: Record<OperationsIncidentSeverity, string> = {
   critical: 'Kritiek',
@@ -21,7 +23,7 @@ const roleLabel: Record<OperatorRole, string> = {
   read_only: 'Read-only',
 }
 
-type RecoveryAction = (formData: FormData) => Promise<void>
+type RecoveryAction = (previous: RecoveryActionState, formData: FormData) => Promise<RecoveryActionState>
 
 export function InternalOperationsDashboard({
   dashboard,
@@ -52,7 +54,7 @@ export function InternalOperationsDashboard({
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Winkelnu internal operations</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Partner operations</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
-              Operationeel overzicht met role-gated, volledig geaudite feed recovery. Kritieke problemen staan altijd bovenaan.
+              Operationeel overzicht met role-gated, geaudite en idempotente feed recovery. Kritieke problemen staan altijd bovenaan.
             </p>
           </div>
           <div className="flex flex-col items-start gap-3 text-xs text-slate-500 sm:items-end">
@@ -79,7 +81,7 @@ export function InternalOperationsDashboard({
           <div className="mb-4 flex items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold">Aandachtspunten</h2>
-              <p className="mt-1 text-sm text-slate-500">Gesorteerd op operationele urgentie. Recovery-acties vereisen operator- of ownerrechten.</p>
+              <p className="mt-1 text-sm text-slate-500">Gesorteerd op operationele urgentie. Dubbele recovery-submits worden server-side onderdrukt.</p>
             </div>
           </div>
 
@@ -111,15 +113,35 @@ export function InternalOperationsDashboard({
                       <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Eerstvolgende actie</p>
                       <p className="mt-2 text-sm leading-6 text-slate-300">{incident.operatorAction}</p>
                       {incident.sourceKey ? (
-                        <div className="mt-4 flex flex-wrap gap-2">
+                        <div className="mt-4 flex flex-wrap gap-3">
                           {incident.kind === 'feed_paused' && canResume ? (
-                            <RecoveryForm action={resumeFeedAction} merchantId={incident.merchantId} sourceKey={incident.sourceKey} label="Hervatten" />
+                            <RecoveryActionForm
+                              action={resumeFeedAction}
+                              merchantId={incident.merchantId}
+                              sourceKey={incident.sourceKey}
+                              requestKey={`${dashboard.generatedAt}:${incident.id}:resume`}
+                              label="Hervatten"
+                            />
                           ) : null}
                           {incident.kind !== 'feed_paused' && canRetry ? (
-                            <RecoveryForm action={retryFeedAction} merchantId={incident.merchantId} sourceKey={incident.sourceKey} label="Retry nu" />
+                            <RecoveryActionForm
+                              action={retryFeedAction}
+                              merchantId={incident.merchantId}
+                              sourceKey={incident.sourceKey}
+                              requestKey={`${dashboard.generatedAt}:${incident.id}:retry`}
+                              label="Retry nu"
+                            />
                           ) : null}
                           {incident.kind !== 'feed_paused' && canPause ? (
-                            <RecoveryForm action={pauseFeedAction} merchantId={incident.merchantId} sourceKey={incident.sourceKey} label="Pauzeren" subtle />
+                            <RecoveryActionForm
+                              action={pauseFeedAction}
+                              merchantId={incident.merchantId}
+                              sourceKey={incident.sourceKey}
+                              requestKey={`${dashboard.generatedAt}:${incident.id}:pause`}
+                              label="Pauzeren"
+                              subtle
+                              confirmMessage={`Weet je zeker dat je feed ${incident.sourceKey} wilt pauzeren? Automatische imports stoppen totdat je de feed hervat.`}
+                            />
                           ) : null}
                         </div>
                       ) : null}
@@ -132,18 +154,6 @@ export function InternalOperationsDashboard({
         </section>
       </div>
     </main>
-  )
-}
-
-function RecoveryForm({ action, merchantId, sourceKey, label, subtle = false }: { action: RecoveryAction; merchantId: string; sourceKey: string; label: string; subtle?: boolean }) {
-  return (
-    <form action={action}>
-      <input type="hidden" name="merchantId" value={merchantId} />
-      <input type="hidden" name="sourceKey" value={sourceKey} />
-      <button type="submit" className={`rounded-lg border px-3 py-2 text-xs font-semibold ${subtle ? 'border-slate-700 text-slate-300 hover:border-slate-500' : 'border-cyan-700 bg-cyan-950/50 text-cyan-200 hover:border-cyan-500'}`}>
-        {label}
-      </button>
-    </form>
   )
 }
 
