@@ -110,13 +110,13 @@ as $$
       where o.product_id = cp.id
         and o.is_active = true
         and o.last_seen_at >= p_now - interval '72 hours'
-        and (not p_in_stock_only or o.availability = 'in_stock')
-        and (p_min_total is null or o.price + coalesce(o.shipping_cost, 0) >= p_min_total)
-        and (p_max_total is null or o.price + coalesce(o.shipping_cost, 0) <= p_max_total)
       order by o.price + coalesce(o.shipping_cost, 0), o.id
       limit 1
     ) bo on true
     where cp.relevance >= 0
+      and (not p_in_stock_only or bo.availability = 'in_stock')
+      and (p_min_total is null or bo.total_amount >= p_min_total)
+      and (p_max_total is null or bo.total_amount <= p_max_total)
   )
   select
     r.external_key,
