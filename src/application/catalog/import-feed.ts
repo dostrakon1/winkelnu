@@ -53,8 +53,9 @@ export async function importFeed(input: {
     errorSummary: [],
   }
 
-  await input.repository.createImportRun(importRun)
+  // Persistence adapters may require the merchant relation to exist before an import run can resolve its feed source.
   await input.repository.upsertMerchant(input.merchant)
+  await input.repository.createImportRun(importRun)
 
   let cursor: string | undefined
   let imported = 0
