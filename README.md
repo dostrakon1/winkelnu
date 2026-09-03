@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability, per-feed timelines, bounded import-run evidence, importkwaliteitssamenvattingen, read-only quality-attention signalen, dashboardprioritering, operations-security readiness verification, geharde recovery-foutgrenzen, een fail-closed Supabase activation environment contract, een CI-afgedwongen preview migration runbook, een veilig activation evidence-pack en een command-by-command preview activation checklist.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability, per-feed timelines, bounded import-run evidence, importkwaliteitssamenvattingen, read-only quality-attention signalen, dashboardprioritering, operations-security readiness verification, geharde recovery-foutgrenzen, een fail-closed Supabase activation environment contract, een CI-afgedwongen preview migration runbook, een veilig activation evidence-pack en een command-by-command preview activation checklist. De repository-only activation preparation is nu bevroren.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
@@ -27,6 +27,7 @@ Afgerond / geïmplementeerd:
 - M0.48 — Preview Supabase Provisioning & Migration Runbook
 - M0.49 — Preview Activation Evidence Pack & Handoff Checklist
 - M0.50 — Preview Activation Command Sequence & Operator Checklist
+- M0.51 — Preview Activation Readiness Freeze & External Handoff Gate
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
@@ -45,6 +46,8 @@ M0.48 legt de complete preview provisioning- en migrationprocedure vast. `npm ru
 M0.49 voegt één canonical evidence-pack toe voor de echte preview-activatie. Alle live velden blijven bewust `PENDING` totdat ze tegen het echte Supabase-project zijn bewezen. `npm run check:preview-evidence-template` bewaakt de verplichte bewijssecties en controleert dat het template geen voor de hand liggende secret assignments bevat.
 
 M0.50 maakt van de preview-voorbereiding één uitvoerbare Steps 0–10 checklist: activation SHA bevriezen, preview-project/configuratie, migration gates/apply, live readiness, project-derived types, bounded import, storefront/operator acceptance, persistence switch en evidence-pack closure. De sequence stopt fail-closed bij de eerste mislukte gate.
+
+M0.51 bevriest deze preparation set. Zonder een echt preview-Supabase-project is de juiste status nu `externally gated`; er worden geen extra activation-documenten of fictieve live-resultaten meer toegevoegd. De volgende activatiefase begint pas met echte provisioning.
 
 Voor human operator auth zijn onder andere nodig:
 
@@ -72,7 +75,7 @@ npm run verify:production-readiness
 
 Live Supabase production readiness is nog niet geclaimd: migrations `0001`–`0015` moeten eerst op een echt preview/production project worden toegepast en de live verification moet daar succesvol draaien.
 
-Zie [`docs/operations/PREVIEW_ACTIVATION_COMMAND_SEQUENCE.md`](docs/operations/PREVIEW_ACTIVATION_COMMAND_SEQUENCE.md), [`docs/operations/PREVIEW_ACTIVATION_EVIDENCE_PACK.md`](docs/operations/PREVIEW_ACTIVATION_EVIDENCE_PACK.md), [`docs/operations/PREVIEW_SUPABASE_PROVISIONING_AND_MIGRATION_RUNBOOK.md`](docs/operations/PREVIEW_SUPABASE_PROVISIONING_AND_MIGRATION_RUNBOOK.md), [`docs/architecture/LIVE_SUPABASE_ACTIVATION_PREPARATION_AND_ENVIRONMENT_CONTRACT.md`](docs/architecture/LIVE_SUPABASE_ACTIVATION_PREPARATION_AND_ENVIRONMENT_CONTRACT.md), [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md) en [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md).
+Zie [`docs/operations/PREVIEW_ACTIVATION_READINESS_FREEZE.md`](docs/operations/PREVIEW_ACTIVATION_READINESS_FREEZE.md), [`docs/operations/PREVIEW_ACTIVATION_COMMAND_SEQUENCE.md`](docs/operations/PREVIEW_ACTIVATION_COMMAND_SEQUENCE.md), [`docs/operations/PREVIEW_ACTIVATION_EVIDENCE_PACK.md`](docs/operations/PREVIEW_ACTIVATION_EVIDENCE_PACK.md), [`docs/operations/PREVIEW_SUPABASE_PROVISIONING_AND_MIGRATION_RUNBOOK.md`](docs/operations/PREVIEW_SUPABASE_PROVISIONING_AND_MIGRATION_RUNBOOK.md), [`docs/architecture/LIVE_SUPABASE_ACTIVATION_PREPARATION_AND_ENVIRONMENT_CONTRACT.md`](docs/architecture/LIVE_SUPABASE_ACTIVATION_PREPARATION_AND_ENVIRONMENT_CONTRACT.md), [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md) en [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md).
 
-## Volgende technische fase
-**M0.51 — Preview Activation Readiness Freeze & External Handoff Gate**: de activation-scaffolding bevriezen, het volledige repositorycontract nog één keer verifiëren en exact vastleggen vanaf welk punt de volgende stap echte Supabase provisioning is in plaats van verdere voorbereiding.
+## Volgende activatiefase
+**M1.0 — Real Preview Supabase Provisioning & Verification**: geen extra voorbereidingsmilestone. De volgende stap begint zodra het echte preview-Supabase-project en de vereiste externe toegang beschikbaar zijn.
