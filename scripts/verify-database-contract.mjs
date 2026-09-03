@@ -17,6 +17,7 @@ const migrationPaths = [
   'supabase/migrations/0013_operator_action_idempotency.sql',
   'supabase/migrations/0014_operations_security_readiness.sql',
   'supabase/migrations/0015_operator_action_retention_policy.sql',
+  'supabase/migrations/0016_explicit_data_api_service_role_grants.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -25,6 +26,12 @@ const requiredTables = [
   'merchants', 'categories', 'products', 'feed_sources', 'import_runs', 'offers', 'product_identifiers',
   'import_rejects', 'product_match_reviews', 'affiliate_click_events', 'affiliate_networks',
   'merchant_affiliate_integrations', 'feed_import_orchestration', 'operator_audit_events', 'operator_action_requests',
+]
+
+const requiredDataApiTables = [
+  'merchants', 'categories', 'products', 'feed_sources', 'import_runs', 'offers', 'product_identifiers',
+  'import_rejects', 'product_match_reviews', 'affiliate_click_events', 'affiliate_networks',
+  'merchant_affiliate_integrations', 'feed_import_orchestration',
 ]
 
 const requiredColumns = [
@@ -77,6 +84,7 @@ const requiredSecurityPatterns = [
   ['resume RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+operator_resume_feed\(text\s*,\s*text\s*,\s*timestamptz\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
   ['operations readiness service-role grant', /grant\s+execute\s+on\s+function\s+winkelnu_operations_security_readiness\(\)\s+to\s+service_role/i],
   ['operator action retention policy', /retain\s+records\s+for\s+at\s+least\s+90\s+days/i],
+  ['service-role public schema usage', /grant\s+usage\s+on\s+schema\s+public\s+to\s+service_role/i],
 ]
 
 const failures = []
@@ -86,6 +94,14 @@ for (const table of requiredTables) {
   if (!pattern.test(migrations)) failures.push(`Missing required table declaration: ${table}`)
   const rls = new RegExp(`alter\\s+table\\s+${table}\\s+enable\\s+row\\s+level\\s+security`, 'i')
   if (!rls.test(migrations)) failures.push(`Missing RLS enablement: ${table}`)
+}
+
+for (const table of requiredDataApiTables) {
+  const revokeUntrusted = new RegExp(`revoke\\s+all\\s+on\\s+table\\s+${table}\\s+from\\s+anon\\s*,\\s*authenticated`, 'i')
+  if (!revokeUntrusted.test(migrations)) failures.push(`Missing explicit Data API revoke for anon/authenticated: ${table}`)
+
+  const serviceRoleGrant = new RegExp(`grant\\s+select\\s*,\\s*insert\\s*,\\s*update\\s*,\\s*delete\\s+on\\s+table\\s+${table}\\s+to\\s+service_role`, 'i')
+  if (!serviceRoleGrant.test(migrations)) failures.push(`Missing explicit service-role Data API grant: ${table}`)
 }
 
 for (const [table, column] of requiredColumns) {
@@ -111,4 +127,4 @@ if (failures.length > 0) {
   process.exit(1)
 }
 
-console.log(`Database contract OK: ${requiredTables.length} RLS-protected tables, ${requiredColumns.length} critical columns, ${requiredFunctions.length} functions and ${requiredSecurityPatterns.length} security contracts verified.`)
+console.log(`Database contract OK: ${requiredTables.length} RLS-protected tables, ${requiredColumns.length} critical columns, ${requiredFunctions.length} functions, ${requiredDataApiTables.length} explicit Data API table contracts and ${requiredSecurityPatterns.length} security contracts verified.`)
