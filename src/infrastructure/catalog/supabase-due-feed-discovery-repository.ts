@@ -4,6 +4,12 @@ import type { DueFeedDiscoveryRepository } from '@/application/catalog/import-wo
 import type { DueFeedSource } from '@/domain/catalog/import-worker'
 import { createSupabaseServerClient } from '@/infrastructure/supabase/server-client'
 
+type DueFeedRow = {
+  merchant_external_key: string
+  source_key: string
+  next_run_at: string | null
+}
+
 export class SupabaseDueFeedDiscoveryRepository implements DueFeedDiscoveryRepository {
   private readonly db = createSupabaseServerClient()
 
@@ -15,7 +21,7 @@ export class SupabaseDueFeedDiscoveryRepository implements DueFeedDiscoveryRepos
 
     if (error) throw new Error(`Discover due feed imports: ${error.message}`)
 
-    return (data ?? []).map((row) => ({
+    return ((data ?? []) as DueFeedRow[]).map((row) => ({
       merchantId: row.merchant_external_key,
       sourceKey: row.source_key,
       nextRunAt: row.next_run_at ?? undefined,
