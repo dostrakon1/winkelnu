@@ -22,7 +22,9 @@ export class InMemoryImportOrchestrationRepository implements ImportOrchestratio
   }): Promise<FeedImportLease | null> {
     const stateKey = key(input.merchantId, input.sourceKey)
     const current = this.states.get(stateKey)
-    if (current?.leaseExpiresAt && Date.parse(current.leaseExpiresAt) > Date.parse(input.acquiredAt)) return null
+    const acquiredAt = Date.parse(input.acquiredAt)
+    if (current?.nextRunAt && Date.parse(current.nextRunAt) > acquiredAt) return null
+    if (current?.leaseExpiresAt && Date.parse(current.leaseExpiresAt) > acquiredAt) return null
 
     const lease: FeedImportLease = {
       merchantId: input.merchantId,
@@ -44,30 +46,13 @@ export class InMemoryImportOrchestrationRepository implements ImportOrchestratio
     const stateKey = key(input.merchantId, input.sourceKey)
     const current = this.states.get(stateKey)
     if (!current || current.leaseToken !== input.token) throw new Error('Import lease token no longer owns this source.')
-    this.states.set(stateKey, {
-      ...current,
-      nextRunAt: input.nextRunAt,
-      failureCount: 0,
-      lastError: undefined,
-      lastSucceededAt: input.finishedAt,
-      leaseOwner: undefined,
-      leaseToken: undefined,
-      leaseExpiresAt: undefined,
-    })
+    this.states.set(stateKey, { ...current, nextRunAt: input.nextRunAt, failureCount: 0, lastError: undefined, lastSucceededAt: input.finishedAt, leaseOwner: undefined, leaseToken: undefined, leaseExpiresAt: undefined })
   }
 
   async completeFailure(input: { merchantId: string; sourceKey: string; token: string; finishedAt: string; nextRunAt: string; error: string }): Promise<void> {
     const stateKey = key(input.merchantId, input.sourceKey)
     const current = this.states.get(stateKey)
     if (!current || current.leaseToken !== input.token) throw new Error('Import lease token no longer owns this source.')
-    this.states.set(stateKey, {
-      ...current,
-      nextRunAt: input.nextRunAt,
-      failureCount: current.failureCount + 1,
-      lastError: input.error,
-      leaseOwner: undefined,
-      leaseToken: undefined,
-      leaseExpiresAt: undefined,
-    })
+    this.states.set(stateKey, { ...current, nextRunAt: input.nextRunAt, failureCount: current.failureCount + 1, lastError: input.error, leaseOwner: undefined, leaseToken: undefined, leaseExpiresAt: undefined })
   }
 }
