@@ -20,8 +20,9 @@ Apply migrations in filename order:
 10. `0010_due_feed_discovery_bootstrap.sql`
 11. `0011_operator_roles_and_audit_boundary.sql`
 12. `0012_feed_recovery_actions.sql`
+13. `0013_operator_action_idempotency.sql`
 
-Do not skip migrations. `0010` makes new active feed sources discoverable before orchestration exists. `0011` establishes the append-only human audit trail. `0012` adds the service-role-only retry/pause/resume recovery RPCs.
+Do not skip migrations. `0010` makes new active feed sources discoverable before orchestration exists. `0011` establishes the append-only human audit trail. `0012` adds service-role-only retry/pause/resume recovery RPCs. `0013` adds the server-only idempotency ledger that atomically claims each human mutation request before execution.
 
 ## Server environment
 Required when `CATALOG_PERSISTENCE=supabase`:
@@ -46,7 +47,7 @@ For the operations trigger, configure either `CRON_SECRET` or `WINKELNU_IMPORT_T
 npm run check:db-contract
 ```
 
-This validates committed schema contracts including RLS tables, orchestration/heartbeat functions, due-feed discovery, ranking/readiness RPCs, operator audit and feed recovery functions.
+This validates committed schema contracts including RLS tables, orchestration/heartbeat functions, due-feed discovery, ranking/readiness RPCs, operator audit, recovery functions and the operator-action idempotency table.
 
 ## Live connection smoke test
 After all migrations are applied:
@@ -64,7 +65,7 @@ Generate types from the real project after migration application; do not invent 
 
 ## Activation sequence
 1. Create the Supabase project.
-2. Apply migrations `0001` through `0012` in filename order.
+2. Apply migrations `0001` through `0013` in filename order.
 3. Add server and auth environment variables locally/Vercel.
 4. Run `npm run verify:supabase`.
 5. Run `npm run types:supabase`.
@@ -81,8 +82,9 @@ Generate types from the real project after migration application; do not invent 
 16. Create an explicit Supabase Auth operator user; do not enable public signup.
 17. Verify operator allowlist/role mapping and login/logout.
 18. Verify `operator_audit_events` accepts service-role INSERT/SELECT and rejects UPDATE/DELETE.
-19. Verify retry, pause and resume RPCs through the audited operator service in preview.
-20. Only then enable recurring production imports and human recovery actions.
+19. Verify retry, pause and resume through the audited operator service in preview.
+20. Submit the same recovery request key twice and confirm only the first mutation executes while the second is reported as duplicate.
+21. Only then enable recurring production imports and human recovery actions.
 
 ## Security properties
 - Service-role and partner credentials are server-only.
@@ -92,7 +94,8 @@ Generate types from the real project after migration application; do not invent 
 - New feed sources can bootstrap before orchestration state exists.
 - Operator role defaults to `read_only` when no explicit role assignment exists.
 - Operator audit records are append-only and never contain credentials/tokens.
-- Human recovery mutations must pass the audited action service.
+- Human recovery mutations must pass both the idempotency claim and audited action boundary.
+- A duplicate recovery submit cannot perform a second mutation for the same request key.
 - Public signup is not part of the operator architecture.
 
 ## Not yet possible without project access
@@ -103,6 +106,6 @@ The following remain external completion gates:
 - validating RLS and RPC grants against the real project;
 - creating the first operator Auth account;
 - executing a real due-feed bootstrap query;
-- inserting and verifying a real operator audit event;
+- inserting and verifying real operator audit/idempotency records;
 - executing retry/pause/resume against a real feed source;
 - performance/index inspection with production-like catalog volume.
