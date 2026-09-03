@@ -4,56 +4,29 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, Daisycon-readiness, gecontroleerde onboarding, persistence-backed orchestration, due-feed batch execution, health-classificatie, production composition, beveiligde scheduler-trigger, lease-heartbeats, end-to-end importcorrelatie, bounded feed-traversal, storefront freshnessbeleid, een schaalbaar Supabase ranking read model, production security/go-live readiness, partneracceptatie, bol Affiliate readiness, productfeed mapping, partner operations, een interne operatorinterface, menselijke Supabase Auth, role/audit authorization, veilige geaudite feed-recoverywrites met server-side idempotency en read-only operator observability.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability en per-feed operationele timelines.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
-- M0.18 — First Real Partner Integration Readiness — Daisycon
-- M0.19 — Partner Onboarding & Import Orchestration
-- M0.20 — Import Scheduling, Concurrency Lease & Failure Recovery
-- M0.21 — Due Feed Discovery, Worker Batch Execution & Operational Health
-- M0.22 — Production Import Composition & Authenticated Operations Trigger
-- M0.23 — Scheduler Deployment Contract, Heartbeats & Import Run Correlation
-- M0.24 — Feed Traversal Safety, Runtime Budgets & Stale Data Policy
-- M0.25 — Catalog Scale Query Pushdown & Ranking Read Model
-- M0.26 — Production Catalog Activation, Security & Go-Live Readiness
-- M0.27 — First Production Partner Activation & Live Catalog Acceptance Gate
-- M0.28 — bol Affiliate Integration Readiness & Acceptance Profile
-- M0.29 — bol Product Feed Transport & Real Mapping Validation
-- M0.30 — Partner Portfolio Operations & Activation Registry
-- M0.31 — Internal Partner Operations Read Model & Secure Ops Surface
-- M0.32 — Internal Operations Dashboard Contract & Incident Prioritization
-- M0.33 — Internal Operator UI Shell & Read-Only Dashboard
-- M0.34 — Human Operator Authentication & Session Boundary
+- M0.18–M0.24 — partnerreadiness, onboarding, scheduling, worker execution, production composition en feed safety
+- M0.25–M0.30 — scalable catalog ranking, go-live readiness, partneracceptatie, bol-readiness en portfolio operations
+- M0.31–M0.34 — secure internal operations, dashboard en menselijke Supabase Auth
 - M0.35 — Operator Authorization Roles & Audit Boundary
 - M0.36 — Audited Feed Recovery Actions & Safe Mutation Contracts
 - M0.37 — Recovery Confirmation, Idempotency & Operator Feedback
 - M0.38 — Operator Action History & Recovery Observability
 - M0.39 — Operator Audit Filtering, Correlation & Incident Context
+- M0.40 — Operational Timeline & Feed State Transition Context
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
 
-## Keten
-`authenticated scheduler trigger → correlation id → due feed discovery → atomic renewable lease → integration registry → partner adapter → bounded pagination → validation/matching/import → correlated import run → scalable freshness-aware catalog read model → affiliate redirect/storefront`
+## Operationslaag
+`/intern/operations` combineert incidenten, role-gated recovery, append-only audit, server-side idempotency, filterbare operatorhistorie en per-feed operationele context.
 
-Daisycon blijft de eerste kandidaat voor een volledige live acceptance run. Bol is tweede first-class affiliatepartner op readinessniveau, productfeed-first en met header-driven mapping totdat een actuele echte feedheader beschikbaar is.
+M0.40 voegt aan het partner operations read model alleen veilige orchestration-signalen toe: laatste start, laatste succes, volgende run en een boolean voor een actieve lease. Lease-token/owner, secret references, vrije auditmetadata en ruwe orchestration errors worden niet aan de timeline/UI blootgesteld.
 
-M0.31–M0.34 bouwen de interne operationslaag: veilige Supabase read data, incidentprioritering, `/intern/operations`, `/intern/login`, cookie-based Supabase SSR sessions en een server-side operatorallowlist. Machine endpoints onder `/api/ops/*` houden hun aparte Bearer-auth.
-
-M0.35 voegt echte operatorrollen toe. `owner` kan later partneractivatie en operatorbeheer uitvoeren; `operator` krijgt operationele feedacties; `read_only` kan uitsluitend lezen. `WINKELNU_OPERATOR_ROLES` kent rollen expliciet toe. Een toegestane gebruiker zonder role assignment valt veilig terug naar `read_only`.
-
-`AuditedOperatorActionService` is de verplichte boundary voor menselijke writes: eerst permission check, vervolgens een append-only `attempted` audit event, daarna pas de mutation en tenslotte `succeeded` of `failed`. Als het eerste audit event niet kan worden geschreven, wordt de mutation niet uitgevoerd.
-
-Migration `0010_due_feed_discovery_bootstrap.sql` sluit de eerdere due-feed bootstrapgap. Migration `0011_operator_roles_and_audit_boundary.sql` voegt de RLS-protected, append-only `operator_audit_events` tabel toe.
-
-M0.36 voegt de eerste echte recoverywrites toe: `retry`, `pause` en `resume`. De UI toont gepauzeerde feeds expliciet en biedt alleen role-gated knoppen. De Server Action controleert de operator opnieuw en alle mutations lopen via de auditboundary. Migration `0012_feed_recovery_actions.sql` bevat service-role-only RPCs; browser- of authenticated Supabase-clients krijgen geen directe recovery-writepermission.
-
-M0.37 maakt deze recoveryacties operationeel veiliger. Pauzeren vereist bevestiging, knoppen tonen pending-state en Server Actions geven zichtbare success/duplicate/error feedback. `IdempotentOperatorActionService` claimt vóór audit/mutation een unieke request key in migration `0013_operator_action_idempotency.sql`. Een dubbel submit met dezelfde key voert daarom geen tweede mutation en geen tweede auditketen uit.
-
-M0.38 voegt read-only operator action history toe. `/intern/operations` toont terminale recovery-outcomes naast incidenten: actor, rol, actie, merchant/feed, status en tijdstip. Vrije auditmetadata en ruwe foutteksten worden bewust niet aan de UI doorgegeven.
-
-M0.39 maakt die observability bruikbaar tijdens incidentonderzoek. History is server-side filterbaar op actor, actie, outcome, merchant en feed. Feedincidenten tonen daarnaast maximaal drie recente operatoracties die exact overeenkomen op `merchantId + sourceKey`, zodat herstelcontext direct naast de huidige feedstatus staat.
+De per-feed timeline correleert uitsluitend op exact `merchantId + sourceKey` en combineert actuele feedstatus, import lifecycle-signalen, toekomstige scheduling en terminale menselijke recovery-outcomes. Er zijn geen nieuwe mutations, RPCs, privileges of schemawijzigingen toegevoegd.
 
 Voor human operator auth zijn onder andere nodig:
 
@@ -78,7 +51,7 @@ npm run verify:supabase
 npm run verify:production-readiness
 ```
 
-Zie [`docs/architecture/OPERATOR_AUDIT_FILTERING_CORRELATION_AND_INCIDENT_CONTEXT.md`](docs/architecture/OPERATOR_AUDIT_FILTERING_CORRELATION_AND_INCIDENT_CONTEXT.md), [`docs/architecture/OPERATOR_ACTION_HISTORY_AND_RECOVERY_OBSERVABILITY.md`](docs/architecture/OPERATOR_ACTION_HISTORY_AND_RECOVERY_OBSERVABILITY.md), [`docs/architecture/RECOVERY_CONFIRMATION_IDEMPOTENCY_AND_OPERATOR_FEEDBACK.md`](docs/architecture/RECOVERY_CONFIRMATION_IDEMPOTENCY_AND_OPERATOR_FEEDBACK.md), [`docs/architecture/AUDITED_FEED_RECOVERY_ACTIONS.md`](docs/architecture/AUDITED_FEED_RECOVERY_ACTIONS.md), [`docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md`](docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md), [`docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md`](docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
+Zie [`docs/architecture/OPERATIONAL_TIMELINE_AND_FEED_STATE_TRANSITION_CONTEXT.md`](docs/architecture/OPERATIONAL_TIMELINE_AND_FEED_STATE_TRANSITION_CONTEXT.md), [`docs/architecture/OPERATOR_AUDIT_FILTERING_CORRELATION_AND_INCIDENT_CONTEXT.md`](docs/architecture/OPERATOR_AUDIT_FILTERING_CORRELATION_AND_INCIDENT_CONTEXT.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Volgende technische fase
-**M0.40 — Operational Timeline & Feed State Transition Context**: feed health/orchestration state en menselijke recovery-outcomes samenbrengen in een compacte chronologische timeline, zonder nieuwe write-capabilities toe te voegen.
+**M0.41 — Import Run Evidence & Timeline Enrichment**: bounded import-run evidence zoals processed/accepted/rejected counts en correlated run outcomes veilig aan dezelfde read-only feedcontext toevoegen.
