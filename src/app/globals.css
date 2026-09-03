@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  /* Brand palette */
   --wn-petrol: #123b3a;
   --wn-petrol-deep: #0d2e2d;
   --wn-petrol-soft: #dfe9e4;
@@ -10,6 +11,64 @@
   --wn-ink: #1e2423;
   --wn-white: #ffffff;
 
+  /* Semantic colors */
+  --wn-text-muted: #6f726f;
+  --wn-border: #ded5c8;
+  --wn-success-bg: #e6f1e9;
+  --wn-success-text: #315f43;
+  --wn-warning-bg: #fff1df;
+  --wn-warning-text: #8a4a1d;
+  --wn-danger-bg: #fbe8e5;
+  --wn-danger-text: #8d3a32;
+
+  /* Typography */
+  --wn-font-sans: Arial, Helvetica, sans-serif;
+  --wn-text-xs: 0.75rem;
+  --wn-text-sm: 0.875rem;
+  --wn-text-base: 1rem;
+  --wn-text-lg: 1.125rem;
+  --wn-text-xl: 1.25rem;
+  --wn-text-2xl: 1.5rem;
+  --wn-text-3xl: 1.875rem;
+  --wn-text-4xl: 2.25rem;
+  --wn-text-5xl: 3rem;
+  --wn-leading-tight: 1.1;
+  --wn-leading-body: 1.65;
+
+  /* Spacing */
+  --wn-space-1: 0.25rem;
+  --wn-space-2: 0.5rem;
+  --wn-space-3: 0.75rem;
+  --wn-space-4: 1rem;
+  --wn-space-5: 1.25rem;
+  --wn-space-6: 1.5rem;
+  --wn-space-8: 2rem;
+  --wn-space-10: 2.5rem;
+  --wn-space-12: 3rem;
+  --wn-space-16: 4rem;
+  --wn-space-20: 5rem;
+  --wn-space-24: 6rem;
+
+  /* Shape */
+  --wn-radius-sm: 0.625rem;
+  --wn-radius-md: 0.875rem;
+  --wn-radius-lg: 1rem;
+  --wn-radius-xl: 1.5rem;
+  --wn-radius-2xl: 2rem;
+  --wn-radius-pill: 9999px;
+
+  /* Elevation */
+  --wn-shadow-xs: 0 2px 10px rgba(18, 59, 58, 0.05);
+  --wn-shadow-sm: 0 8px 24px rgba(18, 59, 58, 0.06);
+  --wn-shadow-md: 0 16px 36px rgba(18, 59, 58, 0.1);
+  --wn-shadow-lg: 0 20px 55px rgba(18, 59, 58, 0.12);
+
+  /* Motion */
+  --wn-duration-fast: 140ms;
+  --wn-duration-base: 200ms;
+  --wn-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Gradients */
   --wn-gradient-welcome: linear-gradient(
     118deg,
     #faf7f0 0%,
@@ -42,11 +101,12 @@
     #28544f 100%
   );
 
+  /* App semantics */
   --background: var(--wn-cream);
   --foreground: var(--wn-ink);
   --surface: var(--wn-white);
-  --muted: #6f726f;
-  --border: #ded5c8;
+  --muted: var(--wn-text-muted);
+  --border: var(--wn-border);
   --brand: var(--wn-petrol);
 }
 
@@ -64,10 +124,196 @@ body {
   min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--wn-font-sans);
+  line-height: var(--wn-leading-body);
+  text-rendering: optimizeLegibility;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: var(--wn-petrol-soft);
+  color: var(--wn-petrol-deep);
+}
+
+:focus-visible {
+  outline: 2px solid var(--wn-warm);
+  outline-offset: 3px;
+}
+
+/* Winkelnu primitives */
+.wn-container {
+  width: min(100% - 3rem, 72rem);
+  margin-inline: auto;
+}
+
+.wn-section {
+  padding-block: clamp(3.5rem, 7vw, 6rem);
+}
+
+.wn-eyebrow {
+  color: var(--wn-warm);
+  font-size: var(--wn-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.wn-heading {
+  color: var(--wn-ink);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: var(--wn-leading-tight);
+}
+
+.wn-body-muted {
+  color: rgba(30, 36, 35, 0.66);
+}
+
+.wn-surface {
+  border: 1px solid rgba(18, 59, 58, 0.11);
+  border-radius: var(--wn-radius-xl);
+  background: var(--wn-white);
+  box-shadow: var(--wn-shadow-sm);
+}
+
+.wn-card-interactive {
+  transition:
+    transform var(--wn-duration-base) var(--wn-ease),
+    border-color var(--wn-duration-base) var(--wn-ease),
+    box-shadow var(--wn-duration-base) var(--wn-ease);
+}
+
+.wn-card-interactive:hover {
+  transform: translateY(-4px);
+  border-color: rgba(18, 59, 58, 0.22);
+  box-shadow: var(--wn-shadow-md);
+}
+
+.wn-button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--wn-radius-pill);
+  padding: 0.7rem 1.25rem;
+  font-size: var(--wn-text-sm);
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--wn-duration-fast) var(--wn-ease),
+    border-color var(--wn-duration-fast) var(--wn-ease),
+    color var(--wn-duration-fast) var(--wn-ease),
+    transform var(--wn-duration-fast) var(--wn-ease);
+}
+
+.wn-button:active {
+  transform: translateY(1px);
+}
+
+.wn-button-primary {
+  background: var(--wn-petrol);
+  color: var(--wn-white);
+}
+
+.wn-button-primary:hover {
+  background: var(--wn-petrol-deep);
+}
+
+.wn-button-secondary {
+  border-color: rgba(18, 59, 58, 0.18);
+  background: var(--wn-white);
+  color: var(--wn-petrol);
+}
+
+.wn-button-secondary:hover {
+  border-color: var(--wn-petrol);
+  background: var(--wn-petrol-soft);
+}
+
+.wn-button-warm {
+  background: var(--wn-warm);
+  color: var(--wn-white);
+}
+
+.wn-button-warm:hover {
+  background: #d96831;
+}
+
+.wn-input {
+  width: 100%;
+  min-height: 3rem;
+  border: 1px solid rgba(18, 59, 58, 0.16);
+  border-radius: var(--wn-radius-md);
+  background: var(--wn-white);
+  color: var(--wn-ink);
+  padding: 0.75rem 1rem;
+  transition:
+    border-color var(--wn-duration-fast) var(--wn-ease),
+    box-shadow var(--wn-duration-fast) var(--wn-ease);
+}
+
+.wn-input::placeholder {
+  color: rgba(30, 36, 35, 0.45);
+}
+
+.wn-input:focus {
+  border-color: var(--wn-petrol);
+  box-shadow: 0 0 0 3px rgba(18, 59, 58, 0.09);
+  outline: none;
+}
+
+.wn-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--wn-radius-pill);
+  padding: 0.3rem 0.65rem;
+  font-size: var(--wn-text-xs);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.wn-badge-success {
+  background: var(--wn-success-bg);
+  color: var(--wn-success-text);
+}
+
+.wn-badge-warning {
+  background: var(--wn-warning-bg);
+  color: var(--wn-warning-text);
+}
+
+.wn-badge-danger {
+  background: var(--wn-danger-bg);
+  color: var(--wn-danger-text);
+}
+
+@media (max-width: 639px) {
+  .wn-container {
+    width: min(100% - 2rem, 72rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
