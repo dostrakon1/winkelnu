@@ -1,11 +1,21 @@
 import type { FeedHealth } from '@/domain/catalog/import-worker'
 import type { AffiliateIntegrationKind, AffiliateIntegrationStatus, AffiliateFeedSourceType } from '@/domain/affiliate/integration-registry'
 
+export type PartnerOperationsFeedOrchestration = {
+  failureCount: number
+  lastStartedAt?: string
+  lastSucceededAt?: string
+  nextRunAt?: string
+  leaseActive: boolean
+  leaseExpiresAt?: string
+}
+
 export type PartnerOperationsFeed = {
   sourceKey: string
   sourceType: AffiliateFeedSourceType
   isActive: boolean
   health?: FeedHealth
+  orchestration?: PartnerOperationsFeedOrchestration
 }
 
 export type PartnerOperationsIntegration = {
