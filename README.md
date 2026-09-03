@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability, per-feed timelines, bounded import-run evidence, importkwaliteitssamenvattingen, read-only quality-attention signalen, dashboardprioritering, operations-security readiness verification, geharde recovery-foutgrenzen en een fail-closed Supabase activation environment contract.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability, per-feed timelines, bounded import-run evidence, importkwaliteitssamenvattingen, read-only quality-attention signalen, dashboardprioritering, operations-security readiness verification, geharde recovery-foutgrenzen, een fail-closed Supabase activation environment contract en een CI-afgedwongen preview migration runbook.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
@@ -24,6 +24,7 @@ Afgerond / geïmplementeerd:
 - M0.45 — Production Operations Readiness & Security Verification v2
 - M0.46 — Operator Recovery Hardening & Safe Error Boundary
 - M0.47 — Live Supabase Activation Preparation & Environment Contract
+- M0.48 — Preview Supabase Provisioning & Migration Runbook
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
@@ -36,6 +37,8 @@ M0.45 breidt production readiness uit naar de volledige operations-security boun
 M0.46 controleert operatorrechten vóór de idempotency-claim, terwijl de auditlaag dezelfde permission-check als defense in depth behoudt. Recoveryfouten worden naar één veilige operator-facing melding vertaald; ruwe Supabase-, RPC-, SQL- of relation-details worden niet naar de UI teruggegeven. `operator_action_requests` heeft een expliciet retentionbeleid van minimaal 90 dagen, zonder automatische delete-job of nieuwe delete-RPC.
 
 M0.47 maakt de live Supabase-handoff expliciet. `npm run verify:activation-env` valideert project URL/project ref, key separation, operator allowlist/rollen en persistence-modus zonder secrets te printen. Preview blijft op `CATALOG_PERSISTENCE=memory` totdat migrations `0001`–`0015`, live connection/readiness, project-derived types en preview acceptance zijn geslaagd.
+
+M0.48 legt de complete preview provisioning- en migrationprocedure vast. `npm run check:migration-manifest` verifieert dat exact migrations `0001`–`0015` aanwezig zijn en in de bedoelde volgorde staan; GitHub Actions voert deze check vóór het databasecontract uit. Het runbook definieert preflight, migration apply, live verification, type generation, bootstrap, operator acceptance, persistence switch en rollback/stop-momenten.
 
 Voor human operator auth zijn onder andere nodig:
 
@@ -63,7 +66,7 @@ npm run verify:production-readiness
 
 Live Supabase production readiness is nog niet geclaimd: migrations `0001`–`0015` moeten eerst op een echt preview/production project worden toegepast en de live verification moet daar succesvol draaien.
 
-Zie [`docs/architecture/LIVE_SUPABASE_ACTIVATION_PREPARATION_AND_ENVIRONMENT_CONTRACT.md`](docs/architecture/LIVE_SUPABASE_ACTIVATION_PREPARATION_AND_ENVIRONMENT_CONTRACT.md), [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md) en [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md).
+Zie [`docs/operations/PREVIEW_SUPABASE_PROVISIONING_AND_MIGRATION_RUNBOOK.md`](docs/operations/PREVIEW_SUPABASE_PROVISIONING_AND_MIGRATION_RUNBOOK.md), [`docs/architecture/LIVE_SUPABASE_ACTIVATION_PREPARATION_AND_ENVIRONMENT_CONTRACT.md`](docs/architecture/LIVE_SUPABASE_ACTIVATION_PREPARATION_AND_ENVIRONMENT_CONTRACT.md), [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md) en [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md).
 
 ## Volgende technische fase
-**M0.48 — Preview Supabase Provisioning & Migration Runbook**: de exacte migration/apply/verify-procedure voorbereiden die we uitvoeren zodra het echte preview-Supabase-project beschikbaar is, inclusief rollback- en acceptance-checks.
+**M0.49 — Preview Activation Evidence Pack & Handoff Checklist**: één compact bewijs- en overdrachtsdocument voorbereiden waarin de echte preview-activatie straks consequent wordt vastgelegd: commit SHA, migration state, readiness-resultaten, gegenereerde types, importbewijs en operator acceptance.
