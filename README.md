@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability, per-feed timelines, bounded import-run evidence en veilige importkwaliteitssamenvattingen.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability, per-feed timelines, bounded import-run evidence, importkwaliteitssamenvattingen en read-only quality-attention signalen.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
@@ -19,6 +19,7 @@ Afgerond / geïmplementeerd:
 - M0.40 — Operational Timeline & Feed State Transition Context
 - M0.41 — Import Run Evidence & Timeline Enrichment
 - M0.42 — Import Quality Drilldown & Reject/Review Summaries
+- M0.43 — Feed Quality Thresholds & Operator Attention Signals
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
@@ -26,11 +27,11 @@ Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4
 ## Operationslaag
 `/intern/operations` combineert incidenten, role-gated recovery, append-only audit, server-side idempotency, filterbare operatorhistorie, veilige orchestrationcontext, recente import-run evidence en geaggregeerde importkwaliteitsinformatie.
 
-M0.40 voegt veilige orchestration-signalen toe: laatste start, laatste succes, volgende run en alleen een boolean voor een actieve lease. Lease-token/owner, secret references, vrije auditmetadata en ruwe orchestration errors worden niet aan de timeline/UI blootgesteld.
-
-M0.41 verrijkt dezelfde per-feed timeline met bounded import-run evidence: runstatus, timestamps, records seen/accepted/rejected, offers deactivated, review-required en correlation id. De reader haalt maximaal 100 recente runs op en de timeline gebruikt maximaal vijf runs per feed. `error_summary`, reject payloads en raw records blijven uitgesloten.
+M0.41 verrijkt de per-feed timeline met bounded import-run evidence: runstatus, timestamps, records seen/accepted/rejected, offers deactivated, review-required en correlation id. De reader haalt maximaal 100 recente runs op en de timeline gebruikt maximaal vijf runs per feed. `error_summary`, reject payloads en raw records blijven uitgesloten.
 
 M0.42 voegt per feed een bounded kwaliteitssamenvatting toe over recente runs: reject-aantallen, reviewstatussen en counts voor `review`/`none` confidence. `raw_record`, reject reasons, review reasons en `error_summary` worden bewust niet gelezen voor de operationsweergave.
+
+M0.43 leidt daar conservatieve read-only signalen uit af. Ratio-alerts worden pas gebruikt vanaf 100 geobserveerde records. Rejectratio >=5% geeft attention en >=15% critical; review load >=10% geeft attention en >=20% critical. Een backlog van minimaal 25 pending reviews geeft `watch` wanneer geen sterker signaal geldt. Deze signalen voeren nooit automatische feed- of catalogusmutaties uit.
 
 Voor human operator auth zijn onder andere nodig:
 
@@ -55,7 +56,7 @@ npm run verify:supabase
 npm run verify:production-readiness
 ```
 
-Zie [`docs/architecture/IMPORT_QUALITY_DRILLDOWN_AND_REVIEW_SUMMARIES.md`](docs/architecture/IMPORT_QUALITY_DRILLDOWN_AND_REVIEW_SUMMARIES.md), [`docs/architecture/IMPORT_RUN_EVIDENCE_AND_TIMELINE_ENRICHMENT.md`](docs/architecture/IMPORT_RUN_EVIDENCE_AND_TIMELINE_ENRICHMENT.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
+Zie [`docs/architecture/FEED_QUALITY_THRESHOLDS_AND_OPERATOR_ATTENTION_SIGNALS.md`](docs/architecture/FEED_QUALITY_THRESHOLDS_AND_OPERATOR_ATTENTION_SIGNALS.md), [`docs/architecture/IMPORT_QUALITY_DRILLDOWN_AND_REVIEW_SUMMARIES.md`](docs/architecture/IMPORT_QUALITY_DRILLDOWN_AND_REVIEW_SUMMARIES.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Volgende technische fase
-**M0.43 — Feed Quality Thresholds & Operator Attention Signals**: read-only waarschuwingsniveaus afleiden uit recente reject/review-ratio's en die zichtbaar maken in incidentcontext, zonder automatische mutations.
+**M0.44 — Quality Signal Prioritization & Dashboard Summary**: quality-attention totals zichtbaar maken en feeds met attention/critical signalen hoger prioriteren in de interne operationsweergave, zonder automatische remediation.
