@@ -66,7 +66,7 @@ export async function runBoundedPreviewFixtureImport() {
     repository: catalog,
     merchant,
     correlationId: `preview-fixture:${globalThis.crypto.randomUUID()}`,
-    traversalLimits: { maxPages: 2, maxRecords: 4 },
+    traversalLimits: { maxPages: 2 },
   })
 
   const params = new URLSearchParams({
