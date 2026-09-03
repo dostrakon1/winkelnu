@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "check:db-contract": "node scripts/verify-database-contract.mjs",
+    "verify:supabase": "node scripts/verify-supabase-connection.mjs",
     "check": "npm run check:db-contract && npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
