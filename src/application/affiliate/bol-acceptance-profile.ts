@@ -3,7 +3,7 @@ import { isBolAffiliateTrackingUrl } from '@/infrastructure/feeds/bol/bol-affili
 
 export type BolAffiliateAcceptanceEvidence = PartnerAcceptanceEvidence & {
   bol: {
-    siteIdConfigured: boolean
+    siteId?: string
     trackingUrl?: string
     sourceAttributionVisible: boolean
     dutchExperienceAvailable: boolean
@@ -20,10 +20,10 @@ export type BolAffiliateAcceptanceResult = PartnerActivationGateResult & {
 
 export function assessBolAffiliateReadiness(evidence: BolAffiliateAcceptanceEvidence): BolAffiliateAcceptanceResult {
   const generic = assessPartnerProductionActivation(evidence)
-  const siteId = evidence.bol.trackingUrl ? new URL(evidence.bol.trackingUrl).searchParams.get('s') ?? undefined : undefined
+  const siteId = evidence.bol.siteId?.trim()
   const bolChecks = [
-    { key: 'bol_site_id', passed: evidence.bol.siteIdConfigured, message: 'A unique bol Affiliate Site_ID is configured for Winkelnu.' },
-    { key: 'bol_tracking', passed: Boolean(evidence.bol.trackingUrl && isBolAffiliateTrackingUrl(evidence.bol.trackingUrl, siteId)), message: 'Product URLs are transformed into valid bol affiliate tracking URLs.' },
+    { key: 'bol_site_id', passed: Boolean(siteId && /^\d+$/.test(siteId)), message: 'A unique numeric bol Affiliate Site_ID is configured for Winkelnu.' },
+    { key: 'bol_tracking', passed: Boolean(siteId && evidence.bol.trackingUrl && isBolAffiliateTrackingUrl(evidence.bol.trackingUrl, siteId)), message: 'Product URLs are transformed into valid bol affiliate tracking URLs for the expected Winkelnu Site_ID.' },
     { key: 'bol_attribution', passed: evidence.bol.sourceAttributionVisible, message: 'The storefront clearly identifies bol as the source/merchant and does not present Winkelnu as bol.' },
     { key: 'bol_language', passed: evidence.bol.dutchExperienceAvailable, message: 'A Dutch consumer experience is available for bol content.' },
     { key: 'bol_freshness', passed: evidence.bol.freshnessPolicyEnforced, message: 'Price, availability and delivery freshness are actively enforced.' },
