@@ -1,4 +1,5 @@
 import type { CatalogReadRepository, CatalogWriteRepository, ProductWithOffers } from '@/application/catalog/ports'
+import type { ImportReject, ImportRun, MatchReviewItem } from '@/domain/catalog/import-observability'
 import type { Category, Merchant, Offer, Product } from '@/domain/catalog/types'
 
 export class InMemoryCatalogRepository implements CatalogReadRepository, CatalogWriteRepository {
@@ -6,6 +7,9 @@ export class InMemoryCatalogRepository implements CatalogReadRepository, Catalog
   private readonly products = new Map<string, Product>()
   private readonly offers = new Map<string, Offer>()
   private readonly categories = new Map<string, Category>()
+  private readonly importRuns = new Map<string, ImportRun>()
+  private readonly importRejects = new Map<string, ImportReject>()
+  private readonly matchReviews = new Map<string, MatchReviewItem>()
 
   constructor(seed?: { categories?: Category[] }) {
     for (const category of seed?.categories ?? []) this.categories.set(category.id, category)
@@ -42,6 +46,22 @@ export class InMemoryCatalogRepository implements CatalogReadRepository, Catalog
     return [...this.merchants.values()].filter((merchant) => merchant.isActive)
   }
 
+  async listImportRuns(input?: { limit?: number }): Promise<ImportRun[]> {
+    const runs = [...this.importRuns.values()].sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+    return runs.slice(0, input?.limit ?? runs.length)
+  }
+
+  async listImportRejects(importRunId: string): Promise<ImportReject[]> {
+    return [...this.importRejects.values()].filter((item) => item.importRunId === importRunId)
+  }
+
+  async listPendingMatchReviews(input?: { limit?: number }): Promise<MatchReviewItem[]> {
+    const items = [...this.matchReviews.values()]
+      .filter((item) => item.status === 'pending')
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+    return items.slice(0, input?.limit ?? items.length)
+  }
+
   async upsertMerchant(merchant: Merchant): Promise<void> {
     this.merchants.set(merchant.id, merchant)
   }
@@ -63,5 +83,21 @@ export class InMemoryCatalogRepository implements CatalogReadRepository, Catalog
       }
     }
     return count
+  }
+
+  async createImportRun(importRun: ImportRun): Promise<void> {
+    this.importRuns.set(importRun.id, importRun)
+  }
+
+  async updateImportRun(importRun: ImportRun): Promise<void> {
+    this.importRuns.set(importRun.id, importRun)
+  }
+
+  async addImportReject(reject: ImportReject): Promise<void> {
+    this.importRejects.set(reject.id, reject)
+  }
+
+  async addMatchReview(item: MatchReviewItem): Promise<void> {
+    this.matchReviews.set(item.id, item)
   }
 }
