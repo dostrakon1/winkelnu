@@ -19,8 +19,9 @@ Apply migrations in filename order:
 9. `0009_production_security_and_readiness.sql`
 10. `0010_due_feed_discovery_bootstrap.sql`
 11. `0011_operator_roles_and_audit_boundary.sql`
+12. `0012_feed_recovery_actions.sql`
 
-Do not skip migrations. `0010` is required before production scheduling because it makes active feed sources discoverable even before an orchestration row exists. `0011` is required before any human operator mutation because it establishes the append-only audit trail.
+Do not skip migrations. `0010` makes new active feed sources discoverable before orchestration exists. `0011` establishes the append-only human audit trail. `0012` adds the service-role-only retry/pause/resume recovery RPCs.
 
 ## Server environment
 Required when `CATALOG_PERSISTENCE=supabase`:
@@ -45,7 +46,7 @@ For the operations trigger, configure either `CRON_SECRET` or `WINKELNU_IMPORT_T
 npm run check:db-contract
 ```
 
-This validates committed schema contracts including RLS tables, orchestration/heartbeat functions, due-feed discovery, ranking/readiness RPCs and the operator audit boundary.
+This validates committed schema contracts including RLS tables, orchestration/heartbeat functions, due-feed discovery, ranking/readiness RPCs, operator audit and feed recovery functions.
 
 ## Live connection smoke test
 After all migrations are applied:
@@ -63,7 +64,7 @@ Generate types from the real project after migration application; do not invent 
 
 ## Activation sequence
 1. Create the Supabase project.
-2. Apply migrations `0001` through `0011` in filename order.
+2. Apply migrations `0001` through `0012` in filename order.
 3. Add server and auth environment variables locally/Vercel.
 4. Run `npm run verify:supabase`.
 5. Run `npm run types:supabase`.
@@ -80,17 +81,18 @@ Generate types from the real project after migration application; do not invent 
 16. Create an explicit Supabase Auth operator user; do not enable public signup.
 17. Verify operator allowlist/role mapping and login/logout.
 18. Verify `operator_audit_events` accepts service-role INSERT/SELECT and rejects UPDATE/DELETE.
-19. Only then enable recurring production imports and later audited human write-actions.
+19. Verify retry, pause and resume RPCs through the audited operator service in preview.
+20. Only then enable recurring production imports and human recovery actions.
 
 ## Security properties
 - Service-role and partner credentials are server-only.
 - Human Auth uses the publishable key only for the session boundary.
 - Storefront components do not directly query Supabase.
-- Worker/ranking/due-feed RPCs are service-role-only.
+- Worker/ranking/due-feed/recovery RPCs are service-role-only.
 - New feed sources can bootstrap before orchestration state exists.
 - Operator role defaults to `read_only` when no explicit role assignment exists.
 - Operator audit records are append-only and never contain credentials/tokens.
-- Future human mutations must pass the audited action service.
+- Human recovery mutations must pass the audited action service.
 - Public signup is not part of the operator architecture.
 
 ## Not yet possible without project access
@@ -102,4 +104,5 @@ The following remain external completion gates:
 - creating the first operator Auth account;
 - executing a real due-feed bootstrap query;
 - inserting and verifying a real operator audit event;
+- executing retry/pause/resume against a real feed source;
 - performance/index inspection with production-like catalog volume.
