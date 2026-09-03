@@ -1,5 +1,11 @@
-import type { OperatorIdentity } from '@/infrastructure/operations/operator-session'
+import type { OperatorRole } from '@/application/auth/operator-authorization'
 import { AuditedOperatorActionService } from '@/application/operations/operator-audit'
+
+export type FeedRecoveryActor = {
+  id: string
+  email: string
+  role: OperatorRole
+}
 
 export type FeedRecoveryTarget = {
   merchantId: string
@@ -19,7 +25,7 @@ export class FeedRecoveryService {
     private readonly clock: () => string = () => new Date().toISOString(),
   ) {}
 
-  retry(actor: OperatorIdentity, target: FeedRecoveryTarget): Promise<void> {
+  retry(actor: FeedRecoveryActor, target: FeedRecoveryTarget): Promise<void> {
     return this.audited.run({
       actor,
       permission: 'retry_feed',
@@ -31,7 +37,7 @@ export class FeedRecoveryService {
     })
   }
 
-  pause(actor: OperatorIdentity, target: FeedRecoveryTarget): Promise<void> {
+  pause(actor: FeedRecoveryActor, target: FeedRecoveryTarget): Promise<void> {
     return this.audited.run({
       actor,
       permission: 'pause_feed',
@@ -43,7 +49,7 @@ export class FeedRecoveryService {
     })
   }
 
-  resume(actor: OperatorIdentity, target: FeedRecoveryTarget): Promise<void> {
+  resume(actor: FeedRecoveryActor, target: FeedRecoveryTarget): Promise<void> {
     return this.audited.run({
       actor,
       permission: 'resume_feed',
