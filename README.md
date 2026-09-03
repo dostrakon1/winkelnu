@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, een realistische providerfixture, Daisycon-readiness en gecontroleerde partner-onboarding.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, een realistische providerfixture, Daisycon-readiness, gecontroleerde partner-onboarding en persistence-backed import orchestration.
 
 Afgerond / geïmplementeerd:
 - M0.1 — Repository Alignment & Verification
@@ -14,8 +14,8 @@ Afgerond / geïmplementeerd:
 - M0.5 — Boundaries & Deployment Readiness
 - M0.6 — Synthetic Catalog Vertical Slice
 - M0.7 — Catalog Quality, Matching & Import Observability
-- M0.8 — Supabase Persistence Adapter & Repository Integration (repository-side complete; live project activation pending)
-- M0.9 — Persistence Verification & Database Typing (repository-side complete; live gate pending)
+- M0.8 — Supabase Persistence Adapter & Repository Integration
+- M0.9 — Persistence Verification & Database Typing
 - M0.10 — Automated Catalog Test Harness
 - M0.11 — Catalog Service & Storefront Query Layer
 - M0.12 — Category & Discovery Query Architecture
@@ -26,6 +26,7 @@ Afgerond / geïmplementeerd:
 - M0.17 — Realistic Partner Adapter Contract & Fixture Proof
 - M0.18 — First Real Partner Integration Readiness — Daisycon
 - M0.19 — Partner Onboarding & Import Orchestration
+- M0.20 — Import Scheduling, Concurrency Lease & Failure Recovery
 
 ## Stack
 - Next.js 16 — App Router
@@ -50,26 +51,26 @@ Volledige kwaliteitscontrole:
 npm run check
 ```
 
-## Persistence
-Ontwikkeling gebruikt standaard `CATALOG_PERSISTENCE=memory`. Live Supabase vereist server-only `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` en projectconfiguratie. Partnercredentials worden nooit in registryrijen opgeslagen; uitsluitend `env:` secret references worden geregistreerd.
-
-Zie [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
-
 ## Architectuur in één lijn
 `merchant feed → integration registry → source resolver → provider adapter → validatie → matching → import run → canonical product + merchant offer → repository → CatalogService → storefront`
 
 Outbound affiliateklikken lopen via `/uit/<offer-id>` met server-side offerresolutie en privacy-minimale click-attributie.
 
-Categorieën gebruiken duurzame `/categorie/<slug>` routes; zoek/filtervarianten via `/zoeken` zijn bewust `noindex,follow`.
+M0.18 kiest Daisycon als eerste echte readiness-target. De echte account-, programma- en feedmapping-gates zijn nog extern.
 
-M0.18 kiest Daisycon als eerste echte readiness-target. De `daisycon:json` transportlaag ondersteunt HTTPS-only ophalen, `X-Next-Url` paginering, same-origin bescherming en begrensde 429/5xx retries. De echte account-, programma- en feedmapping-gates zijn nog extern.
+M0.19 voegt gecontroleerde onboarding toe: `registered → preview_ready → preview_passed → approved → active`. Previewimports gebruiken dezelfde validatie/matching als productie maar voeren nooit stale-offer-deactivatie uit.
 
-M0.19 voegt een gecontroleerde onboardinglaag toe. Een feed gaat niet rechtstreeks van registratie naar productie. De baseline is `registered → preview_ready → preview_passed → approved → active`, met `paused/rejected` als uitzonderingsstaten. Previewimports gebruiken exact dezelfde validatie/matching als productie maar voeren nooit stale-offer-deactivatie uit. Baseline previewkwaliteit vereist records, minimaal 95% acceptatie en nul open match-reviews.
+M0.20 voegt per feed source een duurzame orchestration-state toe met `next_run_at`, failure history en een expirerende lease. Lease-acquisitie gebeurt atomair in PostgreSQL. Een tweede worker kan dezelfde feed niet tegelijk draaien, een gecrashte worker verliest zijn lock na expiry, een stale worker kan niet met een oud token completen en mislukte imports krijgen exponentiële backoff. Storefrontverkeer is nooit de scheduler.
 
 PostgreSQL UUIDs blijven interne relationele sleutels; duurzame Winkelnu-identiteiten gebruiken `external_key`.
 
+## Persistence
+Ontwikkeling gebruikt standaard `CATALOG_PERSISTENCE=memory`. Live Supabase vereist server-only configuratie en migraties in filename-volgorde. Partnercredentials worden nooit in registryrijen opgeslagen; uitsluitend `env:` secret references worden geregistreerd.
+
+Zie [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
+
 ## Kernprincipe
-Winkelnu wordt feedgedreven gebouwd. Externe providerdata wordt eerst vertaald, gevalideerd en gematcht voordat zij publieke catalogusdata kan worden. Productidentiteit, offers, importkwaliteit, persistence, discovery/search, affiliate-attributie, partnercontext, concrete adapters en onboarding blijven afzonderlijke verantwoordelijkheden.
+Winkelnu wordt feedgedreven gebouwd. Externe providerdata wordt eerst vertaald, gevalideerd en gematcht voordat zij publieke catalogusdata kan worden. Productidentiteit, offers, importkwaliteit, persistence, discovery/search, affiliate-attributie, partnercontext, concrete adapters, onboarding en scheduling blijven afzonderlijke verantwoordelijkheden.
 
 ## Volgende technische fase
-**M0.20 — Import Scheduling, Concurrency Lease & Failure Recovery**: persistence-backed leases/idempotency voor terugkerende imports, zodat dezelfde feed niet dubbel tegelijk kan draaien en failures gecontroleerd hersteld kunnen worden zonder storefrontverkeer als scheduler te gebruiken.
+**M0.21 — Due Feed Discovery, Worker Batch Execution & Operational Health**: due sources veilig in batches selecteren, de volledige resolver/adapter/import/orchestration-keten uitvoeren en operationele health/escalatie voor langdurig falende feeds toevoegen.
