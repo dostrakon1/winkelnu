@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 function formatMoney(amount: string): string {
@@ -17,12 +18,7 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
-      <div className="bg-[image:var(--wn-gradient-market)] text-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="text-sm font-bold uppercase tracking-[0.24em]">Winkelnu.nl</Link>
-          <p className="hidden text-sm text-white/75 sm:block">Ontdek. Vergelijk. Kies je winkel.</p>
-        </div>
-      </div>
+      <WinkelnuHeader />
 
       <section className="relative overflow-hidden border-b border-[color:rgba(18,59,58,0.10)] bg-[image:var(--wn-gradient-welcome)]">
         <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)]" aria-hidden="true" />
