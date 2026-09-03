@@ -1,7 +1,7 @@
 import { importFeed } from '@/application/catalog/import-feed'
 import type { ProductWithOffers } from '@/application/catalog/ports'
 import type { Category, Merchant } from '@/domain/catalog/types'
-import { InMemoryCatalogRepository } from '@/infrastructure/catalog/in-memory-catalog-repository'
+import { createCatalogRepository } from '@/infrastructure/catalog/create-catalog-repository'
 import { SyntheticFeedAdapter } from '@/infrastructure/feeds/synthetic/synthetic-feed-adapter'
 
 const categories: Category[] = [
@@ -29,7 +29,7 @@ export type SyntheticCatalogSnapshot = {
 }
 
 export async function buildSyntheticCatalog(): Promise<SyntheticCatalogSnapshot> {
-  const repository = new InMemoryCatalogRepository({ categories })
+  const repository = createCatalogRepository({ memoryCategories: categories })
   const adapter = new SyntheticFeedAdapter()
 
   const importResult = await importFeed({
