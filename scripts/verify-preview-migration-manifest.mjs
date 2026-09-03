@@ -17,6 +17,7 @@ const expected = [
   '0013_operator_action_idempotency.sql',
   '0014_operations_security_readiness.sql',
   '0015_operator_action_retention_policy.sql',
+  '0016_explicit_data_api_service_role_grants.sql',
 ]
 
 const actual = (await readdir(resolve('supabase/migrations')))
