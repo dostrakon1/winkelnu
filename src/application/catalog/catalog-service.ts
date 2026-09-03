@@ -19,13 +19,13 @@ export type CatalogProductDetail = {
   offers: RankedOffer[]
 }
 
-export type CatalogCategoryPage = {
+export type CatalogCategoryDiscovery = {
   category: Category
-  products: CatalogProductListItem[]
+  items: CatalogProductListItem[]
   page: number
   pageSize: number
-  hasPrevious: boolean
-  hasNext: boolean
+  hasPreviousPage: boolean
+  hasNextPage: boolean
 }
 
 export type CatalogSearchResult = {
@@ -129,12 +129,12 @@ export class CatalogService {
     return categories.find((category) => category.slug === slug) ?? null
   }
 
-  async getCategoryPage(input: {
-    slug: string
+  async getCategoryDiscovery(input: {
+    categorySlug: string
     page?: number
     pageSize?: number
-  }): Promise<CatalogCategoryPage | null> {
-    const category = await this.getCategory(input.slug)
+  }): Promise<CatalogCategoryDiscovery | null> {
+    const category = await this.getCategory(input.categorySlug)
     if (!category) return null
 
     const page = Math.max(1, Math.floor(input.page ?? 1))
@@ -145,17 +145,17 @@ export class CatalogService {
       limit: pageSize + 1,
       offset,
     })
-    const hasNext = products.length > pageSize
+    const hasNextPage = products.length > pageSize
 
     return {
       category,
-      products: products
+      items: products
         .slice(0, pageSize)
         .sort((a, b) => Number(Boolean(b.bestOffer)) - Number(Boolean(a.bestOffer)) || cents(a.bestOffer?.totalAmount ?? '9999999.99') - cents(b.bestOffer?.totalAmount ?? '9999999.99')),
       page,
       pageSize,
-      hasPrevious: page > 1,
-      hasNext,
+      hasPreviousPage: page > 1,
+      hasNextPage,
     }
   }
 
