@@ -7,13 +7,14 @@ type ProductCardProps = {
   title: string
   brand?: string | null
   description?: string | null
-  price: string
+  price?: string | null
   merchantName?: string | null
   offerCount: number
-  availability: string
+  availability?: string | null
 }
 
 export function ProductCard({ slug, title, brand, description, price, merchantName, offerCount, availability }: ProductCardProps) {
+  const hasOffer = Boolean(price)
   const inStock = availability === 'in_stock'
 
   return (
@@ -29,14 +30,20 @@ export function ProductCard({ slug, title, brand, description, price, merchantNa
         {description ? <p className="wn-body-muted mt-3 line-clamp-2 text-sm leading-6">{description}</p> : null}
       </div>
       <div className="mt-5 border-t border-[color:rgba(18,59,58,0.09)] pt-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs text-[color:rgba(30,36,35,0.56)]">Vanaf {merchantName ?? 'webwinkel'} · {offerCount} {offerCount === 1 ? 'aanbieding' : 'aanbiedingen'}</p>
-            <p className="mt-1 text-2xl font-bold text-[var(--wn-ink)]">{price}</p>
+        {hasOffer ? (
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs text-[color:rgba(30,36,35,0.56)]">Vanaf {merchantName ?? 'webwinkel'} · {offerCount} {offerCount === 1 ? 'aanbieding' : 'aanbiedingen'}</p>
+              <p className="mt-1 text-2xl font-bold text-[var(--wn-ink)]">{price}</p>
+            </div>
+            <WinkelnuBadge variant={inStock ? 'success' : 'warning'}>{inStock ? 'Op voorraad' : 'Bekijk status'}</WinkelnuBadge>
           </div>
-          <WinkelnuBadge variant={inStock ? 'success' : 'warning'}>{inStock ? 'Op voorraad' : 'Bekijk status'}</WinkelnuBadge>
-        </div>
-        <WinkelnuButton href={`/product/${slug}`} className="mt-4 w-full">Vergelijk aanbiedingen</WinkelnuButton>
+        ) : (
+          <p className="wn-body-muted text-sm">Momenteel geen actieve aanbieding.</p>
+        )}
+        <WinkelnuButton href={`/product/${slug}`} className="mt-4 w-full">
+          {hasOffer ? 'Vergelijk aanbiedingen' : 'Bekijk product'}
+        </WinkelnuButton>
       </div>
     </article>
   )
