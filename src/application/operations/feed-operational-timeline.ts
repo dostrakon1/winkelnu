@@ -36,6 +36,7 @@ export function buildFeedOperationalTimelines(
   return model.integrations.flatMap((integration) => integration.feeds.map((feed) => {
     const events: FeedTimelineEvent[] = []
     const snapshotAt = model.generatedAt
+    const orchestration = feed.orchestration
 
     events.push({
       id: `${integration.merchantId}:${feed.sourceKey}:state:${snapshotAt}`,
@@ -45,22 +46,22 @@ export function buildFeedOperationalTimelines(
       detail: feed.health ? `Health: ${feed.health.status}; failures: ${feed.health.failureCount}` : 'Nog geen orchestration health beschikbaar',
     })
 
-    if (feed.lastStartedAt) events.push({
-      id: `${integration.merchantId}:${feed.sourceKey}:started:${feed.lastStartedAt}`,
+    if (orchestration?.lastStartedAt) events.push({
+      id: `${integration.merchantId}:${feed.sourceKey}:started:${orchestration.lastStartedAt}`,
       kind: 'started',
-      occurredAt: feed.lastStartedAt,
+      occurredAt: orchestration.lastStartedAt,
       label: 'Import gestart',
     })
-    if (feed.lastSucceededAt) events.push({
-      id: `${integration.merchantId}:${feed.sourceKey}:succeeded:${feed.lastSucceededAt}`,
+    if (orchestration?.lastSucceededAt) events.push({
+      id: `${integration.merchantId}:${feed.sourceKey}:succeeded:${orchestration.lastSucceededAt}`,
       kind: 'succeeded',
-      occurredAt: feed.lastSucceededAt,
+      occurredAt: orchestration.lastSucceededAt,
       label: 'Import geslaagd',
     })
-    if (feed.nextRunAt) events.push({
-      id: `${integration.merchantId}:${feed.sourceKey}:scheduled:${feed.nextRunAt}`,
+    if (orchestration?.nextRunAt) events.push({
+      id: `${integration.merchantId}:${feed.sourceKey}:scheduled:${orchestration.nextRunAt}`,
       kind: 'scheduled',
-      occurredAt: feed.nextRunAt,
+      occurredAt: orchestration.nextRunAt,
       label: 'Volgende import gepland',
     })
 
@@ -83,8 +84,8 @@ export function buildFeedOperationalTimelines(
       sourceKey: feed.sourceKey,
       isActive: feed.isActive,
       healthStatus: feed.health?.status,
-      failureCount: feed.health?.failureCount ?? 0,
-      hasActiveLease: feed.hasActiveLease ?? false,
+      failureCount: feed.health?.failureCount ?? orchestration?.failureCount ?? 0,
+      hasActiveLease: orchestration?.leaseActive ?? false,
       events: events.slice(0, 12),
     }
   }))
