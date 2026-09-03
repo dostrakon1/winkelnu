@@ -8,10 +8,12 @@ import { filterOperatorActionHistory, type OperatorActionHistoryFilters } from '
 import { OperatorActionHistoryService, type OperatorActionOutcome } from '@/application/operations/operator-action-history'
 import { buildFeedOperationalTimelines } from '@/application/operations/feed-operational-timeline'
 import { ImportRunEvidenceService } from '@/application/operations/import-run-evidence'
+import { ImportQualitySummaryService } from '@/application/operations/import-quality-summary'
 import { InternalOperationsDashboard } from '@/components/internal/operations-dashboard'
 import { SupabasePartnerOperationsReadRepository } from '@/infrastructure/affiliate/supabase-partner-operations-read-repository'
 import { SupabaseOperatorActionHistoryRepository } from '@/infrastructure/operations/supabase-operator-action-history-repository'
 import { SupabaseImportRunEvidenceRepository } from '@/infrastructure/operations/supabase-import-run-evidence-repository'
+import { SupabaseImportQualitySummaryRepository } from '@/infrastructure/operations/supabase-import-quality-summary-repository'
 import { requireOperatorSession } from '@/infrastructure/operations/operator-session'
 
 export const dynamic = 'force-dynamic'
@@ -49,14 +51,16 @@ export default async function InternalOperationsPage({ searchParams }: { searchP
   const operationsService = new PartnerOperationsReadService(new SupabasePartnerOperationsReadRepository())
   const historyService = new OperatorActionHistoryService(new SupabaseOperatorActionHistoryRepository())
   const importRunService = new ImportRunEvidenceService(new SupabaseImportRunEvidenceRepository())
-  const [model, fullActionHistory, importRuns] = await Promise.all([
+  const qualityService = new ImportQualitySummaryService(new SupabaseImportQualitySummaryRepository())
+  const [model, fullActionHistory, importRuns, qualitySummaries] = await Promise.all([
     operationsService.read(),
     historyService.listRecent(50),
     importRunService.listRecent(100),
+    qualityService.listRecent(50),
   ])
   const dashboard = buildOperationsDashboard(model)
   const actionHistory = filterOperatorActionHistory(fullActionHistory, filters)
-  const feedTimelines = buildFeedOperationalTimelines(model, fullActionHistory, importRuns)
+  const feedTimelines = buildFeedOperationalTimelines(model, fullActionHistory, importRuns, qualitySummaries)
 
   return (
     <InternalOperationsDashboard
