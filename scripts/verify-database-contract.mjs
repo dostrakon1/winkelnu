@@ -14,6 +14,7 @@ const migrationPaths = [
   'supabase/migrations/0010_due_feed_discovery_bootstrap.sql',
   'supabase/migrations/0011_operator_roles_and_audit_boundary.sql',
   'supabase/migrations/0012_feed_recovery_actions.sql',
+  'supabase/migrations/0013_operator_action_idempotency.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -21,7 +22,7 @@ const migrations = (await Promise.all(migrationPaths.map((path) => readFile(reso
 const requiredTables = [
   'merchants', 'categories', 'products', 'feed_sources', 'import_runs', 'offers', 'product_identifiers',
   'import_rejects', 'product_match_reviews', 'affiliate_click_events', 'affiliate_networks',
-  'merchant_affiliate_integrations', 'feed_import_orchestration', 'operator_audit_events',
+  'merchant_affiliate_integrations', 'feed_import_orchestration', 'operator_audit_events', 'operator_action_requests',
 ]
 
 const requiredColumns = [
@@ -41,6 +42,11 @@ const requiredColumns = [
   ['operator_audit_events', 'target_type'], ['operator_audit_events', 'status'],
   ['operator_audit_events', 'correlation_id'], ['operator_audit_events', 'metadata'],
   ['operator_audit_events', 'occurred_at'],
+  ['operator_action_requests', 'request_key'], ['operator_action_requests', 'actor_user_id'],
+  ['operator_action_requests', 'action'], ['operator_action_requests', 'target_type'],
+  ['operator_action_requests', 'target_id'], ['operator_action_requests', 'status'],
+  ['operator_action_requests', 'error_message'], ['operator_action_requests', 'created_at'],
+  ['operator_action_requests', 'completed_at'],
 ]
 
 const requiredFunctions = [
