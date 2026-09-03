@@ -4,6 +4,7 @@ export type ImportRunStatus = 'running' | 'completed' | 'completed_with_errors' 
 
 export type ImportRun = {
   id: string
+  correlationId?: string
   sourceKey: string
   merchantId: string
   status: ImportRunStatus
