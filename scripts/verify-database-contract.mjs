@@ -65,6 +65,18 @@ const requiredFunctions = [
   'operator_resume_feed',
 ]
 
+const requiredSecurityPatterns = [
+  ['operator audit table untrusted revoke', /revoke\s+all\s+on\s+table\s+operator_audit_events\s+from\s+public[\s\S]*?anon[\s\S]*?authenticated/i],
+  ['operator audit table service-role grant', /grant\s+select\s*,\s*insert\s+on\s+table\s+operator_audit_events\s+to\s+service_role/i],
+  ['operator idempotency table untrusted revoke', /revoke\s+all\s+on\s+table\s+operator_action_requests\s+from\s+public[\s\S]*?anon[\s\S]*?authenticated/i],
+  ['operator idempotency service-role grant', /grant\s+select\s*,\s*insert\s*,\s*update\s+on\s+table\s+operator_action_requests\s+to\s+service_role/i],
+  ['audit append-only trigger', /create\s+trigger\s+operator_audit_events_append_only[\s\S]*?before\s+update\s+or\s+delete\s+on\s+operator_audit_events/i],
+  ['retry RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+operator_retry_feed\(text\s*,\s*text\s*,\s*timestamptz\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
+  ['pause RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+operator_pause_feed\(text\s*,\s*text\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
+  ['resume RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+operator_resume_feed\(text\s*,\s*text\s*,\s*timestamptz\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
+  ['operations readiness service-role grant', /grant\s+execute\s+on\s+function\s+winkelnu_operations_security_readiness\(\)\s+to\s+service_role/i],
+]
+
 const failures = []
 
 for (const table of requiredTables) {
@@ -87,10 +99,14 @@ for (const functionName of requiredFunctions) {
   if (!pattern.test(migrations)) failures.push(`Missing required function: ${functionName}`)
 }
 
+for (const [label, pattern] of requiredSecurityPatterns) {
+  if (!pattern.test(migrations)) failures.push(`Missing required security contract: ${label}`)
+}
+
 if (failures.length > 0) {
   console.error('Database contract verification failed:')
   for (const failure of failures) console.error(`- ${failure}`)
   process.exit(1)
 }
 
-console.log(`Database contract OK: ${requiredTables.length} RLS-protected tables, ${requiredColumns.length} critical columns and ${requiredFunctions.length} functions verified.`)
+console.log(`Database contract OK: ${requiredTables.length} RLS-protected tables, ${requiredColumns.length} critical columns, ${requiredFunctions.length} functions and ${requiredSecurityPatterns.length} security contracts verified.`)
