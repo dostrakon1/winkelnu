@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository is op 3 september 2026 geïnitialiseerd en bevat inmiddels een werkende technische fundering, synthetic end-to-end catalogusproef, importobservability, Supabase/Postgres repository-adapter, geautomatiseerde catalogustests, een persistence-onafhankelijke storefront query-laag, SEO-veilige categorie/discovery-routes en gecontroleerde zoek/filterarchitectuur.
+De repository is op 3 september 2026 geïnitialiseerd en bevat inmiddels een werkende technische fundering, synthetic end-to-end catalogusproef, importobservability, Supabase/Postgres repository-adapter, geautomatiseerde catalogustests, een persistence-onafhankelijke storefront query-laag, SEO-veilige categorie/discovery-routes, gecontroleerde zoek/filterarchitectuur en een eigen affiliate redirect/click-attributielaag.
 
 Afgerond / geïmplementeerd:
 - M0.1 — Repository Alignment & Verification
@@ -20,6 +20,7 @@ Afgerond / geïmplementeerd:
 - M0.11 — Catalog Service & Storefront Query Layer
 - M0.12 — Category & Discovery Query Architecture
 - M0.13 — Search & Filter Query Architecture
+- M0.14 — Affiliate Redirect & Click Attribution Architecture (repository-side complete; live Supabase verification pending)
 
 ## Stack
 - Next.js 16 — App Router
@@ -93,12 +94,14 @@ Zoeken loopt via `/zoeken` met gecontroleerde GET-parameters voor zoekterm, cate
 
 Aanbiedingen worden gerangschikt en op prijs gefilterd op bekende totale koopprijs: productprijs plus bekende verzendkosten.
 
+Outbound affiliateklikken lopen nu via `/uit/<offer-id>`. De server resolveert de actuele opgeslagen affiliatebestemming, weigert ontbrekende/inactieve/onveilige offers en schrijft vóór een succesvolle redirect een privacy-minimaal click-event. De baseline slaat geen rauw IP-adres en geen user-agentfingerprint op.
+
 PostgreSQL UUIDs blijven interne relationele sleutels. Duurzame Winkelnu-identiteiten worden opgeslagen als `external_key`.
 
 ## Kernprincipe
 
-Winkelnu wordt feedgedreven gebouwd. Merchantdata komt binnen via adapters, wordt gevalideerd en genormaliseerd en wordt pas daarna onderdeel van de publieke catalogus. Productidentiteit, merchantoffers, importkwaliteit, persistence, querylogica, discovery, search en affiliatebestemmingen blijven bewust van elkaar gescheiden.
+Winkelnu wordt feedgedreven gebouwd. Merchantdata komt binnen via adapters, wordt gevalideerd en genormaliseerd en wordt pas daarna onderdeel van de publieke catalogus. Productidentiteit, merchantoffers, importkwaliteit, persistence, querylogica, discovery, search en affiliate-attributie blijven bewust van elkaar gescheiden.
 
 ## Volgende technische fase
 
-**M0.14 — Affiliate Redirect & Click Attribution Architecture**: outbound affiliateverkeer via een eigen, transparante redirectlaag sturen met offer-identiteit, click-attributie, veilige bestemmingsvalidatie en meetbaarheid zonder Winkelnu als verkoper te presenteren.
+**M0.15 — Affiliate Network & Merchant Integration Registry**: affiliate-netwerken, merchant-integraties, source-configuratie en bestemming-generatie expliciet modelleren vóórdat echte Bol-, Amazon-, eBay- of andere partneradapters worden aangesloten.
