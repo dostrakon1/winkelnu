@@ -49,10 +49,10 @@ async function run(
     revalidatePath('/intern/operations')
     const label = operation === 'retry' ? 'Retry ingepland.' : operation === 'pause' ? 'Feed gepauzeerd.' : 'Feed hervat.'
     return { status: 'success', message: label }
-  } catch (error) {
+  } catch {
     return {
       status: 'error',
-      message: error instanceof Error ? error.message : 'De recoveryactie is mislukt.',
+      message: 'De recoveryactie kon niet worden uitgevoerd. Controleer de feedstatus en probeer het opnieuw.',
     }
   }
 }
