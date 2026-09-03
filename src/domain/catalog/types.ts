@@ -1,3 +1,8 @@
+export type Money = {
+  amount: string
+  currency: 'EUR'
+}
+
 export type Merchant = {
   id: string
   slug: string
@@ -23,13 +28,14 @@ export type Offer = {
   productId: string
   merchantId: string
   merchantProductId: string
-  price: number
-  currency: 'EUR'
-  shippingCost?: number
+  price: Money
+  shippingCost?: Money
   availability?: string
+  productUrl: string
   affiliateUrl: string
   sourceUpdatedAt?: string
   importedAt: string
+  lastSeenAt: string
   isActive: boolean
 }
 
