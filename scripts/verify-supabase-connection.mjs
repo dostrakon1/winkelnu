@@ -21,6 +21,7 @@ const tables = [
   'import_runs',
   'import_rejects',
   'product_match_reviews',
+  'affiliate_click_events',
 ]
 
 const failures = []
