@@ -84,11 +84,13 @@ describe('FeedRecoveryService', () => {
     expect(audit.events.filter((event) => event.status === 'succeeded')).toHaveLength(2)
   })
 
-  it('denies recovery for read-only operators without performing the mutation', async () => {
-    const { audit, recovery, service } = setup()
+  it('denies recovery before claiming idempotency or performing any mutation', async () => {
+    const { audit, requests, recovery, service } = setup()
 
     await expect(service.retry({ ...operator, role: 'read_only' }, target, 'denied-request')).rejects.toThrow('not allowed')
     expect(recovery.calls).toEqual([])
     expect(audit.events).toEqual([])
+    expect(requests.keys.size).toBe(0)
+    expect(requests.outcomes.size).toBe(0)
   })
 })
