@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels een werkende technische fundering, synthetic end-to-end catalogusproef, importobservability, Supabase/Postgres repository-adapter, geautomatiseerde catalogustests, persistence-onafhankelijke storefront queries, SEO-veilige discovery/search, een eigen affiliate redirect/click-attributielaag en een expliciete affiliate network/merchant integration registry.
+De repository bevat inmiddels een werkende technische fundering, synthetic end-to-end catalogusproef, importobservability, Supabase/Postgres repository-adapter, geautomatiseerde catalogustests, persistence-onafhankelijke storefront queries, SEO-veilige discovery/search, een eigen affiliate redirect/click-attributielaag, een expliciete affiliate network/merchant integration registry en partner-feed adapterresolution.
 
 Afgerond / geïmplementeerd:
 - M0.1 — Repository Alignment & Verification
@@ -22,6 +22,7 @@ Afgerond / geïmplementeerd:
 - M0.13 — Search & Filter Query Architecture
 - M0.14 — Affiliate Redirect & Click Attribution Architecture (repository-side complete; live Supabase verification pending)
 - M0.15 — Affiliate Network & Merchant Integration Registry (repository-side complete; live Supabase verification pending)
+- M0.16 — Partner Adapter Registration & Feed Source Resolution
 
 ## Stack
 - Next.js 16 — App Router
@@ -99,18 +100,18 @@ Aanbiedingen worden gerangschikt en op prijs gefilterd op bekende totale kooppri
 
 Outbound affiliateklikken lopen via `/uit/<offer-id>`. De server resolveert de opgeslagen bestemming, weigert ontbrekende/inactieve/onveilige offers en schrijft privacy-minimale click-attributie zonder rauw IP-adres of user-agentfingerprint.
 
-M0.15 scheidt nu ook expliciet:
+De affiliate-integratieketen is nu expliciet:
 
-`merchant → affiliate integration → affiliate network/marketplace (indien van toepassing) → feed source`
+`merchant → affiliate integration → affiliate network/marketplace (indien van toepassing) → feed source → partner adapter`
 
-Directe partnerprogramma's hoeven geen fictief netwerk te krijgen. Feed sources kunnen aan de concrete merchant-integratie worden gekoppeld, terwijl product-, offer- en storefrontlogica vendor-onafhankelijk blijft.
+`PartnerFeedSourceResolver` bepaalt eerst of de source/integration/network-context actief en consistent is. Daarna kiest `PartnerFeedAdapterRegistry` uitsluitend in de infrastructurelaag de technische adapter met sleutels zoals `network-slug:api`, `direct:csv` of `generic:xml`. Eventuele `env:` credentials worden pas op dat moment server-side opgelost en komen niet in application/domain modellen terecht.
 
 PostgreSQL UUIDs blijven interne relationele sleutels. Duurzame Winkelnu-identiteiten worden opgeslagen als `external_key`.
 
 ## Kernprincipe
 
-Winkelnu wordt feedgedreven gebouwd. Merchantdata komt binnen via adapters, wordt gevalideerd en genormaliseerd en wordt pas daarna onderdeel van de publieke catalogus. Productidentiteit, merchantoffers, importkwaliteit, persistence, querylogica, discovery, search, affiliate-attributie en partnerintegratiecontext blijven bewust van elkaar gescheiden.
+Winkelnu wordt feedgedreven gebouwd. Merchantdata komt binnen via adapters, wordt gevalideerd en genormaliseerd en wordt pas daarna onderdeel van de publieke catalogus. Productidentiteit, merchantoffers, importkwaliteit, persistence, querylogica, discovery, search, affiliate-attributie, partnerintegratiecontext en concrete provideradapters blijven bewust van elkaar gescheiden.
 
 ## Volgende technische fase
 
-**M0.16 — Partner Adapter Registration & Feed Source Resolution**: een actieve feed source naar zijn merchant/integration/network-context resolven en vervolgens de juiste partneradapter kiezen zonder vendor-specifieke logica in application/domain code te laten lekken.
+**M0.17 — Realistic Partner Adapter Contract & Fixture Proof**: één realistische providerachtige feedadapter bouwen met fixturedata, veldmapping, paginering/fouten en end-to-end importtests, zonder al productiecredentials of een echt affiliateprogramma nodig te hebben.
