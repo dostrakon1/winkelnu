@@ -1,11 +1,13 @@
 import type { CatalogReadRepository } from './ports'
 import type { CatalogSearchQuery } from './search-query'
+import { classifyOfferFreshness, type OfferFreshnessStatus } from '@/domain/catalog/offer-freshness'
 import type { Category, Merchant, Offer, Product } from '@/domain/catalog/types'
 
 export type RankedOffer = {
   offer: Offer
   merchant?: Merchant
   totalAmount: string
+  freshness: OfferFreshnessStatus
 }
 
 export type CatalogProductListItem = {
@@ -66,7 +68,24 @@ function searchScore(product: Product, term?: string): number {
 }
 
 export class CatalogService {
-  constructor(private readonly repository: CatalogReadRepository) {}
+  constructor(
+    private readonly repository: CatalogReadRepository,
+    private readonly now: () => string = () => new Date().toISOString(),
+  ) {}
+
+  private rankOffers(offers: Offer[], merchantById: Map<string, Merchant>): RankedOffer[] {
+    const now = this.now()
+    return offers
+      .filter((offer) => offer.isActive)
+      .map((offer) => ({
+        offer,
+        merchant: merchantById.get(offer.merchantId),
+        totalAmount: totalOfferAmount(offer),
+        freshness: classifyOfferFreshness(offer, now),
+      }))
+      .filter((item) => item.freshness !== 'expired')
+      .sort((a, b) => cents(a.totalAmount) - cents(b.totalAmount))
+  }
 
   async listProducts(input?: {
     categorySlug?: string
@@ -82,14 +101,7 @@ export class CatalogService {
     return Promise.all(
       products.map(async (product) => {
         const detail = await this.repository.getProductBySlug(product.slug)
-        const ranked = (detail?.offers ?? [])
-          .filter((offer) => offer.isActive)
-          .map((offer) => ({
-            offer,
-            merchant: merchantById.get(offer.merchantId),
-            totalAmount: totalOfferAmount(offer),
-          }))
-          .sort((a, b) => cents(a.totalAmount) - cents(b.totalAmount))
+        const ranked = this.rankOffers(detail?.offers ?? [], merchantById)
 
         return {
           product,
@@ -108,16 +120,7 @@ export class CatalogService {
     if (!detail) return null
 
     const merchantById = new Map(merchants.map((merchant) => [merchant.id, merchant]))
-    const offers = detail.offers
-      .filter((offer) => offer.isActive)
-      .map((offer) => ({
-        offer,
-        merchant: merchantById.get(offer.merchantId),
-        totalAmount: totalOfferAmount(offer),
-      }))
-      .sort((a, b) => cents(a.totalAmount) - cents(b.totalAmount))
-
-    return { product: detail.product, offers }
+    return { product: detail.product, offers: this.rankOffers(detail.offers, merchantById) }
   }
 
   async listCategories(): Promise<Category[]> {
@@ -160,9 +163,6 @@ export class CatalogService {
   }
 
   async searchProducts(query: CatalogSearchQuery): Promise<CatalogSearchResult> {
-    // M0.13 deliberately keeps the public query contract inside the application layer.
-    // The current repository fetch cap is a safe bootstrap for the synthetic/small catalog.
-    // A later scale milestone can push these filters into Postgres without changing routes.
     const candidates = await this.listProducts({
       categorySlug: query.categorySlug,
       limit: 240,
