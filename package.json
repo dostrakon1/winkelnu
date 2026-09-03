@@ -11,7 +11,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run typecheck && npm run build"
+    "check:db-contract": "node scripts/verify-database-contract.mjs",
+    "check": "npm run check:db-contract && npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.114.0",
