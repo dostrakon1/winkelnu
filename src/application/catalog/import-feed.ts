@@ -1,4 +1,5 @@
 import type { CatalogWriteRepository } from './ports'
+import { FeedTraversalGuard, type FeedTraversalLimits } from './feed-traversal-guard'
 import type { FeedAdapter } from '@/infrastructure/feeds/adapter'
 import type { ImportReject, ImportRun, MatchReviewItem } from '@/domain/catalog/import-observability'
 import { decideStrongProductIdentity, type ProductMatchDecision } from '@/domain/catalog/matching'
@@ -29,8 +30,10 @@ export async function importFeed(input: {
   deactivateMissingOffers?: boolean
   correlationId?: string
   onPageFetched?: () => Promise<void>
+  traversalLimits?: FeedTraversalLimits
 }): Promise<ImportFeedResult> {
   const now = input.now ?? (() => new Date().toISOString())
+  const traversal = new FeedTraversalGuard(input.traversalLimits)
   const startedAt = now()
   const importRunId = `import:${safeIdPart(input.adapter.sourceKey)}:${safeIdPart(input.merchant.id)}:${Date.parse(startedAt)}`
   let importRun: ImportRun = { id: importRunId, correlationId: input.correlationId, sourceKey: input.adapter.sourceKey, merchantId: input.merchant.id, status: 'running', startedAt, recordsSeen: 0, recordsAccepted: 0, recordsRejected: 0, offersDeactivated: 0, reviewRequired: 0, errorSummary: [] }
@@ -53,7 +56,9 @@ export async function importFeed(input: {
 
   try {
     do {
+      traversal.beforeFetch()
       const page = await input.adapter.fetchPage({ cursor })
+      traversal.afterFetch(page.nextCursor)
       await input.onPageFetched?.()
       for (const candidate of page.items) {
         importRun = { ...importRun, recordsSeen: importRun.recordsSeen + 1 }
