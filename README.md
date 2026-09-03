@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability en per-feed operationele timelines.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability, per-feed timelines en bounded import-run evidence.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
@@ -17,16 +17,17 @@ Afgerond / geïmplementeerd:
 - M0.38 — Operator Action History & Recovery Observability
 - M0.39 — Operator Audit Filtering, Correlation & Incident Context
 - M0.40 — Operational Timeline & Feed State Transition Context
+- M0.41 — Import Run Evidence & Timeline Enrichment
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
 
 ## Operationslaag
-`/intern/operations` combineert incidenten, role-gated recovery, append-only audit, server-side idempotency, filterbare operatorhistorie en per-feed operationele context.
+`/intern/operations` combineert incidenten, role-gated recovery, append-only audit, server-side idempotency, filterbare operatorhistorie, veilige orchestrationcontext en recente import-run evidence.
 
-M0.40 voegt aan het partner operations read model alleen veilige orchestration-signalen toe: laatste start, laatste succes, volgende run en een boolean voor een actieve lease. Lease-token/owner, secret references, vrije auditmetadata en ruwe orchestration errors worden niet aan de timeline/UI blootgesteld.
+M0.40 voegt veilige orchestration-signalen toe: laatste start, laatste succes, volgende run en alleen een boolean voor een actieve lease. Lease-token/owner, secret references, vrije auditmetadata en ruwe orchestration errors worden niet aan de timeline/UI blootgesteld.
 
-De per-feed timeline correleert uitsluitend op exact `merchantId + sourceKey` en combineert actuele feedstatus, import lifecycle-signalen, toekomstige scheduling en terminale menselijke recovery-outcomes. Er zijn geen nieuwe mutations, RPCs, privileges of schemawijzigingen toegevoegd.
+M0.41 verrijkt dezelfde per-feed timeline met bounded import-run evidence: runstatus, timestamps, records seen/accepted/rejected, offers deactivated, review-required en correlation id. De reader haalt maximaal 100 recente runs op en de timeline gebruikt maximaal vijf runs per feed. `error_summary`, reject payloads en raw records blijven uitgesloten.
 
 Voor human operator auth zijn onder andere nodig:
 
@@ -51,7 +52,7 @@ npm run verify:supabase
 npm run verify:production-readiness
 ```
 
-Zie [`docs/architecture/OPERATIONAL_TIMELINE_AND_FEED_STATE_TRANSITION_CONTEXT.md`](docs/architecture/OPERATIONAL_TIMELINE_AND_FEED_STATE_TRANSITION_CONTEXT.md), [`docs/architecture/OPERATOR_AUDIT_FILTERING_CORRELATION_AND_INCIDENT_CONTEXT.md`](docs/architecture/OPERATOR_AUDIT_FILTERING_CORRELATION_AND_INCIDENT_CONTEXT.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
+Zie [`docs/architecture/IMPORT_RUN_EVIDENCE_AND_TIMELINE_ENRICHMENT.md`](docs/architecture/IMPORT_RUN_EVIDENCE_AND_TIMELINE_ENRICHMENT.md), [`docs/architecture/OPERATIONAL_TIMELINE_AND_FEED_STATE_TRANSITION_CONTEXT.md`](docs/architecture/OPERATIONAL_TIMELINE_AND_FEED_STATE_TRANSITION_CONTEXT.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Volgende technische fase
-**M0.41 — Import Run Evidence & Timeline Enrichment**: bounded import-run evidence zoals processed/accepted/rejected counts en correlated run outcomes veilig aan dezelfde read-only feedcontext toevoegen.
+**M0.42 — Import Quality Drilldown & Reject/Review Summaries**: aggregate reject/review evidence toevoegen zonder raw feed records of gevoelige payloads bloot te stellen.
