@@ -15,8 +15,9 @@ Apply migrations in filename order:
 5. `0005_affiliate_integration_registry.sql`
 6. `0006_import_orchestration.sql`
 7. `0007_import_heartbeat_and_correlation.sql`
+8. `0008_catalog_ranking_read_model.sql`
 
-Do not skip `0003`; repository adapters depend on `external_key`. `0004` is required before live affiliate click attribution, `0005` before real partner registry use, `0006` before recurring production imports and `0007` before enabling lease heartbeats/correlated production runs.
+Do not skip `0003`; repository adapters depend on `external_key`. `0004` is required before live affiliate click attribution, `0005` before real partner registry use, `0006` before recurring production imports, `0007` before lease heartbeats/correlated production runs and `0008` before enabling the scalable Supabase storefront read path.
 
 ## Server environment
 Required when `CATALOG_PERSISTENCE=supabase`:
@@ -37,7 +38,7 @@ For the operations trigger, configure either `CRON_SECRET` (preferred for Vercel
 npm run check:db-contract
 ```
 
-This validates committed schema contracts, including orchestration, heartbeat and correlation persistence.
+This validates committed schema contracts, including orchestration, heartbeat, correlation persistence and the catalog ranking RPC.
 
 ## Live connection smoke test
 After migrations are applied:
@@ -57,7 +58,7 @@ This generates `src/infrastructure/supabase/database.types.ts` from the live sch
 
 ## Activation sequence
 1. Create the Supabase project.
-2. Apply migrations `0001` through `0007` in filename order.
+2. Apply migrations `0001` through `0008` in filename order.
 3. Add server environment variables locally/Vercel.
 4. Run `npm run verify:supabase`.
 5. Run `npm run types:supabase`.
@@ -73,17 +74,21 @@ This generates `src/infrastructure/supabase/database.types.ts` from the live sch
 15. Verify `/uit/<offer-id>` click attribution and redirect behavior.
 16. Verify orchestration lease acquire, heartbeat renewal and completion using server-only worker code.
 17. Verify a trigger correlation ID appears on its created `import_runs` rows.
-18. Only then enable recurring production imports.
+18. Verify `catalog_ranked_products` returns price-ranked, non-expired offers with expected search filters and pagination.
+19. Only then enable recurring production imports and the Supabase storefront read model.
+
+## Storefront ranking read model
+Migration `0008` adds the service-role-only `catalog_ranked_products` RPC plus supporting indexes. It performs offer freshness cutoff, best-offer selection, landed-price ranking, category/brand/text filtering and pagination in Postgres. The public application continues to use `CatalogService`; the Supabase composition swaps in `ScalableCatalogService` and `SupabaseCatalogRankingReadModel` behind that interface.
 
 ## Import orchestration security
 Migrations `0006` and `0007` add `SECURITY DEFINER` worker functions for atomic lease acquire, heartbeat and completion. Their default `PUBLIC` execute permissions are revoked and execution is granted only to Supabase `service_role`.
 
-The scheduler/worker must use the service-role server client. Browser/anon code must never call these worker RPCs.
+The scheduler/worker and ranking read model use the service-role server client. Browser/anon code must never call these RPCs directly.
 
 ## Safety properties
 - Service-role and partner credentials are server-only.
 - Storefront components do not directly query Supabase.
-- Application use-cases depend on repository ports, not Supabase APIs.
+- Application use-cases depend on repository/read-model ports, not browser-side Supabase APIs.
 - Postgres UUIDs never leak into canonical identity rules.
 - In-memory adapters remain available for deterministic tests/development.
 - Affiliate destinations are resolved server-side from stored offers.
@@ -94,6 +99,7 @@ The scheduler/worker must use the service-role server client. Browser/anon code 
 - A stale/expired worker cannot renew or complete another worker's lease.
 - Too-early scheduler triggers are rejected by persisted `next_run_at` state.
 - Trigger correlation IDs are stored on production import-run audit rows.
+- Expired offers are removed from the scalable ranking path before storefront pagination.
 
 ## Not yet possible without project access
 The following remain external completion gates:
@@ -102,6 +108,6 @@ The following remain external completion gates:
 - generating project-derived TypeScript database types;
 - validating service-role connectivity;
 - validating click inserts and registry relations live;
-- executing orchestration/heartbeat RPCs against the real project;
+- executing orchestration/heartbeat/ranking RPCs against the real project;
 - verifying RLS/security settings;
 - performance/index inspection with real catalog volume.
