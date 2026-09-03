@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, Daisycon-readiness, gecontroleerde onboarding, persistence-backed orchestration, due-feed batch execution, health-classificatie, production composition, beveiligde scheduler-trigger, lease-heartbeats, end-to-end importcorrelatie, bounded feed-traversal, storefront freshnessbeleid en een schaalbaar Supabase ranking read model.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, Daisycon-readiness, gecontroleerde onboarding, persistence-backed orchestration, due-feed batch execution, health-classificatie, production composition, beveiligde scheduler-trigger, lease-heartbeats, end-to-end importcorrelatie, bounded feed-traversal, storefront freshnessbeleid, een schaalbaar Supabase ranking read model en production security/go-live readiness.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
@@ -16,6 +16,7 @@ Afgerond / geïmplementeerd:
 - M0.23 — Scheduler Deployment Contract, Heartbeats & Import Run Correlation
 - M0.24 — Feed Traversal Safety, Runtime Budgets & Stale Data Policy
 - M0.25 — Catalog Scale Query Pushdown & Ranking Read Model
+- M0.26 — Production Catalog Activation, Security & Go-Live Readiness
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
@@ -23,15 +24,11 @@ Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4
 ## Keten
 `authenticated scheduler trigger → correlation id → due feed discovery → atomic renewable lease → integration registry → partner adapter → bounded pagination → validation/matching/import → correlated import run → scalable freshness-aware catalog read model → storefront`
 
-M0.18 kiest Daisycon als eerste echte readiness-target. M0.19–M0.21 voegen onboarding, leases, retry/backoff, due discovery, bounded batches en feed-health toe. M0.22 verbindt deze onderdelen in één production composition zonder providerlogica naar de worker te lekken. M0.23 maakt die worker scheduler-compatible en veilig voor lange feeds: pagination-progress kan de lease begrensd verlengen en iedere trigger krijgt één correlation ID die op de bijbehorende production `import_runs` wordt opgeslagen.
+M0.24 begrenst feed traversal en offerfreshness. M0.25 verplaatst ranking/filtering/pagination voor Supabase naar het database read model. M0.26 zet daar een production-securitylaag omheen: alle 13 gevoelige public-schema tabellen krijgen RLS, zonder anon/authenticated policies. Server-side service-role code blijft de enige catalogus/operations-toegang totdat later bewust een smaller publiek contract nodig is.
 
-M0.24 begrenst de feed zelf. Een import faalt gesloten bij een herhaalde cursor, na standaard 10.000 pagina’s of na een standaard wall-clock budget van 30 minuten. Een traversal-failure voert nooit stale-offer cleanup uit. Voor publieke offers geldt als baseline: `fresh` tot 24 uur na laatste verificatie, `stale` daarna tot en met 72 uur, en `expired` daarboven.
+Migration `0009_production_security_and_readiness.sql` voegt daarnaast de service-role-only `winkelnu_production_readiness()` RPC toe. `npm run verify:production-readiness` controleert op een live project dat alle 13 tabellen RLS hebben en dat de ranking-RPC uitvoerbaar is. `supabase/seed.sql` bevat alleen idempotente categorie-bootstrapdata; echte merchants worden niet fictief geseed maar pas na partneronboarding geregistreerd.
 
-M0.25 verwijdert voor de Supabase storefront de bootstrap N+1 listing reads en 240-product search cap. `catalog_ranked_products` selecteert database-side het echte goedkoopste niet-verlopen offer op landed price, past freshness/category/merk/search/prijs/voorraadfilters toe en pagineert vóór data naar de application layer komt. Memory/dev blijft op de bestaande deterministische `CatalogService`-route.
-
-De server-only trigger ondersteunt `GET` en `POST` op `/api/ops/catalog-import` en vereist een Bearer-secret. Voor Vercel Cron is `CRON_SECRET` de voorkeursconfiguratie; voor een externe/manual scheduler kan `WINKELNU_IMPORT_TRIGGER_SECRET` worden gebruikt. Het request kan geen feed-URL, partnercredential, adapterkey of merchantselectie aanleveren. De production factory weigert bovendien te draaien tenzij `CATALOG_PERSISTENCE=supabase`.
-
-Er wordt bewust nog geen high-frequency `vercel.json` cron vastgelegd: schedulerfrequentie blijft deploymentbeleid en moet passen bij het gekozen Vercel-plan en de gewenste feedfreshness.
+De server-only trigger ondersteunt `GET` en `POST` op `/api/ops/catalog-import` en vereist een Bearer-secret. De production factory weigert te draaien tenzij `CATALOG_PERSISTENCE=supabase`.
 
 De eerste geregistreerde productieadapter is `daisycon:json`. Bol.com en latere partners kunnen via hetzelfde `PartnerFeedAdapterRegistry`-contract worden toegevoegd zonder de workerarchitectuur opnieuw te ontwerpen.
 
@@ -43,7 +40,13 @@ npm install
 npm run check
 ```
 
-Zie [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md) voor de live activation gates.
+Voor live activation:
+```bash
+npm run verify:supabase
+npm run verify:production-readiness
+```
+
+Zie [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Volgende technische fase
-**M0.26 — Production Catalog Activation, Security & Go-Live Readiness**: live schema/RLS-securitycontract, seed/bootstrapworkflow, ranking-RPC smoke checks en een concrete preview→production activation checklist vastleggen voordat echte partnerfeeds in een live Supabase catalogus worden aangezet.
+**M0.27 — First Production Partner Activation & Live Catalog Acceptance Gate**: één echt goedgekeurd partner/feedcontract in preview end-to-end valideren (mapping → import → ranking → click), en pas daarna productieactivering toestaan.
