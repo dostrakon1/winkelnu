@@ -14,12 +14,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check:migration-manifest": "node scripts/verify-preview-migration-manifest.mjs",
+    "check:preview-evidence-template": "node scripts/verify-preview-evidence-template.mjs",
     "check:db-contract": "node scripts/verify-database-contract.mjs",
     "verify:activation-env": "node scripts/verify-activation-environment.mjs",
     "verify:supabase": "node scripts/verify-supabase-connection.mjs",
     "verify:production-readiness": "node scripts/verify-production-readiness.mjs",
     "types:supabase": "node scripts/generate-supabase-types.mjs",
-    "check": "npm run check:migration-manifest && npm run check:db-contract && npm run lint && npm run typecheck && npm run test && npm run build"
+    "check": "npm run check:migration-manifest && npm run check:preview-evidence-template && npm run check:db-contract && npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.5",
