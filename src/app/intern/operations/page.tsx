@@ -8,6 +8,7 @@ import { filterOperatorActionHistory, type OperatorActionHistoryFilters } from '
 import { OperatorActionHistoryService, type OperatorActionOutcome } from '@/application/operations/operator-action-history'
 import { buildFeedOperationalTimelines } from '@/application/operations/feed-operational-timeline'
 import { buildFeedQualityAttentionSignals } from '@/application/operations/feed-quality-attention'
+import { buildQualitySignalDashboardSummary } from '@/application/operations/quality-signal-dashboard'
 import { ImportRunEvidenceService } from '@/application/operations/import-run-evidence'
 import { ImportQualitySummaryService } from '@/application/operations/import-quality-summary'
 import { InternalOperationsDashboard } from '@/components/internal/operations-dashboard'
@@ -62,11 +63,13 @@ export default async function InternalOperationsPage({ searchParams }: { searchP
   const dashboard = buildOperationsDashboard(model)
   const actionHistory = filterOperatorActionHistory(fullActionHistory, filters)
   const qualitySignals = buildFeedQualityAttentionSignals(qualitySummaries, importRuns)
+  const qualitySignalSummary = buildQualitySignalDashboardSummary(qualitySignals)
   const feedTimelines = buildFeedOperationalTimelines(model, fullActionHistory, importRuns, qualitySummaries, qualitySignals)
 
   return (
     <InternalOperationsDashboard
       dashboard={dashboard}
+      qualitySignalSummary={qualitySignalSummary}
       actionHistory={actionHistory}
       fullActionHistory={fullActionHistory}
       feedTimelines={feedTimelines}
