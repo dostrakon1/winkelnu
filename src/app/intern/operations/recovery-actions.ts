@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 
 import { FeedRecoveryService } from '@/application/operations/feed-recovery'
 import { AuditedOperatorActionService } from '@/application/operations/operator-audit'
+import { operatorRecoveryErrorMessage } from '@/application/operations/operator-facing-error'
 import { IdempotentOperatorActionService } from '@/application/operations/operator-idempotency'
 import { requireOperatorSession } from '@/infrastructure/operations/operator-session'
 import { SupabaseFeedRecoveryRepository } from '@/infrastructure/operations/supabase-feed-recovery-repository'
@@ -49,10 +50,10 @@ async function run(
     revalidatePath('/intern/operations')
     const label = operation === 'retry' ? 'Retry ingepland.' : operation === 'pause' ? 'Feed gepauzeerd.' : 'Feed hervat.'
     return { status: 'success', message: label }
-  } catch {
+  } catch (error) {
     return {
       status: 'error',
-      message: 'De recoveryactie kon niet worden uitgevoerd. Controleer de feedstatus en probeer het opnieuw.',
+      message: operatorRecoveryErrorMessage(error),
     }
   }
 }
