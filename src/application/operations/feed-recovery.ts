@@ -1,5 +1,5 @@
 import type { OperatorRole } from '@/application/auth/operator-authorization'
-import { AuditedOperatorActionService } from '@/application/operations/operator-audit'
+import { IdempotentOperatorActionService } from '@/application/operations/operator-idempotency'
 
 export type FeedRecoveryActor = {
   id: string
@@ -18,15 +18,17 @@ export interface FeedRecoveryRepository {
   resume(target: FeedRecoveryTarget, now: string): Promise<void>
 }
 
+export type FeedRecoveryResult = { executed: boolean }
+
 export class FeedRecoveryService {
   constructor(
     private readonly recovery: FeedRecoveryRepository,
-    private readonly audited: AuditedOperatorActionService,
+    private readonly idempotent: IdempotentOperatorActionService,
     private readonly clock: () => string = () => new Date().toISOString(),
   ) {}
 
-  retry(actor: FeedRecoveryActor, target: FeedRecoveryTarget): Promise<void> {
-    return this.audited.run({
+  async retry(actor: FeedRecoveryActor, target: FeedRecoveryTarget, requestKey: string): Promise<FeedRecoveryResult> {
+    const result = await this.idempotent.run(requestKey, {
       actor,
       permission: 'retry_feed',
       action: 'feed.retry',
@@ -35,10 +37,11 @@ export class FeedRecoveryService {
       metadata: target,
       execute: () => this.recovery.retryNow(target, this.clock()),
     })
+    return { executed: result.executed }
   }
 
-  pause(actor: FeedRecoveryActor, target: FeedRecoveryTarget): Promise<void> {
-    return this.audited.run({
+  async pause(actor: FeedRecoveryActor, target: FeedRecoveryTarget, requestKey: string): Promise<FeedRecoveryResult> {
+    const result = await this.idempotent.run(requestKey, {
       actor,
       permission: 'pause_feed',
       action: 'feed.pause',
@@ -47,10 +50,11 @@ export class FeedRecoveryService {
       metadata: target,
       execute: () => this.recovery.pause(target),
     })
+    return { executed: result.executed }
   }
 
-  resume(actor: FeedRecoveryActor, target: FeedRecoveryTarget): Promise<void> {
-    return this.audited.run({
+  async resume(actor: FeedRecoveryActor, target: FeedRecoveryTarget, requestKey: string): Promise<FeedRecoveryResult> {
+    const result = await this.idempotent.run(requestKey, {
       actor,
       permission: 'resume_feed',
       action: 'feed.resume',
@@ -59,5 +63,6 @@ export class FeedRecoveryService {
       metadata: target,
       execute: () => this.recovery.resume(target, this.clock()),
     })
+    return { executed: result.executed }
   }
 }
