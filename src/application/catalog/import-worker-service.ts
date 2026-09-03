@@ -1,5 +1,5 @@
 import type { DueFeedDiscoveryRepository } from './import-worker-ports'
-import type { ImportOrchestrationService } from './import-orchestration-service'
+import type { ImportLeaseControl, ImportOrchestrationService } from './import-orchestration-service'
 import type { DueFeedSource, FeedBatchResult } from '@/domain/catalog/import-worker'
 
 export class ImportWorkerService {
@@ -10,7 +10,7 @@ export class ImportWorkerService {
 
   async runBatch<T>(input: {
     owner: string
-    execute: (source: DueFeedSource) => Promise<T>
+    execute: (source: DueFeedSource, control: ImportLeaseControl) => Promise<T>
     now?: () => string
     limit?: number
     successDelayMs?: number
@@ -25,7 +25,7 @@ export class ImportWorkerService {
         merchantId: source.merchantId,
         sourceKey: source.sourceKey,
         owner: input.owner,
-        execute: () => input.execute(source),
+        execute: (control) => input.execute(source, control),
         now,
         successDelayMs: input.successDelayMs,
       })
