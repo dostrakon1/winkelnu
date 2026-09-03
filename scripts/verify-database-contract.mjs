@@ -15,6 +15,7 @@ const migrationPaths = [
   'supabase/migrations/0011_operator_roles_and_audit_boundary.sql',
   'supabase/migrations/0012_feed_recovery_actions.sql',
   'supabase/migrations/0013_operator_action_idempotency.sql',
+  'supabase/migrations/0014_operations_security_readiness.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -57,6 +58,7 @@ const requiredFunctions = [
   'list_due_feed_imports',
   'catalog_ranked_products',
   'winkelnu_production_readiness',
+  'winkelnu_operations_security_readiness',
   'deny_operator_audit_event_mutation',
   'operator_retry_feed',
   'operator_pause_feed',
