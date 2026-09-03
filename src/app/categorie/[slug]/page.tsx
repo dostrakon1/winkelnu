@@ -1,6 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { ProductCard } from '@/components/storefront/product-card'
+import { SectionHeader } from '@/components/storefront/section-header'
+import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
+import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 function formatMoney(amount: string): string {
@@ -56,81 +60,71 @@ export default async function CategoryPage({
   if (requestedPage > 1 && discovery.items.length === 0) notFound()
 
   return (
-    <main className="min-h-screen">
-      <div className="mx-auto max-w-6xl px-6 py-12 sm:py-20">
-        <Link href="/" className="text-sm font-medium text-zinc-600 hover:text-zinc-950">
-          ← Terug naar Winkelnu
-        </Link>
+    <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
+      <WinkelnuHeader />
 
-        <header className="mt-10 max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-zinc-500">Categorie</p>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight text-zinc-950 sm:text-5xl">{discovery.category.name}</h1>
-          <p className="mt-5 text-lg leading-8 text-zinc-600">
-            Vergelijk producten en aanbiedingen van verschillende winkels. Winkelnu rangschikt bekende totale prijzen inclusief verzendkosten waar die beschikbaar zijn.
-          </p>
-        </header>
+      <section className="relative overflow-hidden border-b border-[color:rgba(18,59,58,0.10)] bg-[image:var(--wn-gradient-welcome)]">
+        <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)]" aria-hidden="true" />
+        <div className="wn-container relative py-12 sm:py-16">
+          <SectionHeader
+            eyebrow="Categorie"
+            title={discovery.category.name}
+            description="Vergelijk producten en aanbiedingen van verschillende winkels. Winkelnu rangschikt bekende totaalprijzen inclusief verzendkosten waar die beschikbaar zijn."
+          />
+          <div className="mt-7 flex flex-wrap gap-3">
+            <WinkelnuButton href="/zoeken" variant="secondary">Zoek binnen Winkelnu</WinkelnuButton>
+            <WinkelnuButton href="/" variant="secondary">Terug naar home</WinkelnuButton>
+          </div>
+        </div>
+      </section>
 
+      <section className="wn-container wn-section">
         {discovery.items.length === 0 ? (
-          <div className="mt-12 rounded-3xl border border-zinc-200 bg-white p-8 text-zinc-600">
+          <div className="wn-surface wn-body-muted p-8">
             Er zijn op dit moment nog geen actieve producten in deze categorie.
           </div>
         ) : (
-          <section className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {discovery.items.map(({ product, bestOffer, offerCount }) => (
-              <article key={product.id} className="flex flex-col rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-                <div className="flex min-h-44 items-center justify-center rounded-2xl bg-zinc-100 px-6 text-center text-sm font-medium text-zinc-400">
-                  Productafbeelding
-                </div>
-                <div className="mt-6 flex-1">
-                  <p className="text-sm font-medium text-zinc-500">{product.brand ?? 'Merk onbekend'}</p>
-                  <h2 className="mt-2 text-xl font-semibold tracking-tight text-zinc-950">{product.title}</h2>
-                  <p className="mt-3 text-sm text-zinc-500">{offerCount} {offerCount === 1 ? 'aanbieding' : 'aanbiedingen'}</p>
-                </div>
-                <div className="mt-6 border-t border-zinc-100 pt-5">
-                  {bestOffer ? (
-                    <>
-                      <p className="text-xs text-zinc-500">Beste bekende totaalprijs</p>
-                      <p className="mt-1 text-2xl font-bold text-zinc-950">{formatMoney(bestOffer.totalAmount)}</p>
-                    </>
-                  ) : (
-                    <p className="text-sm text-zinc-500">Momenteel geen actieve aanbieding.</p>
-                  )}
-                  <Link
-                    href={`/product/${product.slug}`}
-                    className="mt-5 flex w-full items-center justify-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800"
-                  >
-                    Bekijk product
-                  </Link>
-                </div>
-              </article>
+              <ProductCard
+                key={product.id}
+                slug={product.slug}
+                title={product.title}
+                brand={product.brand}
+                description={product.description}
+                price={bestOffer ? formatMoney(bestOffer.totalAmount) : null}
+                merchantName={bestOffer?.merchant?.name}
+                offerCount={offerCount}
+                availability={bestOffer?.offer.availability}
+              />
             ))}
-          </section>
+          </div>
         )}
 
         {(discovery.hasPreviousPage || discovery.hasNextPage) && (
-          <nav aria-label="Paginering" className="mt-12 flex items-center justify-between gap-4 border-t border-zinc-200 pt-8">
+          <nav aria-label="Paginering" className="mt-12 flex items-center justify-between gap-4 border-t border-[color:rgba(18,59,58,0.10)] pt-8">
             {discovery.hasPreviousPage ? (
               <Link
                 rel="prev"
                 href={discovery.page === 2 ? `/categorie/${discovery.category.slug}` : `/categorie/${discovery.category.slug}?page=${discovery.page - 1}`}
-                className="rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-800 hover:bg-zinc-50"
+                className="text-sm font-semibold text-[var(--wn-petrol)] hover:underline"
               >
                 ← Vorige
               </Link>
             ) : <span />}
-            <span className="text-sm text-zinc-500">Pagina {discovery.page}</span>
+            <span className="text-sm text-[var(--wn-text-muted)]">Pagina {discovery.page}</span>
             {discovery.hasNextPage ? (
               <Link
                 rel="next"
                 href={`/categorie/${discovery.category.slug}?page=${discovery.page + 1}`}
-                className="rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-800 hover:bg-zinc-50"
+                className="text-sm font-semibold text-[var(--wn-petrol)] hover:underline"
               >
                 Volgende →
               </Link>
             ) : <span />}
           </nav>
         )}
-      </div>
+      </section>
     </main>
   )
 }
