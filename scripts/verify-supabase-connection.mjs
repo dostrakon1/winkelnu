@@ -13,17 +13,9 @@ const db = createClient(url, serviceRoleKey, {
 })
 
 const tables = [
-  'merchants',
-  'categories',
-  'products',
-  'offers',
-  'feed_sources',
-  'import_runs',
-  'import_rejects',
-  'product_match_reviews',
-  'affiliate_click_events',
-  'affiliate_networks',
-  'merchant_affiliate_integrations',
+  'merchants', 'categories', 'products', 'offers', 'feed_sources', 'import_runs', 'import_rejects',
+  'product_match_reviews', 'affiliate_click_events', 'affiliate_networks', 'merchant_affiliate_integrations',
+  'feed_import_orchestration',
 ]
 
 const failures = []
