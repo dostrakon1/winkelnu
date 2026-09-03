@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { buildSyntheticCatalog } from '@/infrastructure/catalog/synthetic-catalog'
+import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 function formatMoney(amount: string): string {
   return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(amount))
@@ -9,8 +9,8 @@ function formatMoney(amount: string): string {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const catalog = await buildSyntheticCatalog()
-  const item = catalog.products.find(({ product }) => product.slug === slug)
+  const catalog = await createStorefrontCatalogService()
+  const item = await catalog.getProduct(slug)
 
   if (!item) return { title: 'Product niet gevonden' }
 
@@ -23,8 +23,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const catalog = await buildSyntheticCatalog()
-  const item = catalog.products.find(({ product }) => product.slug === slug)
+  const catalog = await createStorefrontCatalogService()
+  const item = await catalog.getProduct(slug)
 
   if (!item) notFound()
 
@@ -49,19 +49,22 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
           <aside>
             <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-              <p className="text-sm font-medium text-zinc-500">Aanbiedingen</p>
+              <p className="text-sm font-medium text-zinc-500">Vergelijk {offers.length} {offers.length === 1 ? 'aanbieding' : 'aanbiedingen'}</p>
               <div className="mt-4 space-y-4">
-                {offers.map((offer) => (
+                {offers.map(({ offer, merchant, totalAmount }) => (
                   <div key={offer.id} className="rounded-2xl border border-zinc-200 p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-sm text-zinc-500">{catalog.merchant.name}</p>
+                        <p className="text-sm text-zinc-500">{merchant?.name ?? 'Webwinkel'}</p>
                         <p className="mt-1 text-2xl font-bold text-zinc-950">{formatMoney(offer.price.amount)}</p>
                         {offer.shippingCost ? (
                           <p className="mt-1 text-xs text-zinc-500">Verzending: {formatMoney(offer.shippingCost.amount)}</p>
                         ) : null}
+                        <p className="mt-1 text-xs font-medium text-zinc-700">Totaal: {formatMoney(totalAmount)}</p>
                       </div>
-                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Op voorraad</span>
+                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                        {offer.availability === 'in_stock' ? 'Op voorraad' : 'Bekijk status'}
+                      </span>
                     </div>
                     <a
                       href={offer.affiliateUrl}
