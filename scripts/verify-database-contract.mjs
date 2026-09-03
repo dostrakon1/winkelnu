@@ -8,6 +8,7 @@ const migrationPaths = [
   'supabase/migrations/0004_affiliate_click_attribution.sql',
   'supabase/migrations/0005_affiliate_integration_registry.sql',
   'supabase/migrations/0006_import_orchestration.sql',
+  'supabase/migrations/0007_import_heartbeat_and_correlation.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -20,7 +21,7 @@ const requiredTables = [
 
 const requiredColumns = [
   ['merchants', 'external_key'], ['categories', 'external_key'], ['products', 'external_key'], ['offers', 'external_key'],
-  ['import_runs', 'external_key'], ['import_runs', 'offers_deactivated'], ['import_runs', 'review_required'],
+  ['import_runs', 'external_key'], ['import_runs', 'offers_deactivated'], ['import_runs', 'review_required'], ['import_runs', 'correlation_id'],
   ['affiliate_click_events', 'external_key'], ['affiliate_click_events', 'offer_id'], ['affiliate_click_events', 'product_id'],
   ['affiliate_click_events', 'merchant_id'], ['affiliate_click_events', 'source_path'], ['affiliate_click_events', 'occurred_at'],
   ['affiliate_networks', 'external_key'], ['affiliate_networks', 'kind'],
@@ -34,6 +35,7 @@ const requiredColumns = [
 
 const requiredFunctions = [
   'try_acquire_feed_import_lease',
+  'renew_feed_import_lease',
   'complete_feed_import_success',
   'complete_feed_import_failure',
 ]
