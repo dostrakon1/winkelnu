@@ -4,14 +4,46 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository is op 3 september 2026 geïnitialiseerd als technische basis voor de bouw van Winkelnu.nl.
+De repository is op 3 september 2026 geïnitialiseerd en bevat inmiddels de technische applicatiefundering en de eerste architectuurgrenzen.
 
-De centrale projectcontext staat in [`docs/WINKELNU_PROJECT_CONTEXT.md`](docs/WINKELNU_PROJECT_CONTEXT.md).
+Afgerond:
+- M0.1 — Repository Alignment & Verification
+- M0.2 — Tooling & Application Scaffold
+- M0.3 — Foundation Architecture
 
-## Bouwprincipe
+## Stack
+- Next.js 16 — App Router
+- React 19
+- TypeScript — strict
+- Tailwind CSS v4
+- ESLint
+- GitHub Actions
+- Vercel — gepland voor preview/productie
+- Supabase/Postgres — gepland als persistencelaag
 
-Winkelnu wordt iteratief gebouwd met GitHub als broncode- en documentatiebron, Vercel voor preview- en productiedeployments en een feedgedreven architectuur voor merchants, producten, aanbiedingen en affiliate-links.
+## Lokale start
 
-## Huidige mijlpaal
+```bash
+npm install
+npm run dev
+```
 
-**M0.1 — Repository Alignment & Verification**
+Kwaliteitscontrole:
+
+```bash
+npm run check
+```
+
+## Projectdocumentatie
+- [`docs/WINKELNU_PROJECT_CONTEXT.md`](docs/WINKELNU_PROJECT_CONTEXT.md) — centrale projectgrondwet
+- [`docs/architecture/FOUNDATION_ARCHITECTURE.md`](docs/architecture/FOUNDATION_ARCHITECTURE.md)
+- [`docs/architecture/FEED_INGESTION_CONTRACT.md`](docs/architecture/FEED_INGESTION_CONTRACT.md)
+- [`docs/milestones/`](docs/milestones/) — formele bouwmijlpalen
+
+## Kernprincipe
+
+Winkelnu wordt feedgedreven gebouwd. Merchantdata komt binnen via adapters, wordt gevalideerd en genormaliseerd en wordt pas daarna onderdeel van de publieke catalogus. Productidentiteit, merchantoffers en affiliatebestemmingen blijven bewust van elkaar gescheiden.
+
+## Volgende technische fase
+
+M0.4 — Persistence & Catalog Schema Design: de databasegrondslag voor merchants, products, offers, categories, imports en matching, zonder al partner-specifieke feeds te koppelen.
