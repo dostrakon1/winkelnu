@@ -27,11 +27,13 @@ export async function importFeed(input: {
   categoryIdBySourceCategory?: Record<string, string>
   now?: () => string
   deactivateMissingOffers?: boolean
+  correlationId?: string
+  onPageFetched?: () => Promise<void>
 }): Promise<ImportFeedResult> {
   const now = input.now ?? (() => new Date().toISOString())
   const startedAt = now()
   const importRunId = `import:${safeIdPart(input.adapter.sourceKey)}:${safeIdPart(input.merchant.id)}:${Date.parse(startedAt)}`
-  let importRun: ImportRun = { id: importRunId, sourceKey: input.adapter.sourceKey, merchantId: input.merchant.id, status: 'running', startedAt, recordsSeen: 0, recordsAccepted: 0, recordsRejected: 0, offersDeactivated: 0, reviewRequired: 0, errorSummary: [] }
+  let importRun: ImportRun = { id: importRunId, correlationId: input.correlationId, sourceKey: input.adapter.sourceKey, merchantId: input.merchant.id, status: 'running', startedAt, recordsSeen: 0, recordsAccepted: 0, recordsRejected: 0, offersDeactivated: 0, reviewRequired: 0, errorSummary: [] }
 
   await input.repository.upsertMerchant(input.merchant)
   await input.repository.createImportRun(importRun)
@@ -52,6 +54,7 @@ export async function importFeed(input: {
   try {
     do {
       const page = await input.adapter.fetchPage({ cursor })
+      await input.onPageFetched?.()
       for (const candidate of page.items) {
         importRun = { ...importRun, recordsSeen: importRun.recordsSeen + 1 }
         if (seenMerchantProductIds.has(candidate.merchantProductId)) { await rejectRecord(candidate.merchantProductId, ['Duplicate merchant product ID encountered in the same import run.']); continue }
