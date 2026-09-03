@@ -9,6 +9,7 @@ const migrationPaths = [
   'supabase/migrations/0005_affiliate_integration_registry.sql',
   'supabase/migrations/0006_import_orchestration.sql',
   'supabase/migrations/0007_import_heartbeat_and_correlation.sql',
+  'supabase/migrations/0008_catalog_ranking_read_model.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -38,6 +39,7 @@ const requiredFunctions = [
   'renew_feed_import_lease',
   'complete_feed_import_success',
   'complete_feed_import_failure',
+  'catalog_ranked_products',
 ]
 
 const failures = []
