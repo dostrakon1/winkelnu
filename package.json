@@ -15,6 +15,7 @@
     "test:watch": "vitest",
     "check:db-contract": "node scripts/verify-database-contract.mjs",
     "verify:supabase": "node scripts/verify-supabase-connection.mjs",
+    "verify:production-readiness": "node scripts/verify-production-readiness.mjs",
     "types:supabase": "node scripts/generate-supabase-types.mjs",
     "check": "npm run check:db-contract && npm run lint && npm run typecheck && npm run test && npm run build"
   },
