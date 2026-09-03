@@ -10,7 +10,10 @@ function formatMoney(amount: string): string {
 
 export default async function HomePage() {
   const catalog = await createStorefrontCatalogService()
-  const products = await catalog.listProducts({ limit: 12 })
+  const [products, categories] = await Promise.all([
+    catalog.listProducts({ limit: 12 }),
+    catalog.listCategories(),
+  ])
 
   return (
     <main className="min-h-screen">
@@ -24,6 +27,28 @@ export default async function HomePage() {
             Eén plek om producten en actuele aanbiedingen van verschillende winkels overzichtelijk te vergelijken.
           </p>
         </div>
+
+        {categories.length > 0 ? (
+          <section className="mt-12" aria-labelledby="categories-heading">
+            <div className="flex items-end justify-between gap-6">
+              <div>
+                <p className="text-sm font-medium text-zinc-500">Categorieën</p>
+                <h2 id="categories-heading" className="mt-2 text-2xl font-bold tracking-tight text-zinc-950">Ontdek wat bij je past</h2>
+              </div>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/categorie/${category.slug}`}
+                  className="rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-800 transition hover:border-zinc-300 hover:bg-zinc-50"
+                >
+                  {category.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="mt-16">
           <div className="flex items-end justify-between gap-6">
@@ -57,7 +82,7 @@ export default async function HomePage() {
                         <p className="text-xs text-zinc-500">
                           Vanaf {bestOffer.merchant?.name ?? 'webwinkel'} · {offerCount} {offerCount === 1 ? 'aanbieding' : 'aanbiedingen'}
                         </p>
-                        <p className="mt-1 text-2xl font-bold text-zinc-950">{formatMoney(bestOffer.offer.price.amount)}</p>
+                        <p className="mt-1 text-2xl font-bold text-zinc-950">{formatMoney(bestOffer.totalAmount)}</p>
                       </div>
                       <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
                         {bestOffer.offer.availability === 'in_stock' ? 'Op voorraad' : 'Bekijk status'}
