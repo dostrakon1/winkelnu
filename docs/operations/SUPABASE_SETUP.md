@@ -14,8 +14,9 @@ Apply migrations in filename order:
 2. `0002_catalog_quality_observability.sql`
 3. `0003_domain_external_keys.sql`
 4. `0004_affiliate_click_attribution.sql`
+5. `0005_affiliate_integration_registry.sql`
 
-Do not skip `0003`; the Supabase catalog repository adapter depends on `external_key` for merchants, products, offers, categories and import runs. Do not skip `0004` before enabling the outbound affiliate redirect in Supabase mode; click attribution depends on `affiliate_click_events`.
+Do not skip `0003`; the Supabase catalog repository adapter depends on `external_key`. Do not skip `0004` before enabling outbound affiliate redirects in Supabase mode. Do not skip `0005` before registering real affiliate networks, merchant programs or feed-source integration context.
 
 ## Server environment
 
@@ -30,98 +31,91 @@ SUPABASE_PROJECT_ID=<project-ref>
 
 `SUPABASE_SERVICE_ROLE_KEY` is privileged. It must exist only in local server secrets / Vercel server environment variables and must never use a `NEXT_PUBLIC_` prefix.
 
+Affiliate partner credentials follow the same rule. Registry records may contain only references such as `env:AFFILIATE_PARTNER_API_TOKEN`; the actual token belongs in server-side environment/secret storage.
+
 The public anon/publishable key is intentionally not required by the current catalog implementation. Add browser-side Supabase access only when a concrete public-client use-case exists and after RLS policies are designed for it.
 
 ## Repository-side verification
-
-The repository validates its migration contract without requiring network access:
 
 ```bash
 npm run check:db-contract
 ```
 
-This checks that all tables and critical columns expected by the persistence and attribution adapters are represented by the committed migrations. It is part of GitHub Actions.
+This validates the committed catalog, observability, attribution and affiliate-registry migration contract without network access. It is part of GitHub Actions.
 
 ## Live connection smoke test
 
-After the project exists and migrations are applied, run:
+After the project exists and migrations are applied:
 
 ```bash
 SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run verify:supabase
 ```
 
-This is read-only. It verifies that the service-role connection works and that the required catalog/observability tables can be read. It does not insert or modify data.
+This is read-only and verifies that all required tables are readable.
 
 ## Generate live database types
-
-After the live schema is verified:
 
 ```bash
 SUPABASE_PROJECT_ID=<project-ref> npm run types:supabase
 ```
 
-This generates:
-
-`src/infrastructure/supabase/database.types.ts`
-
-from the actual `public` schema. The generated file must not be manually edited. Regenerate it whenever a migration materially changes the Supabase schema.
-
-Once generated, the server client can use the generated `Database` type so schema drift becomes visible to TypeScript.
+This generates `src/infrastructure/supabase/database.types.ts` from the actual `public` schema. Do not manually edit that generated file.
 
 ## Activation sequence
 
 1. Create the Supabase project.
-2. Apply migrations `0001` through `0004` in filename order.
+2. Apply migrations `0001` through `0005` in filename order.
 3. Add server environment variables locally or in Vercel.
 4. Run `npm run verify:supabase`.
 5. Run `npm run types:supabase`.
 6. Wire the generated `Database` type into the Supabase server client.
 7. Run `npm run check`.
 8. Keep `CATALOG_PERSISTENCE=memory` while validating migration state.
-9. Seed required Winkelnu categories with both a UUID primary key and stable `external_key`.
-10. Switch `CATALOG_PERSISTENCE=supabase` in a preview environment first.
-11. Run a synthetic import against the Supabase adapter.
-12. Verify products, offers, import runs, rejects and matching reviews.
-13. Verify `/uit/<offer-id>` resolves an active offer, records one `affiliate_click_events` row and redirects to the stored HTTPS affiliate destination.
-14. Only then enable Supabase persistence for production.
+9. Seed required Winkelnu categories with UUID primary keys and stable `external_key` values.
+10. Register affiliate networks/programs using secret references only.
+11. Link each real feed source to its merchant integration where applicable.
+12. Switch `CATALOG_PERSISTENCE=supabase` in a preview environment first.
+13. Run a synthetic import against the Supabase adapter.
+14. Verify products, offers, import runs, rejects and matching reviews.
+15. Verify `/uit/<offer-id>` records one click event and redirects to the stored HTTPS affiliate destination.
+16. Only then enable Supabase persistence for production.
 
 ## Affiliate click attribution
 
-The baseline click event stores only:
+The baseline stores offer/product/merchant relations, optional internal source path and timestamp. It deliberately does not store raw IP addresses or user-agent fingerprints.
 
-- stable internal click key;
-- offer relation;
-- product relation;
-- merchant relation;
-- optional internal source path;
-- timestamp.
+## Affiliate integration registry
 
-The baseline deliberately does not store raw IP addresses or user-agent fingerprints. Any future analytics enrichment requires a separate privacy/compliance decision before implementation.
+`affiliate_networks` represents external networks/marketplaces. `merchant_affiliate_integrations` represents the concrete program relationship for one merchant. Direct programs have no network relation. `feed_sources.affiliate_integration_id` records which commercial integration a feed belongs to.
+
+Actual API keys, passwords and tokens are never stored in these tables.
 
 ## Feed-source note
 
-M0.8 creates a minimal `feed_sources` row automatically when an import run starts. It uses `source_type=manual` as a neutral bootstrap value. A later affiliate-integration milestone must register the real source type (`api`, `xml`, `csv`, `json`) and partner-specific configuration explicitly.
+M0.8 can still create a neutral bootstrap `feed_sources` row with `source_type=manual`. M0.15 adds the explicit registry needed to replace that bootstrap context with the real source type and affiliate integration before production partner ingestion.
 
 ## Safety properties
 
-- Service-role credentials are server-only.
+- Service-role and partner credentials are server-only.
 - Storefront components do not directly query Supabase.
 - Application use-cases depend on repository ports, not Supabase APIs.
 - Postgres UUIDs never leak into canonical Winkelnu identity rules.
-- The in-memory adapter remains available for deterministic tests and development.
+- The in-memory adapters remain available for deterministic tests/development.
 - Live smoke verification is read-only.
-- Generated database types come from the live schema rather than hand-maintained assumptions.
-- Affiliate destinations are resolved from stored offers server-side, not accepted from a public destination query parameter.
+- Generated database types come from the live schema.
+- Affiliate destinations are resolved from stored offers server-side.
 - Click attribution is privacy-minimal by default.
+- Registry records contain secret references, never actual partner credentials.
 
 ## Not yet possible without project access
 
-The following require a real Supabase project and therefore remain an external completion gate:
+The following require a real Supabase project and remain an external completion gate:
 
 - applying migrations remotely;
-- executing the live read-only smoke test;
+- executing the live smoke test;
 - generating project-derived TypeScript database types;
-- validating the service-role connection;
-- verifying the affiliate click insert against the live project;
-- verifying RLS/security settings against the live project;
+- validating service-role connectivity;
+- validating affiliate click inserts live;
+- validating registry writes/relations live;
+- verifying RLS/security settings;
 - performance/index inspection with real catalog volume.
