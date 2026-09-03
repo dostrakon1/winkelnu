@@ -1,5 +1,6 @@
 import type { CatalogWriteRepository } from './ports'
 import type { FeedAdapter } from '@/infrastructure/feeds/adapter'
+import { decideStrongProductIdentity, type ProductMatchDecision } from '@/domain/catalog/matching'
 import { validateFeedCandidate } from '@/domain/catalog/validate-feed-candidate'
 import type { Merchant, Offer, Product } from '@/domain/catalog/types'
 
@@ -16,6 +17,7 @@ export type ImportFeedResult = {
   imported: number
   rejected: number
   issues: Array<{ merchantProductId: string; messages: string[] }>
+  matches: ProductMatchDecision[]
 }
 
 export async function importFeed(input: {
@@ -30,6 +32,7 @@ export async function importFeed(input: {
   let imported = 0
   let rejected = 0
   const issues: ImportFeedResult['issues'] = []
+  const matches: ProductMatchDecision[] = []
 
   do {
     const page = await input.adapter.fetchPage({ cursor })
@@ -45,8 +48,27 @@ export async function importFeed(input: {
         continue
       }
 
-      const productIdentity = candidate.gtin ?? `${candidate.sourceKey}:${candidate.merchantProductId}`
-      const productId = `product:${productIdentity}`
+      const match = decideStrongProductIdentity({
+        sourceKey: candidate.sourceKey,
+        merchantProductId: candidate.merchantProductId,
+        gtin: candidate.gtin,
+        mpn: candidate.mpn,
+        brand: candidate.brand,
+        decidedAt: candidate.importedAt,
+      })
+
+      if (!match.canonicalProductId) {
+        rejected += 1
+        issues.push({
+          merchantProductId: candidate.merchantProductId,
+          messages: ['No canonical product identity could be determined.'],
+        })
+        matches.push(match)
+        continue
+      }
+
+      matches.push(match)
+      const productId = match.canonicalProductId
       const offerId = `offer:${input.merchant.id}:${candidate.merchantProductId}`
 
       const product: Product = {
@@ -87,5 +109,5 @@ export async function importFeed(input: {
     cursor = page.nextCursor
   } while (cursor)
 
-  return { imported, rejected, issues }
+  return { imported, rejected, issues, matches }
 }
