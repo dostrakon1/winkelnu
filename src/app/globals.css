@@ -2,6 +2,8 @@
 
 :root {
   --wn-petrol: #123b3a;
+  --wn-petrol-deep: #0d2e2d;
+  --wn-petrol-soft: #dfe9e4;
   --wn-cream: #f7f2e8;
   --wn-sand: #e8ddcc;
   --wn-warm: #e9783d;
@@ -9,36 +11,35 @@
   --wn-white: #ffffff;
 
   --wn-gradient-welcome: linear-gradient(
-    135deg,
-    #f7f2e8 0%,
-    #f1e2d4 42%,
-    #e9b69b 72%,
-    #d98763 100%
+    118deg,
+    #faf7f0 0%,
+    #f4f0e7 46%,
+    #e4ece7 76%,
+    #cfded8 100%
   );
   --wn-gradient-market: linear-gradient(
     135deg,
-    #123b3a 0%,
-    #1b514d 52%,
-    #55766c 78%,
-    #e9783d 135%
+    #0d2e2d 0%,
+    #123b3a 52%,
+    #244c48 100%
   );
   --wn-gradient-morning: linear-gradient(
     180deg,
     #ffffff 0%,
-    #f7f2e8 58%,
-    #f0e7da 100%
+    #fbf8f2 55%,
+    #f4eee4 100%
   );
   --wn-gradient-glow: radial-gradient(
-    circle at 72% 28%,
-    rgba(233, 120, 61, 0.28) 0%,
-    rgba(232, 221, 204, 0.48) 34%,
-    rgba(247, 242, 232, 0) 70%
+    circle at 82% 30%,
+    rgba(233, 120, 61, 0.15) 0%,
+    rgba(233, 120, 61, 0.06) 22%,
+    rgba(247, 242, 232, 0) 58%
   );
   --wn-gradient-evening: linear-gradient(
     145deg,
-    #0d2e2d 0%,
-    #123b3a 50%,
-    #244c48 100%
+    #0a2524 0%,
+    #123b3a 52%,
+    #28544f 100%
   );
 
   --background: var(--wn-cream);
