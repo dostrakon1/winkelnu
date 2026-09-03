@@ -11,6 +11,8 @@ const migrationPaths = [
   'supabase/migrations/0007_import_heartbeat_and_correlation.sql',
   'supabase/migrations/0008_catalog_ranking_read_model.sql',
   'supabase/migrations/0009_production_security_and_readiness.sql',
+  'supabase/migrations/0010_due_feed_discovery_bootstrap.sql',
+  'supabase/migrations/0011_operator_roles_and_audit_boundary.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -18,7 +20,7 @@ const migrations = (await Promise.all(migrationPaths.map((path) => readFile(reso
 const requiredTables = [
   'merchants', 'categories', 'products', 'feed_sources', 'import_runs', 'offers', 'product_identifiers',
   'import_rejects', 'product_match_reviews', 'affiliate_click_events', 'affiliate_networks',
-  'merchant_affiliate_integrations', 'feed_import_orchestration',
+  'merchant_affiliate_integrations', 'feed_import_orchestration', 'operator_audit_events',
 ]
 
 const requiredColumns = [
@@ -33,6 +35,11 @@ const requiredColumns = [
   ['feed_import_orchestration', 'feed_source_id'], ['feed_import_orchestration', 'next_run_at'],
   ['feed_import_orchestration', 'failure_count'], ['feed_import_orchestration', 'lease_token'],
   ['feed_import_orchestration', 'lease_expires_at'], ['feed_import_orchestration', 'last_succeeded_at'],
+  ['operator_audit_events', 'actor_user_id'], ['operator_audit_events', 'actor_email'],
+  ['operator_audit_events', 'actor_role'], ['operator_audit_events', 'action'],
+  ['operator_audit_events', 'target_type'], ['operator_audit_events', 'status'],
+  ['operator_audit_events', 'correlation_id'], ['operator_audit_events', 'metadata'],
+  ['operator_audit_events', 'occurred_at'],
 ]
 
 const requiredFunctions = [
@@ -40,8 +47,10 @@ const requiredFunctions = [
   'renew_feed_import_lease',
   'complete_feed_import_success',
   'complete_feed_import_failure',
+  'list_due_feed_imports',
   'catalog_ranked_products',
   'winkelnu_production_readiness',
+  'deny_operator_audit_event_mutation',
 ]
 
 const failures = []
