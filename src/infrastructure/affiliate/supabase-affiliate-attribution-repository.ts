@@ -8,6 +8,11 @@ function fail(error: { message: string } | null, context: string): void {
   if (error) throw new Error(`${context}: ${error.message}`)
 }
 
+function firstRelation<T>(value: T | T[] | null | undefined): T | null {
+  if (Array.isArray(value)) return value[0] ?? null
+  return value ?? null
+}
+
 export class SupabaseAffiliateAttributionRepository implements AffiliateAttributionRepository {
   private readonly db = createSupabaseServerClient()
 
@@ -21,10 +26,13 @@ export class SupabaseAffiliateAttributionRepository implements AffiliateAttribut
     fail(error, `Resolve affiliate offer ${offerId}`)
     if (!data) return null
 
+    const product = firstRelation(data.products)
+    const merchant = firstRelation(data.merchants)
+
     return {
       offerId: data.external_key,
-      productId: data.products?.external_key ?? '',
-      merchantId: data.merchants?.external_key ?? '',
+      productId: product?.external_key ?? '',
+      merchantId: merchant?.external_key ?? '',
       affiliateUrl: data.affiliate_url,
       isActive: data.is_active,
     }
@@ -35,8 +43,9 @@ export class SupabaseAffiliateAttributionRepository implements AffiliateAttribut
       .from('offers')
       .select('id, product_id, merchant_id')
       .eq('external_key', event.offerId)
-      .single()
+      .maybeSingle()
     fail(offerError, `Resolve click offer ${event.offerId}`)
+    if (!offer) throw new Error(`Resolve click offer ${event.offerId}: expected an offer row.`)
 
     const { error } = await this.db.from('affiliate_click_events').insert({
       external_key: event.id,
