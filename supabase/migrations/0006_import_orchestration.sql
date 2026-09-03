@@ -148,4 +148,11 @@ begin
 end;
 $$;
 
+revoke all on function try_acquire_feed_import_lease(text, text, text, uuid, timestamptz, timestamptz) from public;
+revoke all on function complete_feed_import_success(text, text, uuid, timestamptz, timestamptz) from public;
+revoke all on function complete_feed_import_failure(text, text, uuid, timestamptz, timestamptz, text) from public;
+grant execute on function try_acquire_feed_import_lease(text, text, text, uuid, timestamptz, timestamptz) to service_role;
+grant execute on function complete_feed_import_success(text, text, uuid, timestamptz, timestamptz) to service_role;
+grant execute on function complete_feed_import_failure(text, text, uuid, timestamptz, timestamptz, text) to service_role;
+
 comment on table feed_import_orchestration is 'Per-feed scheduling, failure recovery and expiring worker lease state.';
