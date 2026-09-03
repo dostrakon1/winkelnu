@@ -16,8 +16,11 @@ Apply migrations in filename order:
 6. `0006_import_orchestration.sql`
 7. `0007_import_heartbeat_and_correlation.sql`
 8. `0008_catalog_ranking_read_model.sql`
+9. `0009_production_security_and_readiness.sql`
+10. `0010_due_feed_discovery_bootstrap.sql`
+11. `0011_operator_roles_and_audit_boundary.sql`
 
-Do not skip `0003`; repository adapters depend on `external_key`. `0004` is required before live affiliate click attribution, `0005` before real partner registry use, `0006` before recurring production imports, `0007` before lease heartbeats/correlated production runs and `0008` before enabling the scalable Supabase storefront read path.
+Do not skip migrations. `0010` is required before production scheduling because it makes active feed sources discoverable even before an orchestration row exists. `0011` is required before any human operator mutation because it establishes the append-only audit trail.
 
 ## Server environment
 Required when `CATALOG_PERSISTENCE=supabase`:
@@ -27,87 +30,76 @@ CATALOG_PERSISTENCE=supabase
 SUPABASE_URL=https://<project-ref>.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=<server-only-secret>
 SUPABASE_PROJECT_ID=<project-ref>
+NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<publishable-key>
+WINKELNU_OPERATOR_EMAILS=owner@example.com
+WINKELNU_OPERATOR_ROLES=owner@example.com:owner
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` is privileged and must never use a `NEXT_PUBLIC_` prefix. Partner credentials follow the same rule. Registry rows contain only `env:` references, never the actual secret.
+`SUPABASE_SERVICE_ROLE_KEY` is privileged and must never use a `NEXT_PUBLIC_` prefix. Partner credentials follow the same rule. Registry rows contain only `env:` references, never actual secrets.
 
-For the operations trigger, configure either `CRON_SECRET` (preferred for Vercel Cron) or `WINKELNU_IMPORT_TRIGGER_SECRET` for an external/manual scheduler. These values are server-only.
+For the operations trigger, configure either `CRON_SECRET` or `WINKELNU_IMPORT_TRIGGER_SECRET`. Human operator sessions use Supabase Auth and the server-side email/role policy; they do not use the machine Bearer secret.
 
 ## Repository-side verification
 ```bash
 npm run check:db-contract
 ```
 
-This validates committed schema contracts, including orchestration, heartbeat, correlation persistence and the catalog ranking RPC.
+This validates committed schema contracts including RLS tables, orchestration/heartbeat functions, due-feed discovery, ranking/readiness RPCs and the operator audit boundary.
 
 ## Live connection smoke test
-After migrations are applied:
+After all migrations are applied:
 
 ```bash
 SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run verify:supabase
 ```
-
-The smoke test is read-only and verifies required tables are readable.
 
 ## Generate live database types
 ```bash
 SUPABASE_PROJECT_ID=<project-ref> npm run types:supabase
 ```
 
-This generates `src/infrastructure/supabase/database.types.ts` from the live schema. Do not manually edit it.
+Generate types from the real project after migration application; do not invent live schema output.
 
 ## Activation sequence
 1. Create the Supabase project.
-2. Apply migrations `0001` through `0008` in filename order.
-3. Add server environment variables locally/Vercel.
+2. Apply migrations `0001` through `0011` in filename order.
+3. Add server and auth environment variables locally/Vercel.
 4. Run `npm run verify:supabase`.
 5. Run `npm run types:supabase`.
-6. Wire generated `Database` types into the server client.
-7. Run `npm run check`.
-8. Keep `CATALOG_PERSISTENCE=memory` while validating migration state.
-9. Seed required categories with stable `external_key` values.
-10. Register affiliate networks/programs using secret references only.
-11. Link real feed sources to merchant integrations.
+6. Run `npm run check`.
+7. Keep `CATALOG_PERSISTENCE=memory` until migration state is verified.
+8. Seed required categories.
+9. Register affiliate networks/programs using secret references only.
+10. Link real feed sources to merchant integrations.
+11. Verify a newly active feed with no orchestration row is returned by `list_due_feed_imports()`.
 12. Validate partner onboarding with a non-destructive preview import.
-13. Switch catalog persistence in a preview environment first.
-14. Verify products, offers, import runs, rejects and matching reviews.
-15. Verify `/uit/<offer-id>` click attribution and redirect behavior.
-16. Verify orchestration lease acquire, heartbeat renewal and completion using server-only worker code.
-17. Verify a trigger correlation ID appears on its created `import_runs` rows.
-18. Verify `catalog_ranked_products` returns price-ranked, non-expired offers with expected search filters and pagination.
-19. Only then enable recurring production imports and the Supabase storefront read model.
+13. Switch persistence in a preview environment first.
+14. Verify catalog ranking/freshness and `/uit/<offer-id>` attribution.
+15. Verify lease acquire, heartbeat, completion and trigger correlation.
+16. Create an explicit Supabase Auth operator user; do not enable public signup.
+17. Verify operator allowlist/role mapping and login/logout.
+18. Verify `operator_audit_events` accepts service-role INSERT/SELECT and rejects UPDATE/DELETE.
+19. Only then enable recurring production imports and later audited human write-actions.
 
-## Storefront ranking read model
-Migration `0008` adds the service-role-only `catalog_ranked_products` RPC plus supporting indexes. It performs offer freshness cutoff, best-offer selection, landed-price ranking, category/brand/text filtering and pagination in Postgres. The public application continues to use `CatalogService`; the Supabase composition swaps in `ScalableCatalogService` and `SupabaseCatalogRankingReadModel` behind that interface.
-
-## Import orchestration security
-Migrations `0006` and `0007` add `SECURITY DEFINER` worker functions for atomic lease acquire, heartbeat and completion. Their default `PUBLIC` execute permissions are revoked and execution is granted only to Supabase `service_role`.
-
-The scheduler/worker and ranking read model use the service-role server client. Browser/anon code must never call these RPCs directly.
-
-## Safety properties
+## Security properties
 - Service-role and partner credentials are server-only.
+- Human Auth uses the publishable key only for the session boundary.
 - Storefront components do not directly query Supabase.
-- Application use-cases depend on repository/read-model ports, not browser-side Supabase APIs.
-- Postgres UUIDs never leak into canonical identity rules.
-- In-memory adapters remain available for deterministic tests/development.
-- Affiliate destinations are resolved server-side from stored offers.
-- Click attribution is privacy-minimal.
-- Registry records contain secret references only.
-- Preview imports never deactivate missing offers.
-- Production import leases are atomic, expiring, heartbeat-renewable and token-protected.
-- A stale/expired worker cannot renew or complete another worker's lease.
-- Too-early scheduler triggers are rejected by persisted `next_run_at` state.
-- Trigger correlation IDs are stored on production import-run audit rows.
-- Expired offers are removed from the scalable ranking path before storefront pagination.
+- Worker/ranking/due-feed RPCs are service-role-only.
+- New feed sources can bootstrap before orchestration state exists.
+- Operator role defaults to `read_only` when no explicit role assignment exists.
+- Operator audit records are append-only and never contain credentials/tokens.
+- Future human mutations must pass the audited action service.
+- Public signup is not part of the operator architecture.
 
 ## Not yet possible without project access
 The following remain external completion gates:
 - applying migrations remotely;
-- executing the live smoke test;
+- executing live connection/readiness checks;
 - generating project-derived TypeScript database types;
-- validating service-role connectivity;
-- validating click inserts and registry relations live;
-- executing orchestration/heartbeat/ranking RPCs against the real project;
-- verifying RLS/security settings;
-- performance/index inspection with real catalog volume.
+- validating RLS and RPC grants against the real project;
+- creating the first operator Auth account;
+- executing a real due-feed bootstrap query;
+- inserting and verifying a real operator audit event;
+- performance/index inspection with production-like catalog volume.
