@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { PartnerOnboardingService } from '@/application/affiliate/partner-onboarding'
+import type { FeedCandidate } from '@/domain/catalog/feed'
 import { InMemoryAffiliateIntegrationRegistryRepository } from '@/infrastructure/affiliate/in-memory-affiliate-integration-registry-repository'
 import { InMemoryCatalogRepository } from '@/infrastructure/catalog/in-memory-catalog-repository'
 import type { FeedAdapter } from '@/infrastructure/feeds/adapter'
@@ -14,11 +15,11 @@ async function registry(status: 'pending' | 'active' = 'pending', sourceActive =
 
 const merchant = { id: 'merchant:shop', slug: 'shop', name: 'Shop', websiteUrl: 'https://shop.example', isActive: true }
 
-function adapter(items: Parameters<FeedAdapter['fetchPage']>[0] extends never ? never : any[]): FeedAdapter {
+function adapter(items: FeedCandidate[]): FeedAdapter {
   return { sourceKey: 'daisycon:shop', async fetchPage() { return { items, nextCursor: undefined } } }
 }
 
-const valid = (id: string) => ({ sourceKey: 'daisycon:shop', merchantProductId: id, title: `Product ${id}`, gtin: `87123456789${id}`, imageUrls: [], price: { amount: '10.00', currency: 'EUR' as const }, availability: 'in_stock', productUrl: `https://shop.example/p/${id}`, affiliateUrl: `https://track.example/${id}`, importedAt: '2026-09-03T06:00:00.000Z' })
+const valid = (id: string): FeedCandidate => ({ sourceKey: 'daisycon:shop', merchantProductId: id, title: `Product ${id}`, gtin: `87123456789${id}`, imageUrls: [], price: { amount: '10.00', currency: 'EUR' }, availability: 'in_stock', productUrl: `https://shop.example/p/${id}`, affiliateUrl: `https://track.example/${id}`, importedAt: '2026-09-03T06:00:00.000Z' })
 
 describe('PartnerOnboardingService', () => {
   it('allows preview for a pending integration but blocks activation', async () => {
@@ -42,7 +43,7 @@ describe('PartnerOnboardingService', () => {
   })
 
   it('fails preview quality when rejects exceed the acceptance threshold', async () => {
-    const broken = { ...valid('02'), title: '', price: { amount: '-1.00', currency: 'EUR' as const } }
+    const broken: FeedCandidate = { ...valid('02'), title: '', price: { amount: '-1.00', currency: 'EUR' } }
     const service = new PartnerOnboardingService(await registry())
     const report = await service.runPreview({ adapter: adapter([valid('01'), broken]), repository: new InMemoryCatalogRepository(), merchant, now: () => '2026-09-03T06:00:00.000Z' })
     expect(report.passed).toBe(false)
