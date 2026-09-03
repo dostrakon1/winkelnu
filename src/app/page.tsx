@@ -28,6 +28,17 @@ export default async function HomePage() {
           </p>
         </div>
 
+        <form action="/zoeken" method="get" className="mt-8 flex max-w-2xl gap-3 rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm">
+          <input
+            type="search"
+            name="q"
+            aria-label="Zoek producten"
+            placeholder="Waar ben je naar op zoek?"
+            className="min-w-0 flex-1 rounded-xl px-4 py-3 text-sm outline-none"
+          />
+          <button className="rounded-xl bg-zinc-950 px-5 py-3 text-sm font-semibold text-white">Zoeken</button>
+        </form>
+
         {categories.length > 0 ? (
           <section className="mt-12" aria-labelledby="categories-heading">
             <div className="flex items-end justify-between gap-6">
