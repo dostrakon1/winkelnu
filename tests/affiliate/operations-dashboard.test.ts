@@ -74,4 +74,23 @@ describe('buildOperationsDashboard', () => {
     expect(dashboard.incidents[0].kind).toBe('feed_not_running')
     expect(dashboard.incidents[0].severity).toBe('high')
   })
+
+  it('keeps paused feeds visible so operators can resume them deliberately', () => {
+    const dashboard = buildOperationsDashboard({
+      generatedAt: '2026-09-03T10:00:00.000Z',
+      integrations: [{
+        integrationId: 'integration:paused',
+        merchantId: 'merchant:paused',
+        merchantName: 'Paused Partner',
+        integrationKind: 'network',
+        integrationStatus: 'active',
+        hasSecretReference: true,
+        feeds: [{ sourceKey: 'paused-feed', sourceType: 'csv', isActive: false }],
+      }],
+    })
+
+    expect(dashboard.incidents).toHaveLength(1)
+    expect(dashboard.incidents[0].kind).toBe('feed_paused')
+    expect(dashboard.incidents[0].severity).toBe('low')
+  })
 })
