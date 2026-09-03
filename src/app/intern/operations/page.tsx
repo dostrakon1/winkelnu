@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
+import { signOutOperator } from '@/app/intern/login/actions'
 import { buildOperationsDashboard } from '@/application/affiliate/operations-dashboard'
 import { PartnerOperationsReadService } from '@/application/affiliate/partner-operations-read-model'
 import { InternalOperationsDashboard } from '@/components/internal/operations-dashboard'
 import { SupabasePartnerOperationsReadRepository } from '@/infrastructure/affiliate/supabase-partner-operations-read-repository'
 import { requireOperatorSession } from '@/infrastructure/operations/operator-session'
-import { signOutOperator } from '@/app/intern/login/actions'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,6 +33,7 @@ export default async function InternalOperationsPage() {
     <InternalOperationsDashboard
       dashboard={dashboard}
       operatorEmail={operator.email}
+      operatorRole={operator.role}
       signOutAction={signOutOperator}
     />
   )
