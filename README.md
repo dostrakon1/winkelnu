@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, Daisycon-readiness, gecontroleerde onboarding, persistence-backed orchestration, due-feed batch execution, health-classificatie, production composition, beveiligde scheduler-trigger, lease-heartbeats, end-to-end importcorrelatie, bounded feed-traversal, storefront freshnessbeleid, een schaalbaar Supabase ranking read model, production security/go-live readiness, een formele first-partner production acceptance gate, een bol Affiliate readiness-profiel, een header-driven bol productfeed transport/mappingcontract, een partner portfolio operations-model, een beveiligde interne partner operations read surface, een read-only incidentprioriteringslaag, een server-rendered interne operatorinterface en een menselijke Supabase Auth/sessionboundary.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, Daisycon-readiness, gecontroleerde onboarding, persistence-backed orchestration, due-feed batch execution, health-classificatie, production composition, beveiligde scheduler-trigger, lease-heartbeats, end-to-end importcorrelatie, bounded feed-traversal, storefront freshnessbeleid, een schaalbaar Supabase ranking read model, production security/go-live readiness, partneracceptatie, bol Affiliate readiness, productfeed mapping, partner operations, een interne operatorinterface, menselijke Supabase Auth en een role/audit boundary voor toekomstige beheerwrites.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
@@ -25,6 +25,7 @@ Afgerond / geïmplementeerd:
 - M0.32 — Internal Operations Dashboard Contract & Incident Prioritization
 - M0.33 — Internal Operator UI Shell & Read-Only Dashboard
 - M0.34 — Human Operator Authentication & Session Boundary
+- M0.35 — Operator Authorization Roles & Audit Boundary
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
@@ -32,25 +33,26 @@ Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4
 ## Keten
 `authenticated scheduler trigger → correlation id → due feed discovery → atomic renewable lease → integration registry → partner adapter → bounded pagination → validation/matching/import → correlated import run → scalable freshness-aware catalog read model → affiliate redirect/storefront`
 
-M0.24 begrenst feed traversal en offerfreshness. M0.25 verplaatst ranking/filtering/pagination voor Supabase naar het database read model. M0.26 zet daar een production-securitylaag omheen. M0.27 voegt een fail-closed partneracceptatiepoort toe met de toestanden `blocked`, `repository_ready` en `production_approved`.
+Daisycon blijft de eerste kandidaat voor een volledige live acceptance run. Bol is tweede first-class affiliatepartner op readinessniveau, productfeed-first en met header-driven mapping totdat een actuele echte feedheader beschikbaar is.
 
-Daisycon blijft de eerste kandidaat voor een volledige live acceptance run. M0.28 voegt bol als tweede first-class affiliatepartner toe op readinessniveau. Voor bol wordt de bulkroute productfeed-first. M0.29 maakt de feedmapping header-driven zodat echte veldnamen pas na een actueel feedmonster worden vastgelegd.
+M0.31–M0.34 bouwen de interne operationslaag: veilige Supabase read data, incidentprioritering, `/intern/operations`, `/intern/login`, cookie-based Supabase SSR sessions en een server-side operatorallowlist. Machine endpoints onder `/api/ops/*` houden hun aparte Bearer-auth.
 
-M0.30 brengt Daisycon, bol en toekomstige partners in één operationeel portfolio samen. `buildPartnerPortfolio()` combineert activation status, vereiste evidence en bestaande `FeedHealth` tot expliciete blockers en een `nextAction`. `production_approved` blijft een acceptance-status; daadwerkelijke `readyForProduction` vereist daarnaast complete productie-evidence én een gezonde live feed.
+M0.35 voegt echte operatorrollen toe. `owner` kan later partneractivatie en operatorbeheer uitvoeren; `operator` krijgt operationele feedacties; `read_only` kan uitsluitend lezen. `WINKELNU_OPERATOR_ROLES` kent rollen expliciet toe. Een toegestane gebruiker zonder role assignment valt veilig terug naar `read_only`.
 
-M0.31 koppelt operations aan echte Supabase registry/orchestrationdata. `PartnerOperationsReadService` + `SupabasePartnerOperationsReadRepository` leveren integration-, merchant-, feed- en healthmetadata zonder credentialwaarden. `GET /api/ops/partner-portfolio` is bearer-authenticated, server-only, `no-store` en vereist Supabase persistence. De response bevat hoogstens `hasSecretReference`; secret refs, trackingconfig en secretwaarden worden niet geëxposeerd.
+`AuditedOperatorActionService` wordt de verplichte boundary voor toekomstige menselijke writes: eerst permission check, vervolgens een append-only `attempted` audit event, daarna pas de mutation en tenslotte `succeeded` of `failed`. Als het eerste audit event niet kan worden geschreven, wordt de mutation niet uitgevoerd.
 
-M0.32 vertaalt die read surface naar operatorprioriteit. `buildOperationsDashboard()` classificeert incidenten als `critical`, `high`, `medium` of `low`. Een actieve integration zonder credential reference en feeds met `attention_required` zijn kritisch; falende of nooit-geobserveerde actieve feeds zijn high; delayed feeds en pending integrations zijn medium. `GET /api/ops/dashboard` gebruikt dezelfde bearer-auth en blijft volledig read-only.
+Migration `0010_due_feed_discovery_bootstrap.sql` sluit bovendien de eerdere due-feed bootstrapgap: discovery start nu bij actieve `feed_sources`, zodat een nieuwe feed zonder bestaande orchestrationrow alsnog zijn eerste run kan krijgen. Migration `0011_operator_roles_and_audit_boundary.sql` voegt de RLS-protected, append-only `operator_audit_events` tabel toe.
 
-M0.33 voegt `/intern/operations` toe als server-rendered operatorpagina. M0.34 vervangt de tijdelijke browser-Bearer toegang door Supabase Auth met cookie-based SSR sessions. `/intern/login` gebruikt e-mail/wachtwoord via Server Action; `proxy.ts` verzorgt session refresh op `/intern/*`; `requireOperatorSession()` controleert de server-confirmed Supabase-user en een fail-closed `WINKELNU_OPERATOR_EMAILS` allowlist. Een geldige Supabase-user is dus niet automatisch operator. Machine endpoints onder `/api/ops/*` houden hun eigen Bearer-auth en blijven gescheiden van menselijke sessies.
+Voor human operator auth zijn onder andere nodig:
 
-Voor human operator auth zijn `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` en `WINKELNU_OPERATOR_EMAILS` nodig. Live gebruik vereist daarnaast dat de operator vooraf als Supabase Auth user bestaat; Winkelnu biedt geen publieke signup.
+```env
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
+WINKELNU_OPERATOR_EMAILS=owner@example.com
+WINKELNU_OPERATOR_ROLES=owner@example.com:owner
+```
 
-Migration `0009_production_security_and_readiness.sql` voegt de service-role-only `winkelnu_production_readiness()` RPC toe. `npm run verify:production-readiness` controleert op een live project dat alle 13 tabellen RLS hebben en dat de ranking-RPC uitvoerbaar is. `supabase/seed.sql` bevat alleen idempotente categorie-bootstrapdata; echte merchants worden pas na partneronboarding geregistreerd.
-
-De server-only importtrigger ondersteunt `GET` en `POST` op `/api/ops/catalog-import` en vereist een Bearer-secret. De production factory weigert te draaien tenzij `CATALOG_PERSISTENCE=supabase`.
-
-PostgreSQL UUIDs blijven interne relationele sleutels; duurzame Winkelnu-identiteiten gebruiken `external_key`. Partnercredentials blijven server-only en registryrecords bevatten uitsluitend `env:` secret references.
+De Supabase service-role key en partnercredentials blijven strikt server-only. Winkelnu biedt geen publieke operator-signup.
 
 ## Kwaliteitscontrole
 ```bash
@@ -64,7 +66,7 @@ npm run verify:supabase
 npm run verify:production-readiness
 ```
 
-Zie [`docs/architecture/FIRST_PARTNER_PRODUCTION_ACCEPTANCE_GATE.md`](docs/architecture/FIRST_PARTNER_PRODUCTION_ACCEPTANCE_GATE.md), [`docs/architecture/BOL_AFFILIATE_INTEGRATION_READINESS.md`](docs/architecture/BOL_AFFILIATE_INTEGRATION_READINESS.md), [`docs/architecture/BOL_PRODUCT_FEED_TRANSPORT_AND_MAPPING.md`](docs/architecture/BOL_PRODUCT_FEED_TRANSPORT_AND_MAPPING.md), [`docs/architecture/PARTNER_PORTFOLIO_OPERATIONS.md`](docs/architecture/PARTNER_PORTFOLIO_OPERATIONS.md), [`docs/architecture/INTERNAL_PARTNER_OPERATIONS_READ_MODEL.md`](docs/architecture/INTERNAL_PARTNER_OPERATIONS_READ_MODEL.md), [`docs/architecture/INTERNAL_OPERATIONS_DASHBOARD_AND_INCIDENT_PRIORITIZATION.md`](docs/architecture/INTERNAL_OPERATIONS_DASHBOARD_AND_INCIDENT_PRIORITIZATION.md), [`docs/architecture/INTERNAL_OPERATOR_UI_SHELL.md`](docs/architecture/INTERNAL_OPERATOR_UI_SHELL.md), [`docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md`](docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
+Zie [`docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md`](docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md), [`docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md`](docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md), [`docs/architecture/PARTNER_PORTFOLIO_OPERATIONS.md`](docs/architecture/PARTNER_PORTFOLIO_OPERATIONS.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Volgende technische fase
-**M0.35 — Operator Authorization Roles & Audit Boundary**: owner/operator/read-only rollen en minimale audit events ontwerpen voordat interne write-acties ooit worden toegestaan.
+**M0.36 — Audited Feed Recovery Actions & Safe Mutation Contracts**: de eerste beperkte write-actions voor feed recovery ontwerpen achter role checks, expliciete mutation contracts en de M0.35 audit boundary.
