@@ -20,6 +20,7 @@
     "check": "npm run check:db-contract && npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.114.0",
     "next": "^16.0.0",
     "react": "^19.0.0",
