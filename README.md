@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository is op 3 september 2026 geïnitialiseerd en bevat inmiddels een werkende technische fundering, een synthetic end-to-end catalogusproef, importobservability, een echte Supabase/Postgres repository-adapter en geautomatiseerde catalogustests.
+De repository is op 3 september 2026 geïnitialiseerd en bevat inmiddels een werkende technische fundering, een synthetic end-to-end catalogusproef, importobservability, een echte Supabase/Postgres repository-adapter, geautomatiseerde catalogustests en een persistence-onafhankelijke storefront query-laag.
 
 Afgerond / geïmplementeerd:
 - M0.1 — Repository Alignment & Verification
@@ -17,6 +17,7 @@ Afgerond / geïmplementeerd:
 - M0.8 — Supabase Persistence Adapter & Repository Integration (repository-side complete; live project activation pending)
 - M0.9 — Persistence Verification & Database Typing (repository-side verification/tooling complete; live Supabase gate pending)
 - M0.10 — Automated Catalog Test Harness
+- M0.11 — Catalog Service & Storefront Query Layer
 
 ## Stack
 - Next.js 16 — App Router
@@ -83,20 +84,26 @@ Zie [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Wat de fundering nu bewijst
 
-De storefront kan productdata ontvangen via dezelfde lagen die later echte affiliatefeeds gebruiken:
+De ingestieketen is gescheiden van de storefront-queryketen:
 
-`merchant feed → adapter → validatie → matching → import run → canonical product + merchant offer → repository → storefront`
+`merchant feed → adapter → validatie → matching → import run → canonical product + merchant offer → repository`
 
-De persistence-laag is verwisselbaar achter dezelfde application ports. Synthetic ontwikkeling gebruikt in-memory persistence; de Supabase-adapter implementeert dezelfde contracten voor merchants, products, offers, categories en importobservability.
+De publieke storefront leest vervolgens via:
+
+`Next.js route → CatalogService → CatalogReadRepository → persistence adapter`
+
+Daardoor kennen pagina's geen feed-, synthetic- of Supabase-details. Dezelfde storefront-querylaag werkt boven in-memory development en later boven Supabase/Postgres.
+
+Aanbiedingen worden in de huidige baseline gerangschikt op bekende totale koopprijs: productprijs plus verzendkosten. Dat voorkomt dat een ogenschijnlijk goedkoper aanbod met hoge verzendkosten automatisch als beste aanbod verschijnt.
 
 PostgreSQL UUIDs blijven interne relationele sleutels. Duurzame Winkelnu-identiteiten worden opgeslagen als `external_key`, zodat canonical productidentiteit niet afhankelijk wordt van database-gegenereerde UUIDs.
 
-De kernregels worden nu bovendien automatisch getest: sterke en zwakke productmatching, duplicate records, invalid records, matching review en stale-offer deactivation.
+De kernregels worden automatisch getest: productmatching, duplicate records, invalid records, matching review, stale-offer deactivation en storefront offer-ranking.
 
 ## Kernprincipe
 
-Winkelnu wordt feedgedreven gebouwd. Merchantdata komt binnen via adapters, wordt gevalideerd en genormaliseerd en wordt pas daarna onderdeel van de publieke catalogus. Productidentiteit, merchantoffers, importkwaliteit, persistence en affiliatebestemmingen blijven bewust van elkaar gescheiden.
+Winkelnu wordt feedgedreven gebouwd. Merchantdata komt binnen via adapters, wordt gevalideerd en genormaliseerd en wordt pas daarna onderdeel van de publieke catalogus. Productidentiteit, merchantoffers, importkwaliteit, persistence, querylogica en affiliatebestemmingen blijven bewust van elkaar gescheiden.
 
 ## Volgende technische fase
 
-**M0.11 — Catalog Service & Storefront Query Layer**: herbruikbare product-, categorie- en offer-query use-cases boven repository ports, zodat pages niet rechtstreeks afhankelijk worden van persistence-details.
+**M0.12 — Category & Discovery Query Architecture**: categoriepagina's, pagination/query-contracten, discovery-ordering en SEO-veilige categorie-routes neerzetten voordat grotere catalogusvolumes worden toegevoegd.
