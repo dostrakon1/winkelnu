@@ -18,6 +18,7 @@ const migrationPaths = [
   'supabase/migrations/0014_operations_security_readiness.sql',
   'supabase/migrations/0015_operator_action_retention_policy.sql',
   'supabase/migrations/0016_explicit_data_api_service_role_grants.sql',
+  'supabase/migrations/0017_external_key_unique_constraints.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -33,6 +34,8 @@ const requiredDataApiTables = [
   'import_rejects', 'product_match_reviews', 'affiliate_click_events', 'affiliate_networks',
   'merchant_affiliate_integrations', 'feed_import_orchestration',
 ]
+
+const requiredExternalKeyConflictTargets = ['merchants', 'categories', 'products', 'offers', 'import_runs']
 
 const requiredColumns = [
   ['merchants', 'external_key'], ['categories', 'external_key'], ['products', 'external_key'], ['offers', 'external_key'],
@@ -104,6 +107,11 @@ for (const table of requiredDataApiTables) {
   if (!serviceRoleGrant.test(migrations)) failures.push(`Missing explicit service-role Data API grant: ${table}`)
 }
 
+for (const table of requiredExternalKeyConflictTargets) {
+  const uniqueConstraint = new RegExp(`alter\\s+table\\s+${table}\\s+add\\s+constraint\\s+${table}_external_key_unique\\s+unique\\s*\\(\\s*external_key\\s*\\)`, 'i')
+  if (!uniqueConstraint.test(migrations)) failures.push(`Missing non-partial external_key conflict target: ${table}`)
+}
+
 for (const [table, column] of requiredColumns) {
   const createTableBlock = new RegExp(`create\\s+table\\s+(?:if\\s+not\\s+exists\\s+)?${table}\\s*\\([\\s\\S]*?\\);`, 'i')
   const alterTableColumn = new RegExp(`alter\\s+table\\s+${table}[\\s\\S]*?add\\s+column\\s+(?:if\\s+not\\s+exists\\s+)?${column}\\b`, 'i')
@@ -127,4 +135,4 @@ if (failures.length > 0) {
   process.exit(1)
 }
 
-console.log(`Database contract OK: ${requiredTables.length} RLS-protected tables, ${requiredColumns.length} critical columns, ${requiredFunctions.length} functions, ${requiredDataApiTables.length} explicit Data API table contracts and ${requiredSecurityPatterns.length} security contracts verified.`)
+console.log(`Database contract OK: ${requiredTables.length} RLS-protected tables, ${requiredColumns.length} critical columns, ${requiredFunctions.length} functions, ${requiredDataApiTables.length} explicit Data API table contracts, ${requiredExternalKeyConflictTargets.length} external-key conflict targets and ${requiredSecurityPatterns.length} security contracts verified.`)
