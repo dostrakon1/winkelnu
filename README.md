@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels een werkende technische fundering, synthetic end-to-end catalogusproef, importobservability, Supabase/Postgres repository-adapter, geautomatiseerde catalogustests, persistence-onafhankelijke storefront queries, SEO-veilige discovery/search, een eigen affiliate redirect/click-attributielaag, een expliciete affiliate network/merchant integration registry, partner-feed adapterresolution en een realistische providerfixture met cursorpaginering en foutscenario's.
+De repository bevat inmiddels een werkende technische fundering, synthetic end-to-end catalogusproef, importobservability, Supabase/Postgres repository-adapter, geautomatiseerde catalogustests, persistence-onafhankelijke storefront queries, SEO-veilige discovery/search, een eigen affiliate redirect/click-attributielaag, een expliciete affiliate network/merchant integration registry, partner-feed adapterresolution, een realistische providerfixture en eerste echte partner-readiness voor Daisycon.
 
 Afgerond / geïmplementeerd:
 - M0.1 — Repository Alignment & Verification
@@ -24,6 +24,7 @@ Afgerond / geïmplementeerd:
 - M0.15 — Affiliate Network & Merchant Integration Registry (repository-side complete; live Supabase verification pending)
 - M0.16 — Partner Adapter Registration & Feed Source Resolution
 - M0.17 — Realistic Partner Adapter Contract & Fixture Proof
+- M0.18 — First Real Partner Integration Readiness — Daisycon (repository-side complete; account/program/sandbox gates pending)
 
 ## Stack
 - Next.js 16 — App Router
@@ -72,7 +73,7 @@ SUPABASE_PROJECT_ID=<project-ref>
 Partnercredentials worden nooit in registry- of config-rijen opgeslagen. Integraties bewaren uitsluitend server-side secret references zoals:
 
 ```text
-env:AFFILIATE_PARTNER_API_TOKEN
+env:DAISYCON_PRODUCT_FEED_URL
 ```
 
 Beschikbare verificatiecommando's:
@@ -107,9 +108,11 @@ De affiliate-integratieketen is expliciet:
 
 `PartnerFeedSourceResolver` bepaalt eerst of source/integration/network-context actief en consistent is. Daarna kiest `PartnerFeedAdapterRegistry` uitsluitend in de infrastructurelaag de technische adapter. Eventuele `env:` credentials worden pas daar server-side opgelost.
 
-M0.17 bewijst die keten met een providerachtige fixture die andere veldnamen gebruikt, twee cursorpagina's levert en één bewust kapot record bevat. De adapter vertaalt alleen; de bestaande domeinvalidatie bepaalt wat wel en niet in de catalogus mag komen. Drie geldige records worden geïmporteerd en het kapotte record wordt afgewezen.
+M0.17 bewijst die keten met een providerachtige fixture die andere veldnamen gebruikt, twee cursorpagina's levert en één bewust kapot record bevat. De adapter vertaalt alleen; de bestaande domeinvalidatie bepaalt wat wel en niet in de catalogus mag komen.
 
-M0.17 corrigeert bovendien de importbootstrap voor relationele persistence: de merchant wordt nu gegarandeerd ge-upsert vóór de import-run/feed-source-relatie wordt aangemaakt.
+M0.18 kiest Daisycon als eerste echte readiness-target. De repository bevat nu een `daisycon:json` product-feed transportlaag met HTTPS-only ophalen, `X-Next-Url` paginering, same-origin bescherming, begrensde retries voor 429/5xx en een ingeplugde feed-standard mapper. Daisycon OAuth/API en product-feed transport blijven bewust afzonderlijke verantwoordelijkheden.
+
+De eerste echte Daisycon-activatie blijft extern gated: publisher/media-account, programmatoelating, developer/OAuth-gegevens, gegenereerde feed-URL, sandbox/read-only verificatie en mapping tegen een gesaniteerde echte feed moeten nog beschikbaar komen voordat live imports worden ingeschakeld.
 
 PostgreSQL UUIDs blijven interne relationele sleutels. Duurzame Winkelnu-identiteiten worden opgeslagen als `external_key`.
 
@@ -119,4 +122,4 @@ Winkelnu wordt feedgedreven gebouwd. Merchantdata komt binnen via adapters, word
 
 ## Volgende technische fase
 
-**M0.18 — First Real Partner Integration Readiness**: één echt affiliate-/netwerkdoel selecteren en vóór live aansluiting het authenticatiecontract, feedtransport, rate limits, retries, secret-env-contract en read-only/sandbox-verificatiepad vastleggen.
+**M0.19 — Partner Onboarding & Import Orchestration**: vastleggen hoe een goedgekeurde merchant/feed van registry-configuratie naar previewimport, validatierapport, activatiestatus en geplande terugkerende imports gaat zonder productiecatalogus of bestaande offers onveilig te beïnvloeden.
