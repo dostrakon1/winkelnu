@@ -14,7 +14,15 @@ const severityClass: Record<OperationsIncidentSeverity, string> = {
   low: 'border-slate-200 bg-slate-50 text-slate-700',
 }
 
-export function InternalOperationsDashboard({ dashboard }: { dashboard: OperationsDashboard }) {
+export function InternalOperationsDashboard({
+  dashboard,
+  operatorEmail,
+  signOutAction,
+}: {
+  dashboard: OperationsDashboard
+  operatorEmail: string
+  signOutAction: () => Promise<void>
+}) {
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
       <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-10">
@@ -26,7 +34,15 @@ export function InternalOperationsDashboard({ dashboard }: { dashboard: Operatio
               Read-only overzicht van affiliate-integraties en feedincidenten. Kritieke problemen staan altijd bovenaan.
             </p>
           </div>
-          <div className="text-xs text-slate-500">Snapshot: {new Date(dashboard.generatedAt).toLocaleString('nl-NL')}</div>
+          <div className="flex flex-col items-start gap-3 text-xs text-slate-500 sm:items-end">
+            <span>Snapshot: {new Date(dashboard.generatedAt).toLocaleString('nl-NL')}</span>
+            <span>Ingelogd als {operatorEmail}</span>
+            <form action={signOutAction}>
+              <button type="submit" className="rounded-lg border border-slate-700 px-3 py-2 font-semibold text-slate-300 hover:border-slate-500 hover:text-white">
+                Uitloggen
+              </button>
+            </form>
+          </div>
         </header>
 
         <section className="grid gap-3 py-8 sm:grid-cols-2 lg:grid-cols-5" aria-label="Operations samenvatting">
