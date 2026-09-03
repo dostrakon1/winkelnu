@@ -7,7 +7,11 @@ describe('feed operational timeline', () => {
       generatedAt: '2026-09-03T10:00:00Z',
       integrations: [{
         integrationId: 'int-1', merchantId: 'merchant-1', merchantName: 'Merchant 1', integrationKind: 'direct', integrationStatus: 'active', hasSecretReference: true,
-        feeds: [{ sourceKey: 'feed-1', sourceType: 'csv', isActive: true, health: { merchantId: 'merchant-1', sourceKey: 'feed-1', status: 'healthy', failureCount: 0, lastSucceededAt: '2026-09-03T09:00:00Z', nextRunAt: '2026-09-03T11:00:00Z' }, lastStartedAt: '2026-09-03T08:55:00Z', lastSucceededAt: '2026-09-03T09:00:00Z', nextRunAt: '2026-09-03T11:00:00Z', hasActiveLease: false }],
+        feeds: [{
+          sourceKey: 'feed-1', sourceType: 'csv', isActive: true,
+          health: { merchantId: 'merchant-1', sourceKey: 'feed-1', status: 'healthy', failureCount: 0, lastSucceededAt: '2026-09-03T09:00:00Z', nextRunAt: '2026-09-03T11:00:00Z' },
+          orchestration: { failureCount: 0, lastStartedAt: '2026-09-03T08:55:00Z', lastSucceededAt: '2026-09-03T09:00:00Z', nextRunAt: '2026-09-03T11:00:00Z', leaseActive: false },
+        }],
       }],
     }, [{ id: 'a1', actorEmail: 'ops@example.com', actorRole: 'operator', action: 'feed.retry', targetType: 'feed', merchantId: 'merchant-1', sourceKey: 'feed-1', outcome: 'succeeded', occurredAt: '2026-09-03T09:30:00Z' }])
 
