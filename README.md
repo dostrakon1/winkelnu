@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels een werkende technische fundering, synthetic end-to-end catalogusproef, importobservability, Supabase/Postgres repository-adapter, geautomatiseerde catalogustests, persistence-onafhankelijke storefront queries, SEO-veilige discovery/search, een eigen affiliate redirect/click-attributielaag, een expliciete affiliate network/merchant integration registry en partner-feed adapterresolution.
+De repository bevat inmiddels een werkende technische fundering, synthetic end-to-end catalogusproef, importobservability, Supabase/Postgres repository-adapter, geautomatiseerde catalogustests, persistence-onafhankelijke storefront queries, SEO-veilige discovery/search, een eigen affiliate redirect/click-attributielaag, een expliciete affiliate network/merchant integration registry, partner-feed adapterresolution en een realistische providerfixture met cursorpaginering en foutscenario's.
 
 Afgerond / geïmplementeerd:
 - M0.1 — Repository Alignment & Verification
@@ -23,6 +23,7 @@ Afgerond / geïmplementeerd:
 - M0.14 — Affiliate Redirect & Click Attribution Architecture (repository-side complete; live Supabase verification pending)
 - M0.15 — Affiliate Network & Merchant Integration Registry (repository-side complete; live Supabase verification pending)
 - M0.16 — Partner Adapter Registration & Feed Source Resolution
+- M0.17 — Realistic Partner Adapter Contract & Fixture Proof
 
 ## Stack
 - Next.js 16 — App Router
@@ -100,11 +101,15 @@ Aanbiedingen worden gerangschikt en op prijs gefilterd op bekende totale kooppri
 
 Outbound affiliateklikken lopen via `/uit/<offer-id>`. De server resolveert de opgeslagen bestemming, weigert ontbrekende/inactieve/onveilige offers en schrijft privacy-minimale click-attributie zonder rauw IP-adres of user-agentfingerprint.
 
-De affiliate-integratieketen is nu expliciet:
+De affiliate-integratieketen is expliciet:
 
-`merchant → affiliate integration → affiliate network/marketplace (indien van toepassing) → feed source → partner adapter`
+`merchant → affiliate integration → affiliate network/marketplace → feed source → partner adapter`
 
-`PartnerFeedSourceResolver` bepaalt eerst of de source/integration/network-context actief en consistent is. Daarna kiest `PartnerFeedAdapterRegistry` uitsluitend in de infrastructurelaag de technische adapter met sleutels zoals `network-slug:api`, `direct:csv` of `generic:xml`. Eventuele `env:` credentials worden pas op dat moment server-side opgelost en komen niet in application/domain modellen terecht.
+`PartnerFeedSourceResolver` bepaalt eerst of source/integration/network-context actief en consistent is. Daarna kiest `PartnerFeedAdapterRegistry` uitsluitend in de infrastructurelaag de technische adapter. Eventuele `env:` credentials worden pas daar server-side opgelost.
+
+M0.17 bewijst die keten met een providerachtige fixture die andere veldnamen gebruikt, twee cursorpagina's levert en één bewust kapot record bevat. De adapter vertaalt alleen; de bestaande domeinvalidatie bepaalt wat wel en niet in de catalogus mag komen. Drie geldige records worden geïmporteerd en het kapotte record wordt afgewezen.
+
+M0.17 corrigeert bovendien de importbootstrap voor relationele persistence: de merchant wordt nu gegarandeerd ge-upsert vóór de import-run/feed-source-relatie wordt aangemaakt.
 
 PostgreSQL UUIDs blijven interne relationele sleutels. Duurzame Winkelnu-identiteiten worden opgeslagen als `external_key`.
 
@@ -114,4 +119,4 @@ Winkelnu wordt feedgedreven gebouwd. Merchantdata komt binnen via adapters, word
 
 ## Volgende technische fase
 
-**M0.17 — Realistic Partner Adapter Contract & Fixture Proof**: één realistische providerachtige feedadapter bouwen met fixturedata, veldmapping, paginering/fouten en end-to-end importtests, zonder al productiecredentials of een echt affiliateprogramma nodig te hebben.
+**M0.18 — First Real Partner Integration Readiness**: één echt affiliate-/netwerkdoel selecteren en vóór live aansluiting het authenticatiecontract, feedtransport, rate limits, retries, secret-env-contract en read-only/sandbox-verificatiepad vastleggen.
