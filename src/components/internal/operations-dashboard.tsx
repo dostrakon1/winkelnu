@@ -1,4 +1,5 @@
 import type { OperationsDashboard, OperationsIncidentSeverity } from '@/application/affiliate/operations-dashboard'
+import type { OperatorRole } from '@/application/auth/operator-authorization'
 
 const severityLabel: Record<OperationsIncidentSeverity, string> = {
   critical: 'Kritiek',
@@ -14,13 +15,21 @@ const severityClass: Record<OperationsIncidentSeverity, string> = {
   low: 'border-slate-200 bg-slate-50 text-slate-700',
 }
 
+const roleLabel: Record<OperatorRole, string> = {
+  owner: 'Owner',
+  operator: 'Operator',
+  read_only: 'Read-only',
+}
+
 export function InternalOperationsDashboard({
   dashboard,
   operatorEmail,
+  operatorRole,
   signOutAction,
 }: {
   dashboard: OperationsDashboard
   operatorEmail: string
+  operatorRole: OperatorRole
   signOutAction: () => Promise<void>
 }) {
   return (
@@ -37,6 +46,7 @@ export function InternalOperationsDashboard({
           <div className="flex flex-col items-start gap-3 text-xs text-slate-500 sm:items-end">
             <span>Snapshot: {new Date(dashboard.generatedAt).toLocaleString('nl-NL')}</span>
             <span>Ingelogd als {operatorEmail}</span>
+            <span className="rounded-full border border-slate-700 px-2.5 py-1 font-semibold text-slate-300">Rol: {roleLabel[operatorRole]}</span>
             <form action={signOutAction}>
               <button type="submit" className="rounded-lg border border-slate-700 px-3 py-2 font-semibold text-slate-300 hover:border-slate-500 hover:text-white">
                 Uitloggen
