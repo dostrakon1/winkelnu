@@ -116,13 +116,21 @@ export class SupabaseCatalogRepository implements CatalogReadRepository, Catalog
   }
 
   async listCategories(): Promise<Category[]> {
-    const { data, error } = await this.db.from('categories').select('*, parent:categories!categories_parent_id_fkey(external_key)').eq('is_active', true).order('name')
+    const { data, error } = await this.db
+      .from('categories')
+      .select('id, external_key, parent_id, slug, name')
+      .eq('is_active', true)
+      .order('name')
     fail(error, 'List categories')
-    return (data ?? []).map((row) => ({
+
+    const rows = data ?? []
+    const externalKeyById = new Map(rows.map((row) => [row.id, row.external_key]))
+
+    return rows.map((row) => ({
       id: row.external_key,
       slug: row.slug,
       name: row.name,
-      parentId: row.parent?.external_key ?? undefined,
+      parentId: row.parent_id ? externalKeyById.get(row.parent_id) : undefined,
     }))
   }
 
