@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability, per-feed timelines en bounded import-run evidence.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability, per-feed timelines, bounded import-run evidence en veilige importkwaliteitssamenvattingen.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
@@ -18,16 +18,19 @@ Afgerond / geïmplementeerd:
 - M0.39 — Operator Audit Filtering, Correlation & Incident Context
 - M0.40 — Operational Timeline & Feed State Transition Context
 - M0.41 — Import Run Evidence & Timeline Enrichment
+- M0.42 — Import Quality Drilldown & Reject/Review Summaries
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
 
 ## Operationslaag
-`/intern/operations` combineert incidenten, role-gated recovery, append-only audit, server-side idempotency, filterbare operatorhistorie, veilige orchestrationcontext en recente import-run evidence.
+`/intern/operations` combineert incidenten, role-gated recovery, append-only audit, server-side idempotency, filterbare operatorhistorie, veilige orchestrationcontext, recente import-run evidence en geaggregeerde importkwaliteitsinformatie.
 
 M0.40 voegt veilige orchestration-signalen toe: laatste start, laatste succes, volgende run en alleen een boolean voor een actieve lease. Lease-token/owner, secret references, vrije auditmetadata en ruwe orchestration errors worden niet aan de timeline/UI blootgesteld.
 
 M0.41 verrijkt dezelfde per-feed timeline met bounded import-run evidence: runstatus, timestamps, records seen/accepted/rejected, offers deactivated, review-required en correlation id. De reader haalt maximaal 100 recente runs op en de timeline gebruikt maximaal vijf runs per feed. `error_summary`, reject payloads en raw records blijven uitgesloten.
+
+M0.42 voegt per feed een bounded kwaliteitssamenvatting toe over recente runs: reject-aantallen, reviewstatussen en counts voor `review`/`none` confidence. `raw_record`, reject reasons, review reasons en `error_summary` worden bewust niet gelezen voor de operationsweergave.
 
 Voor human operator auth zijn onder andere nodig:
 
@@ -52,7 +55,7 @@ npm run verify:supabase
 npm run verify:production-readiness
 ```
 
-Zie [`docs/architecture/IMPORT_RUN_EVIDENCE_AND_TIMELINE_ENRICHMENT.md`](docs/architecture/IMPORT_RUN_EVIDENCE_AND_TIMELINE_ENRICHMENT.md), [`docs/architecture/OPERATIONAL_TIMELINE_AND_FEED_STATE_TRANSITION_CONTEXT.md`](docs/architecture/OPERATIONAL_TIMELINE_AND_FEED_STATE_TRANSITION_CONTEXT.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
+Zie [`docs/architecture/IMPORT_QUALITY_DRILLDOWN_AND_REVIEW_SUMMARIES.md`](docs/architecture/IMPORT_QUALITY_DRILLDOWN_AND_REVIEW_SUMMARIES.md), [`docs/architecture/IMPORT_RUN_EVIDENCE_AND_TIMELINE_ENRICHMENT.md`](docs/architecture/IMPORT_RUN_EVIDENCE_AND_TIMELINE_ENRICHMENT.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Volgende technische fase
-**M0.42 — Import Quality Drilldown & Reject/Review Summaries**: aggregate reject/review evidence toevoegen zonder raw feed records of gevoelige payloads bloot te stellen.
+**M0.43 — Feed Quality Thresholds & Operator Attention Signals**: read-only waarschuwingsniveaus afleiden uit recente reject/review-ratio's en die zichtbaar maken in incidentcontext, zonder automatische mutations.
