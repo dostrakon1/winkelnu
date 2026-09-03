@@ -2,8 +2,9 @@ import type { PartnerOperationsReadModel } from '@/application/affiliate/partner
 import type { OperatorActionHistoryItem } from '@/application/operations/operator-action-history'
 import type { ImportRunEvidence } from '@/application/operations/import-run-evidence'
 import type { ImportQualitySummary } from '@/application/operations/import-quality-summary'
+import type { FeedQualityAttentionSignal } from '@/application/operations/feed-quality-attention'
 
-export type FeedTimelineEventKind = 'state' | 'started' | 'succeeded' | 'scheduled' | 'operator_action' | 'import_run' | 'quality_summary'
+export type FeedTimelineEventKind = 'state' | 'started' | 'succeeded' | 'scheduled' | 'operator_action' | 'import_run' | 'quality_summary' | 'quality_attention'
 
 export type FeedTimelineEvent = {
   id: string
@@ -22,6 +23,7 @@ export type FeedOperationalTimeline = {
   healthStatus?: string
   failureCount: number
   hasActiveLease: boolean
+  qualityAttention?: FeedQualityAttentionSignal['level']
   events: FeedTimelineEvent[]
 }
 
@@ -38,11 +40,19 @@ const runStatusLabel: Record<ImportRunEvidence['status'], string> = {
   failed: 'Import mislukt',
 }
 
+const attentionLabel: Record<FeedQualityAttentionSignal['level'], string> = {
+  healthy: 'Importkwaliteit gezond',
+  watch: 'Importkwaliteit volgen',
+  attention: 'Importkwaliteit vraagt aandacht',
+  critical: 'Importkwaliteit kritisch',
+}
+
 export function buildFeedOperationalTimelines(
   model: PartnerOperationsReadModel,
   history: OperatorActionHistoryItem[],
   importRuns: ImportRunEvidence[] = [],
   qualitySummaries: ImportQualitySummary[] = [],
+  qualitySignals: FeedQualityAttentionSignal[] = [],
 ): FeedOperationalTimeline[] {
   return model.integrations.flatMap((integration) => integration.feeds.map((feed) => {
     const events: FeedTimelineEvent[] = []
@@ -85,6 +95,15 @@ export function buildFeedOperationalTimelines(
       detail: `Runs ${quality.runsObserved} · rejects ${quality.rejectsObserved} · reviews pending ${quality.reviewsPending} · approved ${quality.reviewsApproved} · rejected ${quality.reviewsRejected} · review-confidence ${quality.reviewConfidence} · geen match ${quality.noMatchConfidence}`,
     })
 
+    const qualitySignal = qualitySignals.find((item) => item.merchantId === integration.merchantId && item.sourceKey === feed.sourceKey)
+    if (qualitySignal && qualitySignal.level !== 'healthy' && qualitySignal.observedAt) events.push({
+      id: `quality-attention:${integration.merchantId}:${feed.sourceKey}:${qualitySignal.observedAt}`,
+      kind: 'quality_attention',
+      occurredAt: qualitySignal.observedAt,
+      label: attentionLabel[qualitySignal.level],
+      detail: qualitySignal.reasons.join(' · '),
+    })
+
     events.sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt))
 
     return {
@@ -95,7 +114,8 @@ export function buildFeedOperationalTimelines(
       healthStatus: feed.health?.status,
       failureCount: feed.health?.failureCount ?? orchestration?.failureCount ?? 0,
       hasActiveLease: orchestration?.leaseActive ?? false,
-      events: events.slice(0, 18),
+      qualityAttention: qualitySignal?.level,
+      events: events.slice(0, 20),
     }
   }))
 }
