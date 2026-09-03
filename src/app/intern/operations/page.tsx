@@ -7,9 +7,11 @@ import { PartnerOperationsReadService } from '@/application/affiliate/partner-op
 import { filterOperatorActionHistory, type OperatorActionHistoryFilters } from '@/application/operations/operator-action-context'
 import { OperatorActionHistoryService, type OperatorActionOutcome } from '@/application/operations/operator-action-history'
 import { buildFeedOperationalTimelines } from '@/application/operations/feed-operational-timeline'
+import { ImportRunEvidenceService } from '@/application/operations/import-run-evidence'
 import { InternalOperationsDashboard } from '@/components/internal/operations-dashboard'
 import { SupabasePartnerOperationsReadRepository } from '@/infrastructure/affiliate/supabase-partner-operations-read-repository'
 import { SupabaseOperatorActionHistoryRepository } from '@/infrastructure/operations/supabase-operator-action-history-repository'
+import { SupabaseImportRunEvidenceRepository } from '@/infrastructure/operations/supabase-import-run-evidence-repository'
 import { requireOperatorSession } from '@/infrastructure/operations/operator-session'
 
 export const dynamic = 'force-dynamic'
@@ -46,10 +48,15 @@ export default async function InternalOperationsPage({ searchParams }: { searchP
   const filters = readFilters(await searchParams)
   const operationsService = new PartnerOperationsReadService(new SupabasePartnerOperationsReadRepository())
   const historyService = new OperatorActionHistoryService(new SupabaseOperatorActionHistoryRepository())
-  const [model, fullActionHistory] = await Promise.all([operationsService.read(), historyService.listRecent(50)])
+  const importRunService = new ImportRunEvidenceService(new SupabaseImportRunEvidenceRepository())
+  const [model, fullActionHistory, importRuns] = await Promise.all([
+    operationsService.read(),
+    historyService.listRecent(50),
+    importRunService.listRecent(100),
+  ])
   const dashboard = buildOperationsDashboard(model)
   const actionHistory = filterOperatorActionHistory(fullActionHistory, filters)
-  const feedTimelines = buildFeedOperationalTimelines(model, fullActionHistory)
+  const feedTimelines = buildFeedOperationalTimelines(model, fullActionHistory, importRuns)
 
   return (
     <InternalOperationsDashboard
