@@ -10,6 +10,13 @@ export interface ImportOrchestrationRepository {
     acquiredAt: string
     expiresAt: string
   }): Promise<FeedImportLease | null>
+  renewLease(input: {
+    merchantId: string
+    sourceKey: string
+    token: string
+    renewedAt: string
+    expiresAt: string
+  }): Promise<void>
   completeSuccess(input: {
     merchantId: string
     sourceKey: string
