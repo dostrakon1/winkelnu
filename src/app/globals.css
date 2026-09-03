@@ -1,12 +1,52 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f7f5;
-  --foreground: #171717;
-  --surface: #ffffff;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --brand: #111827;
+  --wn-petrol: #123b3a;
+  --wn-cream: #f7f2e8;
+  --wn-sand: #e8ddcc;
+  --wn-warm: #e9783d;
+  --wn-ink: #1e2423;
+  --wn-white: #ffffff;
+
+  --wn-gradient-welcome: linear-gradient(
+    135deg,
+    #f7f2e8 0%,
+    #f1e2d4 42%,
+    #e9b69b 72%,
+    #d98763 100%
+  );
+  --wn-gradient-market: linear-gradient(
+    135deg,
+    #123b3a 0%,
+    #1b514d 52%,
+    #55766c 78%,
+    #e9783d 135%
+  );
+  --wn-gradient-morning: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f7f2e8 58%,
+    #f0e7da 100%
+  );
+  --wn-gradient-glow: radial-gradient(
+    circle at 72% 28%,
+    rgba(233, 120, 61, 0.28) 0%,
+    rgba(232, 221, 204, 0.48) 34%,
+    rgba(247, 242, 232, 0) 70%
+  );
+  --wn-gradient-evening: linear-gradient(
+    145deg,
+    #0d2e2d 0%,
+    #123b3a 50%,
+    #244c48 100%
+  );
+
+  --background: var(--wn-cream);
+  --foreground: var(--wn-ink);
+  --surface: var(--wn-white);
+  --muted: #6f726f;
+  --border: #ded5c8;
+  --brand: var(--wn-petrol);
 }
 
 * {
