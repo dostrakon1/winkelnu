@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, Daisycon-readiness, gecontroleerde onboarding, persistence-backed orchestration, due-feed batch execution, health-classificatie, production composition, beveiligde scheduler-trigger, lease-heartbeats, end-to-end importcorrelatie, bounded feed-traversal, storefront freshnessbeleid, een schaalbaar Supabase ranking read model, production security/go-live readiness, partneracceptatie, bol Affiliate readiness, productfeed mapping, partner operations, een interne operatorinterface, menselijke Supabase Auth, role/audit authorization en veilige geaudite feed-recoverywrites met server-side idempotency.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-adapters, storefront discovery/search, affiliate click-attributie, integration registry, partner-adapterresolution, Daisycon-readiness, gecontroleerde onboarding, persistence-backed orchestration, due-feed batch execution, health-classificatie, production composition, beveiligde scheduler-trigger, lease-heartbeats, end-to-end importcorrelatie, bounded feed-traversal, storefront freshnessbeleid, een schaalbaar Supabase ranking read model, production security/go-live readiness, partneracceptatie, bol Affiliate readiness, productfeed mapping, partner operations, een interne operatorinterface, menselijke Supabase Auth, role/audit authorization, veilige geaudite feed-recoverywrites met server-side idempotency en read-only operator action history.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
@@ -28,6 +28,7 @@ Afgerond / geïmplementeerd:
 - M0.35 — Operator Authorization Roles & Audit Boundary
 - M0.36 — Audited Feed Recovery Actions & Safe Mutation Contracts
 - M0.37 — Recovery Confirmation, Idempotency & Operator Feedback
+- M0.38 — Operator Action History & Recovery Observability
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
@@ -48,6 +49,8 @@ Migration `0010_due_feed_discovery_bootstrap.sql` sluit de eerdere due-feed boot
 M0.36 voegt de eerste echte recoverywrites toe: `retry`, `pause` en `resume`. De UI toont gepauzeerde feeds expliciet en biedt alleen role-gated knoppen. De Server Action controleert de operator opnieuw en alle mutations lopen via de auditboundary. Migration `0012_feed_recovery_actions.sql` bevat service-role-only RPCs; browser- of authenticated Supabase-clients krijgen geen directe recovery-writepermission.
 
 M0.37 maakt deze recoveryacties operationeel veiliger. Pauzeren vereist bevestiging, knoppen tonen pending-state en Server Actions geven zichtbare success/duplicate/error feedback. `IdempotentOperatorActionService` claimt vóór audit/mutation een unieke request key in migration `0013_operator_action_idempotency.sql`. Een dubbel submit met dezelfde key voert daarom geen tweede mutation en geen tweede auditketen uit.
+
+M0.38 voegt read-only operator action history toe. `/intern/operations` toont de laatste terminale recovery-outcomes naast incidenten: actor, rol, actie, merchant/feed, status en tijdstip. Vrije auditmetadata en ruwe foutteksten worden bewust niet aan de UI doorgegeven.
 
 Voor human operator auth zijn onder andere nodig:
 
@@ -72,7 +75,7 @@ npm run verify:supabase
 npm run verify:production-readiness
 ```
 
-Zie [`docs/architecture/RECOVERY_CONFIRMATION_IDEMPOTENCY_AND_OPERATOR_FEEDBACK.md`](docs/architecture/RECOVERY_CONFIRMATION_IDEMPOTENCY_AND_OPERATOR_FEEDBACK.md), [`docs/architecture/AUDITED_FEED_RECOVERY_ACTIONS.md`](docs/architecture/AUDITED_FEED_RECOVERY_ACTIONS.md), [`docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md`](docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md), [`docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md`](docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md), [`docs/architecture/PARTNER_PORTFOLIO_OPERATIONS.md`](docs/architecture/PARTNER_PORTFOLIO_OPERATIONS.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
+Zie [`docs/architecture/OPERATOR_ACTION_HISTORY_AND_RECOVERY_OBSERVABILITY.md`](docs/architecture/OPERATOR_ACTION_HISTORY_AND_RECOVERY_OBSERVABILITY.md), [`docs/architecture/RECOVERY_CONFIRMATION_IDEMPOTENCY_AND_OPERATOR_FEEDBACK.md`](docs/architecture/RECOVERY_CONFIRMATION_IDEMPOTENCY_AND_OPERATOR_FEEDBACK.md), [`docs/architecture/AUDITED_FEED_RECOVERY_ACTIONS.md`](docs/architecture/AUDITED_FEED_RECOVERY_ACTIONS.md), [`docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md`](docs/architecture/OPERATOR_AUTHORIZATION_AND_AUDIT_BOUNDARY.md), [`docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md`](docs/architecture/HUMAN_OPERATOR_AUTH_AND_SESSION_BOUNDARY.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Volgende technische fase
-**M0.38 — Operator Action History & Recovery Observability**: recente menselijke recoveryacties en hun outcomes zichtbaar maken naast operationele incidenten, zonder de write-scope verder uit te breiden.
+**M0.39 — Operator Audit Filtering, Correlation & Incident Context**: recente acties filterbaar en beter koppelbaar maken aan feeds/incidenten, zonder nieuwe mutations toe te voegen.
