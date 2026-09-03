@@ -9,6 +9,7 @@ type WinkelnuButtonProps = {
   href?: string
   className?: string
   type?: ButtonHTMLAttributes<HTMLButtonElement>['type']
+  rel?: string
 }
 
 const variantClass: Record<WinkelnuButtonVariant, string> = {
@@ -23,12 +24,13 @@ export function WinkelnuButton({
   href,
   className = '',
   type = 'button',
+  rel,
 }: WinkelnuButtonProps) {
   const classes = `wn-button ${variantClass[variant]} ${className}`.trim()
 
   if (href) {
     return (
-      <Link href={href} className={classes}>
+      <Link href={href} className={classes} rel={rel}>
         {children}
       </Link>
     )
