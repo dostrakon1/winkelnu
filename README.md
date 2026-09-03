@@ -4,7 +4,7 @@ Winkelnu.nl is een multi-merchant affiliate- en vergelijkingsplatform dat produc
 
 ## Status
 
-De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability, per-feed timelines, bounded import-run evidence, importkwaliteitssamenvattingen, read-only quality-attention signalen, dashboardprioritering en operations-security readiness verification.
+De repository bevat inmiddels de technische fundering, catalogus/importkwaliteit, Supabase-persistence, discovery/search, affiliate-attributie, partnerintegraties, importorchestration, production readiness en een beveiligde interne operationslaag met auth, rollen, audit, idempotente recovery, observability, per-feed timelines, bounded import-run evidence, importkwaliteitssamenvattingen, read-only quality-attention signalen, dashboardprioritering, operations-security readiness verification en geharde recovery-foutgrenzen.
 
 Afgerond / geïmplementeerd:
 - M0.1 t/m M0.17 — fundering, catalogus, persistence, search, affiliate-attributie en partner-adapterarchitectuur
@@ -22,6 +22,7 @@ Afgerond / geïmplementeerd:
 - M0.43 — Feed Quality Thresholds & Operator Attention Signals
 - M0.44 — Quality Signal Prioritization & Dashboard Summary
 - M0.45 — Production Operations Readiness & Security Verification v2
+- M0.46 — Operator Recovery Hardening & Safe Error Boundary
 
 ## Stack
 Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4, Vitest, GitHub Actions, Supabase/Postgres voorbereid en Vercel gepland.
@@ -29,11 +30,9 @@ Next.js 16 App Router, React 19, Node.js 22+, TypeScript strict, Tailwind CSS v4
 ## Operationslaag
 `/intern/operations` combineert incidenten, role-gated recovery, append-only audit, server-side idempotency, filterbare operatorhistorie, veilige orchestrationcontext, recente import-run evidence, geaggregeerde importkwaliteit en read-only quality-prioritering.
 
-M0.43 leidt conservatieve read-only quality-signalen af. Ratio-alerts worden pas gebruikt vanaf 100 geobserveerde records. Rejectratio >=5% geeft attention en >=15% critical; review load >=10% geeft attention en >=20% critical. Een backlog van minimaal 25 pending reviews geeft `watch` wanneer geen sterker signaal geldt.
+M0.45 breidt production readiness uit naar de volledige operations-security boundary. `winkelnu_production_readiness()` verwacht alle 15 RLS-tabellen en `winkelnu_operations_security_readiness()` controleert operator-table RLS/policies/grants, het exacte service-role privilegecontract, service-role-only recovery-RPC execution en de append-only audittrigger. `npm run check:db-contract` bewaakt daarnaast de kritieke revoke/grant-contracten statisch in CI.
 
-M0.44 vat deze signalen bovenin samen en sorteert de quality-prioriteitslijst deterministisch: `critical` voor `attention` voor `watch`, daarna nieuwste evidence.
-
-M0.45 breidt production readiness uit naar de volledige operations-security boundary. `winkelnu_production_readiness()` verwacht nu alle 15 RLS-tabellen en `winkelnu_operations_security_readiness()` controleert operator-table RLS/policies/grants, het exacte service-role privilegecontract, service-role-only recovery-RPC execution en de append-only audittrigger. `npm run check:db-contract` bewaakt daarnaast de kritieke revoke/grant-contracten statisch in CI.
+M0.46 controleert operatorrechten vóór de idempotency-claim, terwijl de auditlaag dezelfde permission-check als defense in depth behoudt. Recoveryfouten worden naar één veilige operator-facing melding vertaald; ruwe Supabase-, RPC-, SQL- of relation-details worden niet naar de UI teruggegeven. `operator_action_requests` heeft een expliciet retentionbeleid van minimaal 90 dagen, zonder automatische delete-job of nieuwe delete-RPC.
 
 Voor human operator auth zijn onder andere nodig:
 
@@ -58,9 +57,9 @@ npm run verify:supabase
 npm run verify:production-readiness
 ```
 
-Live Supabase production readiness is nog niet geclaimd: migrations `0001`–`0014` moeten eerst op een echt preview/production project worden toegepast en de live verification moet daar succesvol draaien.
+Live Supabase production readiness is nog niet geclaimd: migrations `0001`–`0015` moeten eerst op een echt preview/production project worden toegepast en de live verification moet daar succesvol draaien.
 
-Zie [`docs/architecture/PRODUCTION_OPERATIONS_READINESS_AND_SECURITY_VERIFICATION_V2.md`](docs/architecture/PRODUCTION_OPERATIONS_READINESS_AND_SECURITY_VERIFICATION_V2.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
+Zie [`docs/architecture/OPERATOR_RECOVERY_HARDENING_AND_SAFE_ERROR_BOUNDARY.md`](docs/architecture/OPERATOR_RECOVERY_HARDENING_AND_SAFE_ERROR_BOUNDARY.md), [`docs/architecture/PRODUCTION_OPERATIONS_READINESS_AND_SECURITY_VERIFICATION_V2.md`](docs/architecture/PRODUCTION_OPERATIONS_READINESS_AND_SECURITY_VERIFICATION_V2.md), [`docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md`](docs/operations/PRODUCTION_GO_LIVE_CHECKLIST.md) en [`docs/operations/SUPABASE_SETUP.md`](docs/operations/SUPABASE_SETUP.md).
 
 ## Volgende technische fase
-**M0.46 — Operator Recovery Hardening & Safe Error Boundary**: authorization vóór idempotency-claim afdwingen, operator-facing recovery errors sanitiseren en een expliciet idempotency-retentionbeleid vastleggen zonder mutation scope uit te breiden.
+**M0.47 — Live Supabase Activation Preparation & Environment Contract**: de resterende project- en environment-gate exact vastleggen en één preview-naar-productie activatieprocedure voorbereiden zonder te doen alsof live Supabase al geconfigureerd is.
