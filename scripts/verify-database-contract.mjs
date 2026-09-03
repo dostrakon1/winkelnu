@@ -16,6 +16,7 @@ const migrationPaths = [
   'supabase/migrations/0012_feed_recovery_actions.sql',
   'supabase/migrations/0013_operator_action_idempotency.sql',
   'supabase/migrations/0014_operations_security_readiness.sql',
+  'supabase/migrations/0015_operator_action_retention_policy.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -75,6 +76,7 @@ const requiredSecurityPatterns = [
   ['pause RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+operator_pause_feed\(text\s*,\s*text\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
   ['resume RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+operator_resume_feed\(text\s*,\s*text\s*,\s*timestamptz\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
   ['operations readiness service-role grant', /grant\s+execute\s+on\s+function\s+winkelnu_operations_security_readiness\(\)\s+to\s+service_role/i],
+  ['operator action retention policy', /retain\s+records\s+for\s+at\s+least\s+90\s+days/i],
 ]
 
 const failures = []
