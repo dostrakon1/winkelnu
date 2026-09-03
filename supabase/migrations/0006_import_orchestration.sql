@@ -128,7 +128,7 @@ create or replace function complete_feed_import_failure(
 language plpgsql
 security definer
 set search_path = public
-as $$;
+as $$
 begin
   update feed_import_orchestration fio
   set next_run_at = p_next_run_at,
