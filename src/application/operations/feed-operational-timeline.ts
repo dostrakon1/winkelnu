@@ -1,8 +1,9 @@
 import type { PartnerOperationsReadModel } from '@/application/affiliate/partner-operations-read-model'
 import type { OperatorActionHistoryItem } from '@/application/operations/operator-action-history'
 import type { ImportRunEvidence } from '@/application/operations/import-run-evidence'
+import type { ImportQualitySummary } from '@/application/operations/import-quality-summary'
 
-export type FeedTimelineEventKind = 'state' | 'started' | 'succeeded' | 'scheduled' | 'operator_action' | 'import_run'
+export type FeedTimelineEventKind = 'state' | 'started' | 'succeeded' | 'scheduled' | 'operator_action' | 'import_run' | 'quality_summary'
 
 export type FeedTimelineEvent = {
   id: string
@@ -41,6 +42,7 @@ export function buildFeedOperationalTimelines(
   model: PartnerOperationsReadModel,
   history: OperatorActionHistoryItem[],
   importRuns: ImportRunEvidence[] = [],
+  qualitySummaries: ImportQualitySummary[] = [],
 ): FeedOperationalTimeline[] {
   return model.integrations.flatMap((integration) => integration.feeds.map((feed) => {
     const events: FeedTimelineEvent[] = []
@@ -74,6 +76,15 @@ export function buildFeedOperationalTimelines(
         detail: `Gezien ${run.recordsSeen} · geaccepteerd ${run.recordsAccepted} · afgewezen ${run.recordsRejected} · gedeactiveerd ${run.offersDeactivated} · review ${run.reviewRequired}${run.correlationId ? ` · correlatie ${run.correlationId}` : ''}`,
       }))
 
+    const quality = qualitySummaries.find((item) => item.merchantId === integration.merchantId && item.sourceKey === feed.sourceKey)
+    if (quality?.latestEvidenceAt) events.push({
+      id: `quality:${integration.merchantId}:${feed.sourceKey}:${quality.latestEvidenceAt}`,
+      kind: 'quality_summary',
+      occurredAt: quality.latestEvidenceAt,
+      label: 'Importkwaliteit samenvatting',
+      detail: `Runs ${quality.runsObserved} · rejects ${quality.rejectsObserved} · reviews pending ${quality.reviewsPending} · approved ${quality.reviewsApproved} · rejected ${quality.reviewsRejected} · review-confidence ${quality.reviewConfidence} · geen match ${quality.noMatchConfidence}`,
+    })
+
     events.sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt))
 
     return {
@@ -84,7 +95,7 @@ export function buildFeedOperationalTimelines(
       healthStatus: feed.health?.status,
       failureCount: feed.health?.failureCount ?? orchestration?.failureCount ?? 0,
       hasActiveLease: orchestration?.leaseActive ?? false,
-      events: events.slice(0, 16),
+      events: events.slice(0, 18),
     }
   }))
 }
