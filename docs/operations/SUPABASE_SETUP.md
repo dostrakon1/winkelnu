@@ -14,8 +14,9 @@ Apply migrations in filename order:
 4. `0004_affiliate_click_attribution.sql`
 5. `0005_affiliate_integration_registry.sql`
 6. `0006_import_orchestration.sql`
+7. `0007_import_heartbeat_and_correlation.sql`
 
-Do not skip `0003`; repository adapters depend on `external_key`. `0004` is required before live affiliate click attribution, `0005` before real partner registry use, and `0006` before enabling recurring production imports.
+Do not skip `0003`; repository adapters depend on `external_key`. `0004` is required before live affiliate click attribution, `0005` before real partner registry use, `0006` before recurring production imports and `0007` before enabling lease heartbeats/correlated production runs.
 
 ## Server environment
 Required when `CATALOG_PERSISTENCE=supabase`:
@@ -29,12 +30,14 @@ SUPABASE_PROJECT_ID=<project-ref>
 
 `SUPABASE_SERVICE_ROLE_KEY` is privileged and must never use a `NEXT_PUBLIC_` prefix. Partner credentials follow the same rule. Registry rows contain only `env:` references, never the actual secret.
 
+For the operations trigger, configure either `CRON_SECRET` (preferred for Vercel Cron) or `WINKELNU_IMPORT_TRIGGER_SECRET` for an external/manual scheduler. These values are server-only.
+
 ## Repository-side verification
 ```bash
 npm run check:db-contract
 ```
 
-This validates committed schema contracts, including the import-orchestration table and worker RPCs.
+This validates committed schema contracts, including orchestration, heartbeat and correlation persistence.
 
 ## Live connection smoke test
 After migrations are applied:
@@ -54,7 +57,7 @@ This generates `src/infrastructure/supabase/database.types.ts` from the live sch
 
 ## Activation sequence
 1. Create the Supabase project.
-2. Apply migrations `0001` through `0006` in filename order.
+2. Apply migrations `0001` through `0007` in filename order.
 3. Add server environment variables locally/Vercel.
 4. Run `npm run verify:supabase`.
 5. Run `npm run types:supabase`.
@@ -68,11 +71,12 @@ This generates `src/infrastructure/supabase/database.types.ts` from the live sch
 13. Switch catalog persistence in a preview environment first.
 14. Verify products, offers, import runs, rejects and matching reviews.
 15. Verify `/uit/<offer-id>` click attribution and redirect behavior.
-16. Verify `feed_import_orchestration` state and lease acquisition using server-only worker code.
-17. Only then enable recurring production imports.
+16. Verify orchestration lease acquire, heartbeat renewal and completion using server-only worker code.
+17. Verify a trigger correlation ID appears on its created `import_runs` rows.
+18. Only then enable recurring production imports.
 
 ## Import orchestration security
-Migration `0006` adds three `SECURITY DEFINER` functions for atomic lease acquire/completion. Their default `PUBLIC` execute permission is revoked and execution is granted only to Supabase `service_role`.
+Migrations `0006` and `0007` add `SECURITY DEFINER` worker functions for atomic lease acquire, heartbeat and completion. Their default `PUBLIC` execute permissions are revoked and execution is granted only to Supabase `service_role`.
 
 The scheduler/worker must use the service-role server client. Browser/anon code must never call these worker RPCs.
 
@@ -86,8 +90,10 @@ The scheduler/worker must use the service-role server client. Browser/anon code 
 - Click attribution is privacy-minimal.
 - Registry records contain secret references only.
 - Preview imports never deactivate missing offers.
-- Production import leases are atomic, expiring and token-protected.
+- Production import leases are atomic, expiring, heartbeat-renewable and token-protected.
+- A stale/expired worker cannot renew or complete another worker's lease.
 - Too-early scheduler triggers are rejected by persisted `next_run_at` state.
+- Trigger correlation IDs are stored on production import-run audit rows.
 
 ## Not yet possible without project access
 The following remain external completion gates:
@@ -96,6 +102,6 @@ The following remain external completion gates:
 - generating project-derived TypeScript database types;
 - validating service-role connectivity;
 - validating click inserts and registry relations live;
-- executing orchestration RPCs against the real project;
+- executing orchestration/heartbeat RPCs against the real project;
 - verifying RLS/security settings;
 - performance/index inspection with real catalog volume.
