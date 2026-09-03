@@ -25,7 +25,10 @@ describe('AffiliateIntegrationRegistryService', () => {
   it('allows direct programs without a network', async () => {
     const { repository, registry } = createRegistryTestContext()
     await registry.registerIntegration({ id: 'integration:merchant-direct', merchantId: 'merchant:direct', kind: 'direct', status: 'active', secretRef: 'env:DIRECT_PARTNER_TOKEN', trackingConfig: {} })
-    expect(await repository.getIntegration('integration:merchant-direct')).toMatchObject({ kind: 'direct', networkId: undefined })
+
+    const integration = await repository.getIntegration('integration:merchant-direct')
+    expect(integration).toMatchObject({ kind: 'direct' })
+    expect(integration).not.toHaveProperty('networkId')
   })
 
   it('rejects network integrations without a registered network', async () => {
