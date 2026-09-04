@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { ProductCard } from '@/components/storefront/product-card'
 import { SectionHeader } from '@/components/storefront/section-header'
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
+import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
@@ -125,6 +126,8 @@ export default async function CategoryPage({
           </nav>
         )}
       </section>
+
+      <WinkelnuFooter />
     </main>
   )
 }
