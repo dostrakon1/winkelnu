@@ -4,6 +4,7 @@ import { parseCatalogSearchQuery } from '@/application/catalog/search-query'
 import { ProductCard } from '@/components/storefront/product-card'
 import { SectionHeader } from '@/components/storefront/section-header'
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
+import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
@@ -149,6 +150,8 @@ export default async function SearchPage({
           ) : null}
         </nav>
       </section>
+
+      <WinkelnuFooter />
     </main>
   )
 }
