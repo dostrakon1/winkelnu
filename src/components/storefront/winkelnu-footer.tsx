@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { WinkelnuBrand } from './winkelnu-brand'
 
 export function WinkelnuFooter() {
   const year = new Date().getFullYear()
@@ -8,13 +9,8 @@ export function WinkelnuFooter() {
       <div className="wn-container py-12 sm:py-16">
         <div className="grid gap-10 lg:grid-cols-[1.25fr_0.75fr_0.75fr]">
           <div className="max-w-xl">
-            <Link
-              href="/"
-              className="inline-flex text-sm font-bold uppercase tracking-[0.24em] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)]"
-            >
-              Winkelnu.nl
-            </Link>
-            <p className="mt-4 text-xl font-semibold tracking-tight text-white">
+            <WinkelnuBrand inverse />
+            <p className="mt-5 text-xl font-semibold tracking-tight text-white">
               Ontdek. Vergelijk. Kies je winkel.
             </p>
             <p className="mt-4 max-w-lg text-sm leading-6 text-white/70">
@@ -27,7 +23,7 @@ export function WinkelnuFooter() {
             <div className="mt-4 flex flex-col items-start gap-3 text-sm text-white/78">
               <Link href="/zoeken" className="transition hover:text-white">Alle producten</Link>
               <Link href="/#categorieen" className="transition hover:text-white">Categorieën</Link>
-              <Link href="/zoeken?sort=price_asc" className="transition hover:text-white">Laagste totaalprijs</Link>
+              <Link href="/zoeken?sort=price_asc" className="transition hover:text-white">Laagste bekende prijs</Link>
             </div>
           </nav>
 
