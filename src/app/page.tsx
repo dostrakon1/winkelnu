@@ -27,18 +27,18 @@ export default async function HomePage() {
 
       <section className="relative overflow-hidden border-b border-[color:rgba(18,59,58,0.10)] bg-[image:var(--wn-gradient-welcome)]">
         <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)]" aria-hidden="true" />
-        <div className="wn-container relative py-16 sm:py-24 lg:py-28">
-          <div className="grid items-end gap-12 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="wn-container relative py-14 sm:py-24 lg:py-28">
+          <div className="grid items-end gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-12">
             <div className="max-w-3xl">
               <p className="wn-eyebrow mb-4">Slim winkelen begint hier</p>
-              <h1 className="wn-heading text-5xl sm:text-7xl">Slimmer ontdekken en vergelijken.</h1>
-              <p className="wn-body-muted mt-6 max-w-2xl text-lg leading-8 sm:text-xl">
+              <h1 className="wn-heading text-4xl sm:text-7xl">Slimmer ontdekken en vergelijken.</h1>
+              <p className="wn-body-muted mt-5 max-w-2xl text-lg leading-8 sm:mt-6 sm:text-xl">
                 Eén plek om producten en actuele aanbiedingen van verschillende winkels overzichtelijk te vergelijken.
               </p>
 
-              <WinkelnuSearchField className="mt-9 max-w-3xl" />
+              <WinkelnuSearchField className="mt-8 max-w-3xl sm:mt-9" />
 
-              <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-[color:rgba(30,36,35,0.62)] sm:text-sm">
+              <div className="mt-5 grid gap-2 text-xs font-medium text-[color:rgba(30,36,35,0.62)] sm:flex sm:flex-wrap sm:gap-x-6 sm:gap-y-2 sm:text-sm">
                 <span>Bekende verzendkosten tellen mee</span>
                 <span>Meerdere winkels naast elkaar</span>
                 <span>Je rekent af bij de winkel zelf</span>
@@ -55,12 +55,12 @@ export default async function HomePage() {
             <section id="categorieen" className="mt-10 scroll-mt-6" aria-labelledby="categories-heading">
               <p className="text-sm font-medium text-[color:rgba(30,36,35,0.62)]">Categorieën</p>
               <h2 id="categories-heading" className="wn-heading mt-2 text-2xl">Ontdek wat bij je past</h2>
-              <div className="mt-5 flex flex-wrap gap-3">
+              <div className="mt-5 flex gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:gap-3 sm:overflow-visible sm:pb-0">
                 {categories.map((category) => (
                   <Link
                     key={category.id}
                     href={`/categorie/${category.slug}`}
-                    className="rounded-full border border-[color:rgba(18,59,58,0.16)] bg-white/75 px-5 py-2.5 text-sm font-semibold text-[var(--wn-petrol)] transition hover:border-[var(--wn-petrol)] hover:bg-white"
+                    className="flex min-h-12 shrink-0 items-center rounded-full border border-[color:rgba(18,59,58,0.16)] bg-white/75 px-5 py-2.5 text-sm font-semibold text-[var(--wn-petrol)] transition hover:border-[var(--wn-petrol)] hover:bg-white"
                   >
                     {category.name}
                   </Link>
@@ -83,7 +83,7 @@ export default async function HomePage() {
             actionLabel="Bekijk alle producten"
           />
 
-          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
             {products.map(({ product, bestOffer, offerCount }) => {
               if (!bestOffer) return null
 
