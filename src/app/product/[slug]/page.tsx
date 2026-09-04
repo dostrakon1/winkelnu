@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { ComparisonSignals } from '@/components/storefront/comparison-signals'
 import { OfferCard } from '@/components/storefront/offer-card'
 import { ProductMedia } from '@/components/storefront/product-media'
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
@@ -50,6 +51,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <p className="wn-eyebrow mt-8">{product.brand ?? 'Merk onbekend'}</p>
               <h1 className="wn-heading mt-3 text-4xl sm:text-5xl">{product.title}</h1>
               {product.description ? <p className="wn-body-muted mt-6 max-w-3xl text-lg leading-8">{product.description}</p> : null}
+              <ComparisonSignals className="mt-8" />
               <div className="mt-7">
                 <WinkelnuButton href="/zoeken" variant="secondary">Verder zoeken</WinkelnuButton>
               </div>
@@ -59,7 +61,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <div className="rounded-[var(--wn-radius-2xl)] bg-[image:var(--wn-gradient-market)] p-1 shadow-[var(--wn-shadow-lg)]">
                 <div className="rounded-[calc(var(--wn-radius-2xl)-4px)] bg-[var(--wn-cream)] p-5 sm:p-6">
                   <p className="text-sm font-semibold text-[var(--wn-petrol)]">Vergelijk {offers.length} {offers.length === 1 ? 'aanbieding' : 'aanbiedingen'}</p>
-                  <p className="wn-body-muted mt-2 text-sm leading-6">Je kiest hier een winkel; de aankoop en betaling vinden bij die winkel plaats.</p>
+                  <p className="wn-body-muted mt-2 text-sm leading-6">Winkelnu vergelijkt de beschikbare feedinformatie. Controleer de definitieve prijs, voorraad en voorwaarden altijd bij de webwinkel.</p>
 
                   {offers.length === 0 ? (
                     <div className="wn-surface wn-body-muted mt-5 p-5 text-sm">
@@ -70,9 +72,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                       {offers.map(({ offer, merchant, totalAmount }) => {
                         const outboundHref = `/uit/${encodeURIComponent(offer.id)}?from=${encodeURIComponent(`/product/${product.slug}`)}`
                         const isBest = bestTotal !== null && Number(totalAmount) === bestTotal
-                        const shippingLabel = offer.shippingCost
-                          ? `Verzending: ${formatMoney(offer.shippingCost.amount)}`
-                          : 'Verzendkosten niet apart bekend'
+                        const shippingKnown = Boolean(offer.shippingCost)
+                        const shippingLabel = shippingKnown
+                          ? `Verzending: ${formatMoney(offer.shippingCost!.amount)}`
+                          : 'Verzendkosten niet bekend in de feed'
 
                         return (
                           <OfferCard
@@ -81,6 +84,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                             itemPrice={formatMoney(offer.price.amount)}
                             totalPrice={formatMoney(totalAmount)}
                             shippingLabel={shippingLabel}
+                            shippingKnown={shippingKnown}
                             availability={offer.availability}
                             href={outboundHref}
                             isBest={isBest}
@@ -91,7 +95,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   )}
 
                   <p className="mt-5 text-xs leading-5 text-[var(--wn-text-muted)]">
-                    Winkelnu verkoopt dit product niet zelf. Je gaat voor aankoop door naar de betreffende winkel.
+                    Winkelnu is geen verkoper. Je koopt bij de gekozen webwinkel; die webwinkel bepaalt de uiteindelijke prijs, levering, retour en garantie.
                   </p>
                 </div>
               </div>
