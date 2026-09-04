@@ -23,7 +23,7 @@ export default function AboutWinkelnuPage() {
       </section>
       <section>
         <h2 className="text-xl font-bold">Exploitant</h2>
-        <p className="mt-3">Winkelnu.nl wordt geëxploiteerd door Akflow.</p>
+        <p className="mt-3">Winkelnu.nl wordt geëxploiteerd door Akflow. Akflow staat ingeschreven bij de Kamer van Koophandel onder nummer 42111391.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Contact</h2>
