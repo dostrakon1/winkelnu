@@ -7,6 +7,7 @@ type StorefrontEmptyStateProps = {
   description: string
   actionHref?: string
   actionLabel?: string
+  headingLevel?: 'h1' | 'h2' | 'h3'
 }
 
 export function StorefrontEmptyState({
@@ -15,7 +16,10 @@ export function StorefrontEmptyState({
   description,
   actionHref,
   actionLabel,
+  headingLevel = 'h2',
 }: StorefrontEmptyStateProps) {
+  const Heading = headingLevel
+
   return (
     <section className="wn-surface relative overflow-hidden p-7 sm:p-9">
       <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[color:rgba(233,120,61,0.10)]" aria-hidden="true" />
@@ -23,7 +27,7 @@ export function StorefrontEmptyState({
       <div className="relative max-w-xl">
         <WinkelnuMark className="mb-5" />
         <p className="wn-eyebrow">{eyebrow}</p>
-        <h2 className="wn-heading mt-3 text-2xl sm:text-3xl">{title}</h2>
+        <Heading className="wn-heading mt-3 text-2xl sm:text-3xl">{title}</Heading>
         <p className="wn-body-muted mt-3 leading-7">{description}</p>
         {actionHref && actionLabel ? (
           <WinkelnuButton href={actionHref} variant="secondary" className="mt-6">
