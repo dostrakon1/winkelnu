@@ -13,6 +13,7 @@ type ProductCardProps = {
   merchantName?: string | null
   offerCount: number
   availability?: string | null
+  shippingKnown?: boolean
 }
 
 export function ProductCard({
@@ -25,9 +26,11 @@ export function ProductCard({
   merchantName,
   offerCount,
   availability,
+  shippingKnown = false,
 }: ProductCardProps) {
   const hasOffer = Boolean(price)
   const inStock = availability === 'in_stock'
+  const priceLabel = shippingKnown ? 'Beste bekende totaalprijs' : 'Beste bekende productprijs'
 
   return (
     <article className="wn-surface wn-card-interactive group flex h-full flex-col p-4 sm:p-5">
@@ -45,12 +48,13 @@ export function ProductCard({
         {hasOffer ? (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
             <div className="min-w-0">
-              <p className="text-xs font-medium text-[var(--wn-text-muted)]">Beste bekende totaalprijs</p>
+              <p className="text-xs font-medium text-[var(--wn-text-muted)]">{priceLabel}</p>
               <p className="mt-1 text-2xl font-bold tracking-tight text-[var(--wn-ink)]">{price}</p>
               <p className="mt-1 text-xs leading-5 text-[color:rgba(30,36,35,0.56)]">Bij {merchantName ?? 'webwinkel'} · {offerCount} {offerCount === 1 ? 'aanbieding' : 'aanbiedingen'}</p>
+              {!shippingKnown ? <p className="mt-1 text-xs font-medium text-[var(--wn-warm)]">Verzendkosten nog niet bekend.</p> : null}
             </div>
             <div className="shrink-0">
-              <WinkelnuBadge variant={inStock ? 'success' : 'warning'}>{inStock ? 'Op voorraad' : 'Bekijk status'}</WinkelnuBadge>
+              <WinkelnuBadge variant={inStock ? 'success' : 'warning'}>{inStock ? 'Op voorraad' : 'Controleer voorraad'}</WinkelnuBadge>
             </div>
           </div>
         ) : (
