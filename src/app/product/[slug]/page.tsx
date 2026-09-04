@@ -36,143 +36,123 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   if (!item) notFound()
 
-  const { product, offers } = item
-  const bestOffer = offers[0]
-  const bestShippingKnown = Boolean(bestOffer?.offer.shippingCost)
-  const bestPriceLabel = bestShippingKnown ? 'Laagste bekende totaalprijs' : 'Laagste bekende productprijs'
+  const { product, category, offers } = item
+  const bestOffer = offers[0]?.offer
+  const bestKnownTotal = offers[0]?.totalAmount
 
   return (
     <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
       <WinkelnuHeader />
 
-      <div className="border-b border-[color:rgba(18,59,58,0.08)] bg-white/70">
-        <div className="wn-container flex min-h-12 items-center gap-2 overflow-x-auto py-2 text-xs text-[var(--wn-text-muted)]">
-          <Link href="/" className="shrink-0 font-semibold text-[var(--wn-petrol)] hover:underline">Home</Link>
+      <section className="wn-container py-7 sm:py-10 lg:py-12">
+        <nav aria-label="Broodkruimel" className="mb-6 flex flex-wrap items-center gap-2 text-sm text-[var(--wn-text-muted)]">
+          <Link href="/" className="transition hover:text-[var(--wn-petrol)]">Home</Link>
           <span aria-hidden="true">/</span>
-          <Link href="/zoeken" className="shrink-0 font-semibold text-[var(--wn-petrol)] hover:underline">Producten</Link>
-          <span aria-hidden="true">/</span>
-          <span className="truncate" aria-current="page">{product.title}</span>
-        </div>
-      </div>
+          {category ? (
+            <>
+              <Link href={`/categorie/${category.slug}`} className="transition hover:text-[var(--wn-petrol)]">{category.name}</Link>
+              <span aria-hidden="true">/</span>
+            </>
+          ) : null}
+          <span aria-current="page" className="max-w-full truncate font-medium text-[var(--wn-ink)]">{product.title}</span>
+        </nav>
 
-      <section className="border-b border-[color:rgba(18,59,58,0.10)] bg-[image:var(--wn-gradient-morning)]">
-        <div className="wn-container py-8 sm:py-12 lg:py-16">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(22rem,0.92fr)] lg:items-start lg:gap-12">
-            <section>
-              <ProductMedia
-                src={product.imageUrl}
-                alt={product.title}
-                variant="detail"
-                className="rounded-[var(--wn-radius-2xl)] shadow-[var(--wn-shadow-sm)]"
-              />
-              <p className="mt-3 text-xs text-[var(--wn-text-muted)]">Productbeeld wordt aangeleverd via de aangesloten productfeed.</p>
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+          <div className="min-w-0 space-y-8">
+            <section className="grid gap-7 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-start">
+              <ProductMedia src={product.imageUrl} alt={product.title} variant="detail" />
 
-              <div className="mt-7 flex flex-wrap items-center gap-2">
-                <WinkelnuBadge>{product.brand ?? 'Merk onbekend'}</WinkelnuBadge>
-                {offers.length > 0 ? (
-                  <WinkelnuBadge variant="success">
-                    {offers.length} {offers.length === 1 ? 'aanbieding' : 'aanbiedingen'}
-                  </WinkelnuBadge>
-                ) : (
-                  <WinkelnuBadge variant="warning">Geen actieve aanbieding</WinkelnuBadge>
-                )}
-              </div>
-
-              <h1 className="wn-heading mt-4 max-w-3xl text-3xl sm:text-4xl lg:text-5xl">{product.title}</h1>
-              {product.description ? (
-                <p className="wn-body-muted mt-5 max-w-3xl text-base leading-7 sm:text-lg sm:leading-8">{product.description}</p>
-              ) : null}
-
-              {bestOffer ? (
-                <div className="mt-7 rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.12)] bg-white p-4 shadow-[var(--wn-shadow-xs)] sm:p-5 lg:hidden">
-                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--wn-text-muted)]">{bestPriceLabel}</p>
-                  <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
-                    <div>
-                      <p className="text-3xl font-bold tracking-tight text-[var(--wn-ink)]">{formatMoney(bestOffer.totalAmount)}</p>
-                      <p className="mt-1 text-xs text-[var(--wn-text-muted)]">
-                        Bij {bestOffer.merchant?.name ?? 'webwinkel'}{bestShippingKnown ? ' · bekende verzending inbegrepen' : ' · verzending nog onbekend'}
-                      </p>
-                    </div>
-                    <WinkelnuButton href="#aanbiedingen" variant="warm">Bekijk winkels ↓</WinkelnuButton>
-                  </div>
+              <div>
+                <div className="flex flex-wrap gap-2">
+                  {category ? <WinkelnuBadge>{category.name}</WinkelnuBadge> : null}
+                  {product.brand ? <WinkelnuBadge variant="neutral">{product.brand}</WinkelnuBadge> : null}
+                  {bestOffer ? <WinkelnuBadge variant="success">{bestOffer.availability === 'in_stock' ? 'Op voorraad' : 'Controleer voorraad'}</WinkelnuBadge> : null}
                 </div>
-              ) : null}
 
-              <ProductFacts brand={product.brand} gtin={product.gtin} mpn={product.mpn} offerCount={offers.length} />
-              <ComparisonSignals className="mt-8" />
+                <h1 className="wn-heading mt-4 text-3xl sm:text-4xl lg:text-5xl">{product.title}</h1>
+                {product.description ? <p className="wn-body-muted mt-5 max-w-2xl text-base leading-8 sm:text-lg">{product.description}</p> : null}
 
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <WinkelnuButton href="#aanbiedingen" variant="warm" className="sm:hidden">Bekijk aanbiedingen</WinkelnuButton>
-                <WinkelnuButton href="/zoeken" variant="secondary">Verder zoeken</WinkelnuButton>
+                {bestOffer && bestKnownTotal ? (
+                  <div className="mt-6 rounded-[var(--wn-radius-lg)] border border-[color:rgba(18,59,58,0.10)] bg-white p-5 lg:hidden">
+                    <p className="text-xs font-semibold uppercase tracking-[0.09em] text-[var(--wn-text-muted)]">Vanaf bekende prijs</p>
+                    <p className="mt-2 text-3xl font-bold text-[var(--wn-petrol-deep)]">{formatMoney(bestKnownTotal)}</p>
+                    <WinkelnuButton href="#aanbiedingen" variant="warm" className="mt-4 w-full">Vergelijk winkels</WinkelnuButton>
+                  </div>
+                ) : null}
               </div>
             </section>
 
-            <aside id="aanbiedingen" className="scroll-mt-4 lg:sticky lg:top-6">
-              <div className="rounded-[var(--wn-radius-2xl)] bg-[image:var(--wn-gradient-market)] p-1 shadow-[var(--wn-shadow-lg)]">
-                <div className="rounded-[calc(var(--wn-radius-2xl)-4px)] bg-[var(--wn-cream)] p-4 sm:p-6">
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div>
-                      <p className="wn-eyebrow">Winkelvergelijking</p>
-                      <h2 className="wn-heading mt-2 text-2xl">Vergelijk {offers.length} {offers.length === 1 ? 'aanbieding' : 'aanbiedingen'}</h2>
-                    </div>
-                    {bestOffer ? <WinkelnuBadge variant="success">Gesorteerd op prijs</WinkelnuBadge> : null}
-                  </div>
+            <ProductFacts product={product} category={category} />
 
-                  <p className="wn-body-muted mt-3 text-sm leading-6">
-                    Winkelnu vergelijkt beschikbare feedinformatie. Bekende verzendkosten tellen mee; controleer de definitieve prijs, voorraad en voorwaarden altijd bij de webwinkel.
-                  </p>
+            <section id="aanbiedingen" className="scroll-mt-24">
+              <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="wn-eyebrow">Vergelijk winkels</p>
+                  <h2 className="wn-heading mt-2 text-2xl sm:text-3xl">Beschikbare aanbiedingen</h2>
+                </div>
+                <p className="wn-body-muted max-w-md text-sm">We tonen bekende prijsinformatie uit de feed. Controleer de uiteindelijke prijs en voorwaarden altijd bij de webwinkel.</p>
+              </div>
 
-                  {bestOffer ? (
-                    <div className="mt-5 rounded-[var(--wn-radius-lg)] border border-[color:rgba(18,59,58,0.10)] bg-white/80 p-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--wn-text-muted)]">{bestPriceLabel}</p>
-                      <p className="mt-1 text-3xl font-bold tracking-tight text-[var(--wn-ink)]">{formatMoney(bestOffer.totalAmount)}</p>
-                      <p className="mt-1 text-xs leading-5 text-[var(--wn-text-muted)]">
-                        {bestShippingKnown ? 'Bekende verzendkosten zijn meegenomen.' : 'Verzendkosten ontbreken in de feed en kunnen de uiteindelijke prijs verhogen.'}
-                      </p>
-                    </div>
-                  ) : null}
+              <ComparisonSignals />
 
-                  {offers.length === 0 ? (
-                    <div className="wn-surface wn-body-muted mt-5 p-5 text-sm">
-                      Voor dit product is momenteel geen actieve aanbieding beschikbaar.
-                    </div>
-                  ) : (
-                    <div className="mt-5 space-y-4">
-                      {offers.map(({ offer, merchant, totalAmount }, index) => {
-                        const outboundHref = `/uit/${encodeURIComponent(offer.id)}?from=${encodeURIComponent(`/product/${product.slug}`)}`
-                        const shippingKnown = Boolean(offer.shippingCost)
-                        const shippingLabel = shippingKnown
-                          ? `Verzending: ${formatMoney(offer.shippingCost!.amount)}`
-                          : 'Verzendkosten niet bekend in de feed'
+              {offers.length === 0 ? (
+                <div className="wn-surface mt-5 p-6">
+                  <p className="font-semibold">Er zijn momenteel geen actieve aanbiedingen voor dit product.</p>
+                  <p className="wn-body-muted mt-2 text-sm">Probeer later opnieuw of bekijk andere producten.</p>
+                </div>
+              ) : (
+                <div className="mt-5 space-y-4">
+                  {offers.map(({ offer, merchant, totalAmount }, index) => {
+                    const outboundHref = `/uit/${encodeURIComponent(offer.id)}?from=${encodeURIComponent(`/product/${product.slug}`)}`
+                    const shippingKnown = Boolean(offer.shippingCost)
+                    const shippingLabel = shippingKnown
+                      ? `Verzending: ${formatMoney(offer.shippingCost!.amount)}`
+                      : 'Verzendkosten niet bekend in de feed'
 
-                        return (
-                          <div key={offer.id}>
-                            <p className="mb-2 text-xs font-semibold text-[var(--wn-text-muted)]">
-                              {index === 0 ? 'Eerste op basis van bekende prijs' : `Optie ${index + 1}`}
-                            </p>
-                            <OfferCard
-                              merchantName={merchant?.name ?? 'Webwinkel'}
-                              itemPrice={formatMoney(offer.price.amount)}
-                              totalPrice={formatMoney(totalAmount)}
-                              shippingLabel={shippingLabel}
-                              shippingKnown={shippingKnown}
-                              availability={offer.availability}
-                              href={outboundHref}
-                              isBest={index === 0}
-                            />
-                          </div>
-                        )
-                      })}
-                    </div>
-                  )}
+                    return (
+                      <div key={offer.id}>
+                        <p className="mb-2 text-xs font-semibold text-[var(--wn-text-muted)]">
+                          {index === 0 ? 'Eerste op basis van bekende prijs' : `Optie ${index + 1}`}
+                        </p>
+                        <OfferCard
+                          merchantName={merchant?.name ?? 'Webwinkel'}
+                          itemPrice={formatMoney(offer.price.amount)}
+                          totalPrice={formatMoney(totalAmount)}
+                          shippingLabel={shippingLabel}
+                          shippingKnown={shippingKnown}
+                          availability={offer.availability ?? 'unknown'}
+                          href={outboundHref}
+                          isBest={index === 0}
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </section>
+          </div>
 
-                  <div className="mt-5 rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4 text-xs leading-5 text-[var(--wn-petrol-deep)]">
-                    Winkelnu is geen verkoper. Je koopt bij de gekozen webwinkel; die webwinkel bepaalt de uiteindelijke prijs, betaling, levering, retour en garantie.
-                  </div>
+          <aside className="hidden lg:block">
+            <div className="sticky top-24">
+              <div className="wn-surface p-5">
+                <p className="wn-eyebrow">Vergelijk</p>
+                <h2 className="mt-2 text-xl font-bold text-[var(--wn-ink)]">Kies een webwinkel</h2>
+                {bestOffer && bestKnownTotal ? (
+                  <>
+                    <p className="mt-4 text-sm text-[var(--wn-text-muted)]">Vanaf bekende prijs</p>
+                    <p className="mt-1 text-3xl font-bold text-[var(--wn-petrol-deep)]">{formatMoney(bestKnownTotal)}</p>
+                    <WinkelnuButton href="#aanbiedingen" variant="warm" className="mt-5 w-full">Bekijk aanbiedingen</WinkelnuButton>
+                  </>
+                ) : (
+                  <p className="wn-body-muted mt-4 text-sm">Er zijn momenteel geen actieve aanbiedingen beschikbaar.</p>
+                )}
+
+                <div className="mt-5 rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4 text-xs leading-5 text-[var(--wn-petrol-deep)]">
+                  Winkelnu is geen verkoper. Je koopt bij de gekozen webwinkel; die webwinkel bepaalt de uiteindelijke prijs, betaling, levering, retour en garantie.
                 </div>
               </div>
-            </aside>
-          </div>
+            </div>
+          </aside>
         </div>
       </section>
 
