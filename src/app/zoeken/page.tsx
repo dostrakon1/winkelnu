@@ -62,33 +62,33 @@ export default async function SearchPage({
             description="Vergelijk producten op prijs, bekende verzendkosten, beschikbaarheid, categorie en merk."
           />
 
-          <form action="/zoeken" method="get" className="wn-surface mt-8 grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4">
+          <form action="/zoeken" method="get" className="wn-surface mt-8 grid gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4">
             <label className="sm:col-span-2 lg:col-span-2">
               <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Zoekterm</span>
-              <input name="q" defaultValue={query.term} placeholder="Bijv. hoofdtelefoon" className="wn-input mt-1" />
+              <input name="q" defaultValue={query.term} placeholder="Bijv. hoofdtelefoon" className="wn-input mt-1 text-base sm:text-sm" />
             </label>
             <label>
               <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Categorie</span>
-              <select name="categorie" defaultValue={query.categorySlug ?? ''} className="wn-input mt-1">
+              <select name="categorie" defaultValue={query.categorySlug ?? ''} className="wn-input mt-1 text-base sm:text-sm">
                 <option value="">Alle categorieën</option>
                 {categories.map((category) => <option key={category.id} value={category.slug}>{category.name}</option>)}
               </select>
             </label>
             <label>
               <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Merk</span>
-              <input name="merk" defaultValue={query.brand} placeholder="Merk" className="wn-input mt-1" />
+              <input name="merk" defaultValue={query.brand} placeholder="Merk" className="wn-input mt-1 text-base sm:text-sm" />
             </label>
             <label>
               <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Min. bekende prijs</span>
-              <input name="min" inputMode="decimal" defaultValue={query.minPrice} placeholder="0" className="wn-input mt-1" />
+              <input name="min" inputMode="decimal" defaultValue={query.minPrice} placeholder="0" className="wn-input mt-1 text-base sm:text-sm" />
             </label>
             <label>
               <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Max. bekende prijs</span>
-              <input name="max" inputMode="decimal" defaultValue={query.maxPrice} placeholder="500" className="wn-input mt-1" />
+              <input name="max" inputMode="decimal" defaultValue={query.maxPrice} placeholder="500" className="wn-input mt-1 text-base sm:text-sm" />
             </label>
             <label>
               <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Sorteren</span>
-              <select name="sort" defaultValue={query.sort} className="wn-input mt-1">
+              <select name="sort" defaultValue={query.sort} className="wn-input mt-1 text-base sm:text-sm">
                 <option value="relevance">Relevantie</option>
                 <option value="price_asc">Laagste bekende prijs</option>
                 <option value="price_desc">Hoogste bekende prijs</option>
@@ -97,13 +97,13 @@ export default async function SearchPage({
             </label>
             <div className="flex items-end">
               <label className="flex min-h-12 items-center gap-3 text-sm font-medium text-[color:rgba(30,36,35,0.72)]">
-                <input type="checkbox" name="voorraad" value="1" defaultChecked={query.inStockOnly} className="h-4 w-4 accent-[var(--wn-petrol)]" />
+                <input type="checkbox" name="voorraad" value="1" defaultChecked={query.inStockOnly} className="h-5 w-5 accent-[var(--wn-petrol)]" />
                 Alleen op voorraad
               </label>
             </div>
-            <div className="flex flex-wrap gap-3 sm:col-span-2 lg:col-span-4">
-              <WinkelnuButton type="submit">Zoeken</WinkelnuButton>
-              <WinkelnuButton href="/zoeken" variant="secondary">Wis filters</WinkelnuButton>
+            <div className="sticky bottom-3 z-10 -mx-1 flex gap-2 rounded-[var(--wn-radius-lg)] border border-[color:rgba(18,59,58,0.10)] bg-white/95 p-2 shadow-[var(--wn-shadow-md)] backdrop-blur sm:static sm:col-span-2 sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none lg:col-span-4">
+              <WinkelnuButton type="submit" className="flex-1 sm:flex-none">Toon resultaten</WinkelnuButton>
+              <WinkelnuButton href="/zoeken" variant="secondary" className="flex-1 sm:flex-none">Wis filters</WinkelnuButton>
             </div>
           </form>
         </div>
@@ -127,7 +127,7 @@ export default async function SearchPage({
             />
           </div>
         ) : (
-          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
             {result.products.map(({ product, bestOffer, offerCount }) => {
               if (!bestOffer) return null
 
@@ -152,10 +152,10 @@ export default async function SearchPage({
 
         <nav className="mt-10 flex items-center justify-between border-t border-[color:rgba(18,59,58,0.10)] pt-8" aria-label="Zoekresultaten pagina's">
           {result.hasPrevious ? (
-            <Link rel="prev" href={searchHref(raw, { pagina: result.page - 1 })} className="text-sm font-semibold text-[var(--wn-petrol)] hover:underline">← Vorige</Link>
+            <Link rel="prev" href={searchHref(raw, { pagina: result.page - 1 })} className="flex min-h-12 items-center text-sm font-semibold text-[var(--wn-petrol)] hover:underline">← Vorige</Link>
           ) : <span />}
           {result.hasNext ? (
-            <Link rel="next" href={searchHref(raw, { pagina: result.page + 1 })} className="text-sm font-semibold text-[var(--wn-petrol)] hover:underline">Volgende →</Link>
+            <Link rel="next" href={searchHref(raw, { pagina: result.page + 1 })} className="flex min-h-12 items-center text-sm font-semibold text-[var(--wn-petrol)] hover:underline">Volgende →</Link>
           ) : null}
         </nav>
       </section>
