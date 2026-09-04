@@ -22,6 +22,7 @@ export default function OfferUnavailablePage() {
             description="De prijs, voorraad of affiliate-link kan inmiddels zijn gewijzigd. Bekijk de actuele producten en vergelijk opnieuw welke winkelinformatie nu beschikbaar is."
             actionHref="/zoeken"
             actionLabel="Bekijk actuele producten"
+            headingLevel="h1"
           />
         </div>
       </section>
