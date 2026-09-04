@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 type ProductMediaProps = {
   src?: string | null
@@ -42,11 +42,8 @@ function ProductMediaFallback({ variant }: { variant: 'card' | 'detail' }) {
 
 export function ProductMedia({ src, alt, variant = 'card', className = '' }: ProductMediaProps) {
   const normalized = safeImageUrl(src)
-  const [failed, setFailed] = useState(false)
-
-  useEffect(() => {
-    setFailed(false)
-  }, [normalized])
+  const [failedSrc, setFailedSrc] = useState<string | null>(null)
+  const failed = Boolean(normalized && failedSrc === normalized)
 
   const sizeClass = variant === 'detail' ? 'min-h-80 sm:min-h-96' : 'aspect-[4/3] min-h-44'
   const classes = `relative overflow-hidden rounded-[var(--wn-radius-lg)] border border-[color:rgba(18,59,58,0.08)] bg-white ${sizeClass} ${className}`.trim()
@@ -65,7 +62,7 @@ export function ProductMedia({ src, alt, variant = 'card', className = '' }: Pro
         loading={variant === 'card' ? 'lazy' : 'eager'}
         decoding="async"
         referrerPolicy="no-referrer"
-        onError={() => setFailed(true)}
+        onError={() => setFailedSrc(normalized)}
         className="absolute inset-0 h-full w-full object-contain p-5 transition-transform duration-200 group-hover:scale-[1.025]"
       />
     </div>
