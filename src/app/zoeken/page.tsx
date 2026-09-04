@@ -59,7 +59,7 @@ export default async function SearchPage({
           <SectionHeader
             eyebrow="Zoeken & filteren"
             title="Vind de aanbieding die bij je past."
-            description="Vergelijk producten op bekende totaalprijs, beschikbaarheid, categorie en merk."
+            description="Vergelijk producten op prijs, bekende verzendkosten, beschikbaarheid, categorie en merk."
           />
 
           <form action="/zoeken" method="get" className="wn-surface mt-8 grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -79,19 +79,19 @@ export default async function SearchPage({
               <input name="merk" defaultValue={query.brand} placeholder="Merk" className="wn-input mt-1" />
             </label>
             <label>
-              <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Min. totaalprijs</span>
+              <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Min. bekende prijs</span>
               <input name="min" inputMode="decimal" defaultValue={query.minPrice} placeholder="0" className="wn-input mt-1" />
             </label>
             <label>
-              <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Max. totaalprijs</span>
+              <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Max. bekende prijs</span>
               <input name="max" inputMode="decimal" defaultValue={query.maxPrice} placeholder="500" className="wn-input mt-1" />
             </label>
             <label>
               <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Sorteren</span>
               <select name="sort" defaultValue={query.sort} className="wn-input mt-1">
                 <option value="relevance">Relevantie</option>
-                <option value="price_asc">Laagste totaalprijs</option>
-                <option value="price_desc">Hoogste totaalprijs</option>
+                <option value="price_asc">Laagste bekende prijs</option>
+                <option value="price_desc">Hoogste bekende prijs</option>
                 <option value="title_asc">Naam A–Z</option>
               </select>
             </label>
@@ -113,7 +113,7 @@ export default async function SearchPage({
         <SectionHeader
           eyebrow={`Pagina ${result.page}`}
           title={query.term ? `Resultaten voor “${query.term}”` : 'Producten'}
-          description="De getoonde prijs is de beste bekende totaalprijs wanneer verzendkosten bekend zijn."
+          description="Bekende verzendkosten worden meegenomen. Als verzendkosten ontbreken, tonen we dat bij het product."
         />
 
         {result.products.length === 0 ? (
@@ -143,6 +143,7 @@ export default async function SearchPage({
                   merchantName={bestOffer.merchant?.name}
                   offerCount={offerCount}
                   availability={bestOffer.offer.availability}
+                  shippingKnown={Boolean(bestOffer.offer.shippingCost)}
                 />
               )
             })}
