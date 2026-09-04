@@ -71,7 +71,7 @@ export default async function CategoryPage({
           <SectionHeader
             eyebrow="Categorie"
             title={discovery.category.name}
-            description="Vergelijk producten en aanbiedingen van verschillende winkels. Winkelnu rangschikt bekende totaalprijzen inclusief verzendkosten waar die beschikbaar zijn."
+            description="Vergelijk producten en aanbiedingen van verschillende winkels. Bekende verzendkosten tellen mee; ontbrekende verzendkosten worden duidelijk aangegeven."
           />
           <div className="mt-7 flex flex-wrap gap-3">
             <WinkelnuButton href="/zoeken" variant="secondary">Zoek binnen Winkelnu</WinkelnuButton>
@@ -103,6 +103,7 @@ export default async function CategoryPage({
                 merchantName={bestOffer?.merchant?.name}
                 offerCount={offerCount}
                 availability={bestOffer?.offer.availability}
+                shippingKnown={Boolean(bestOffer?.offer.shippingCost)}
               />
             ))}
           </div>
