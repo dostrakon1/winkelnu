@@ -13,6 +13,7 @@ export default function NotFound() {
           description="De link kan verouderd zijn of het product is niet langer beschikbaar in Winkelnu. Zoek opnieuw of ga terug naar het productoverzicht."
           actionHref="/zoeken"
           actionLabel="Bekijk producten"
+          headingLevel="h1"
         />
       </section>
       <WinkelnuFooter />
