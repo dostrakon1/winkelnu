@@ -125,20 +125,25 @@ Already implemented:
 - no fabricated reviews, scarcity, merchant scores or discount claims are used;
 - remote feed media failure degrades to a branded fallback rather than breaking discovery.
 
+Policy architecture now established:
+
+- `docs/compliance/WINKELNU_COMPLIANCE_PRIVACY_AFFILIATE_POLICY_ARCHITECTURE_v1.0.md` defines the merchant-of-record boundary, affiliate disclosure layers, commission-independent organic ranking baseline, price/ranking transparency, privacy data inventory, cookie/consent architecture, retention decision points, public legal route contract and future-feature privacy rules.
+
 Still required for public launch:
 
-- a permanent public explanation of affiliate compensation and comparison/ranking methodology;
-- public privacy information covering click attribution, operational logs and any analytics actually deployed;
-- cookie/consent treatment based on the actual tracking stack, not a generic banner;
-- company/contact/disclaimer information appropriate to the legal operator of Winkelnu.
+- verified legal operator identity and monitored contact/privacy route;
+- verified production processor/logging/analytics/cookie inventory;
+- final public pages for affiliate/comparison methodology, privacy, cookies, operator information and disclaimer;
+- footer legal navigation and any necessary consent-preference control;
+- live compliance evidence proving policy and runtime behavior match.
 
 ## Legal/compliance launch blocker
 
-The repository currently does **not** contain complete public legal/compliance routes such as privacy, cookies, affiliate/comparison methodology and operator/company information.
+The repository now contains the authoritative **policy architecture**, but still does **not** contain the final public legal/compliance routes.
 
-This is intentionally recorded as an unresolved public-launch blocker rather than filled with guessed legal identity or placeholder contact data.
+This distinction is intentional. The architecture forbids filling those pages with guessed operator identity, generic processor lists or invented retention facts.
 
-The next compliance step must establish the authoritative operator details and actual data-processing/tracking behavior first, then publish the legal pages and footer links from that verified information.
+Before public pages are written, the next compliance step must verify the real operator identity, contact route and production data-processing/tracking behavior. Only then should those facts be rendered into public legal pages and footer links.
 
 Do not mark Winkelnu public-launch-ready until this gate is closed.
 
@@ -191,11 +196,13 @@ Before public promotion, validate with at least one production-shaped real feed:
 | Crawler boundaries | Hardened | intern/api/outbound redirect excluded |
 | Sitemap | Ready for early catalog | 500-product scale ceiling remains |
 | Affiliate outbound semantics | Implemented | final live redirect acceptance still required |
+| Compliance/privacy/affiliate architecture | **Implemented** | v1.0 policy baseline committed |
+| Verified operator + production data inventory | **BLOCKER** | required before final legal copy |
 | Internal operator indexing | Hardened | noindex plus robots; auth remains security boundary |
 | Exact production CI/build | Pending per final release commit | must be green on the promoted SHA |
 | Real production-shaped feed QA | Pending | required before launch |
 | Accessibility/manual mobile QA | Pending | required before launch |
-| Public legal/compliance pages | **BLOCKER** | authoritative operator/data-processing facts required |
+| Public legal/compliance pages | **BLOCKER** | build after verified v1.2 facts |
 | Production domain/canonical verification | Pending | validate on final deployed hostname |
 
 ## Definition of public-launch-ready
@@ -212,6 +219,6 @@ Winkelnu may be considered public-launch-ready only when:
 
 ## Next step
 
-**Launch Readiness v1.1 — Compliance, Privacy & Affiliate Policy Architecture**
+**Launch Readiness v1.2 — Verified Operator & Production Data Inventory**
 
-This should establish the verified public legal model for Winkelnu before writing final legal pages. It should cover operator identity, affiliate disclosure, ranking methodology, privacy/data inventory, cookie/analytics policy, retention, user rights/contact routes, and the exact footer/legal navigation contract.
+Verify the legal operator identity, monitored contact/privacy channel, real production processors, hosting/security logging, analytics/browser storage, retention settings and transfer facts. This must be a factual evidence step so the final public legal pages can be built without placeholders or assumptions.
