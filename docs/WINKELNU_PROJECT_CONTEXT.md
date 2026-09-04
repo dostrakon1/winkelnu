@@ -1,8 +1,8 @@
 # WINKELNU PROJECT CONTEXT
 
-Version: 1.0
+Version: 1.1
 Status: Active project baseline
-Date: 2026-09-03
+Date: 2026-09-04
 Domain: https://winkelnu.nl
 Repository: dostrakon1/winkelnu
 
@@ -145,19 +145,23 @@ Priorities:
 
 Winkelnu must be transparent about its affiliate/comparison role.
 
-The later compliance architecture must explicitly cover at least:
+The authoritative policy architecture is now:
 
-- Affiliate disclosure.
-- Merchant relationship disclosure.
-- Price/availability freshness and disclaimers where needed.
-- Ranking and sorting transparency where legally required.
-- Privacy and analytics.
-- Cookies/consent.
-- Click tracking.
-- Consumer-information boundaries between Winkelnu and the merchant.
-- Sponsored/promoted placements if introduced.
+`docs/compliance/WINKELNU_COMPLIANCE_PRIVACY_AFFILIATE_POLICY_ARCHITECTURE_v1.0.md`
 
-The next previously identified architecture phase after the established foundation is **Step 11 — Compliance, Privacy & Affiliate Policy Architecture v1.0**. The build roadmap may introduce repository/tooling milestones before that policy phase without invalidating the earlier product architecture.
+That baseline fixes the following principles:
+
+- Winkelnu is the comparison/discovery service, not the seller for external merchant offers.
+- Affiliate compensation must be disclosed clearly.
+- Affiliate commission is not an ordinary organic ranking parameter.
+- Paid/sponsored placement may not influence presentation silently; if introduced later it requires explicit data, policy and visible labelling.
+- Known shipping may be included in a known total; unknown shipping must remain visibly unknown.
+- Application-level affiliate click attribution remains privacy-minimal and intentionally does not store raw IP addresses or user-agent fingerprints in the click event.
+- Generic/decorative cookie banners are not acceptable; consent controls must correspond to real tracking technology.
+- Tracking requiring consent may not run before valid consent, and rejecting optional tracking may not make the storefront unusable.
+- Final public legal pages must be generated from verified operator, processor, retention and production-tracking facts rather than boilerplate assumptions.
+
+The current next compliance phase is **Launch Readiness v1.2 — Verified Operator & Production Data Inventory**. Final public legal pages remain a launch blocker until that factual inventory is complete.
 
 ## 11. Initial integrations
 
@@ -186,7 +190,7 @@ Source code, documentation, branches, commits and change history.
 Preview builds and production deployment for the web application.
 
 ### Database
-Introduced when persistent catalogue/application data is required. Current preferred direction: PostgreSQL/Supabase.
+PostgreSQL/Supabase persistence for catalogue, affiliate attribution, internal operations and related application data.
 
 ### Workers / scheduled jobs
 Feed imports and other non-request-bound processing must be kept logically separate from storefront rendering and designed so they can later move to dedicated infrastructure if scale requires it.
@@ -198,11 +202,14 @@ The initial foundation must not prematurely implement:
 - A Winkelnu-owned checkout for external merchant products.
 - Complex personalisation before core catalogue quality works.
 - AI features without a defined user problem.
-- Merchant integrations before the canonical data model and ingestion contracts are ready.
 - Large-scale SEO page generation before data quality and indexation rules are established.
+- Behavioural advertising/profiling merely because affiliate monetisation exists.
+- Generic legal/cookie pages that describe processors or tracking not actually used.
 
 ## 15. Decision rule
 
 When choosing between a quick implementation and a structure that safely supports multiple merchants, feeds and changing offers, prefer the latter unless it creates disproportionate complexity for the current milestone.
+
+When choosing between collecting more visitor data and meeting a product need with less data, prefer the lower-data design unless the additional processing has a documented purpose, lawful basis and launch decision.
 
 This document is the central project baseline for the repository and should be updated when a formally accepted architectural decision changes it.
