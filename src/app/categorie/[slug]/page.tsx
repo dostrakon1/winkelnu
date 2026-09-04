@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ProductCard } from '@/components/storefront/product-card'
 import { SectionHeader } from '@/components/storefront/section-header'
+import { StorefrontEmptyState } from '@/components/storefront/storefront-empty-state'
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
@@ -81,9 +82,13 @@ export default async function CategoryPage({
 
       <section className="wn-container wn-section">
         {discovery.items.length === 0 ? (
-          <div className="wn-surface wn-body-muted p-8">
-            Er zijn op dit moment nog geen actieve producten in deze categorie.
-          </div>
+          <StorefrontEmptyState
+            eyebrow="Categorie nog leeg"
+            title="Hier staan op dit moment nog geen actieve producten."
+            description="Aanbod kan veranderen wanneer aangesloten winkels hun productfeeds bijwerken. Bekijk ondertussen alle producten op Winkelnu."
+            actionHref="/zoeken"
+            actionLabel="Bekijk alle producten"
+          />
         ) : (
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {discovery.items.map(({ product, bestOffer, offerCount }) => (
