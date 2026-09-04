@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { parseCatalogSearchQuery } from '@/application/catalog/search-query'
 import { ProductCard } from '@/components/storefront/product-card'
 import { SectionHeader } from '@/components/storefront/section-header'
+import { StorefrontEmptyState } from '@/components/storefront/storefront-empty-state'
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
@@ -116,8 +117,14 @@ export default async function SearchPage({
         />
 
         {result.products.length === 0 ? (
-          <div className="wn-surface wn-body-muted mt-8 p-8">
-            Geen producten gevonden met deze combinatie. Pas je zoekterm of filters aan.
+          <div className="mt-8">
+            <StorefrontEmptyState
+              eyebrow="Geen resultaten"
+              title="We vinden nog geen product met deze combinatie."
+              description="Pas je zoekterm of filters aan. Je kunt ook alle filters wissen en opnieuw beginnen."
+              actionHref="/zoeken"
+              actionLabel="Wis alle filters"
+            />
           </div>
         ) : (
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
