@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { OfferCard } from '@/components/storefront/offer-card'
+import { ProductMedia } from '@/components/storefront/product-media'
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
@@ -44,9 +45,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="wn-container py-12 sm:py-16">
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
             <section>
-              <div className="flex min-h-80 items-center justify-center rounded-[var(--wn-radius-2xl)] border border-[color:rgba(18,59,58,0.10)] bg-[#f0ebe2] px-6 text-center text-sm font-medium text-[color:rgba(30,36,35,0.48)] sm:min-h-96">
-                Productafbeelding volgt uit merchantfeed
-              </div>
+              <ProductMedia src={product.imageUrl} alt={product.title} variant="detail" className="rounded-[var(--wn-radius-2xl)] shadow-[var(--wn-shadow-sm)]" />
+              <p className="mt-3 text-xs text-[var(--wn-text-muted)]">Productbeeld wordt aangeleverd via de aangesloten productfeed.</p>
               <p className="wn-eyebrow mt-8">{product.brand ?? 'Merk onbekend'}</p>
               <h1 className="wn-heading mt-3 text-4xl sm:text-5xl">{product.title}</h1>
               {product.description ? <p className="wn-body-muted mt-6 max-w-3xl text-lg leading-8">{product.description}</p> : null}
