@@ -36,7 +36,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   if (!item) notFound()
 
-  const { product, category, offers } = item
+  const { product, offers } = item
+  const categories = product.categoryId ? await catalog.listCategories() : []
+  const category = product.categoryId ? categories.find((candidate) => candidate.id === product.categoryId) : undefined
   const bestOffer = offers[0]?.offer
   const bestKnownTotal = offers[0]?.totalAmount
 
@@ -82,7 +84,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </div>
             </section>
 
-            <ProductFacts product={product} category={category} />
+            <ProductFacts
+              brand={product.brand}
+              gtin={product.gtin}
+              mpn={product.mpn}
+              offerCount={offers.length}
+            />
 
             <section id="aanbiedingen" className="scroll-mt-24">
               <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -98,10 +105,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               {offers.length === 0 ? (
                 <div className="wn-surface mt-5 p-6">
                   <p className="font-semibold">Er zijn momenteel geen actieve aanbiedingen voor dit product.</p>
-                  <p className="wn-body-muted mt-2 text-sm">Probeer later opnieuw of bekijk andere producten.</p>
+                  <p className="wn-body-muted mt-2 text-sm">Probeer later opnieuw of zoek een vergelijkbaar product.</p>
                 </div>
               ) : (
-                <div className="mt-5 space-y-4">
+                <div className="mt-5 space-y-4 lg:hidden">
                   {offers.map(({ offer, merchant, totalAmount }, index) => {
                     const outboundHref = `/uit/${encodeURIComponent(offer.id)}?from=${encodeURIComponent(`/product/${product.slug}`)}`
                     const shippingKnown = Boolean(offer.shippingCost)
@@ -132,19 +139,43 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </section>
           </div>
 
-          <aside className="hidden lg:block">
-            <div className="sticky top-24">
-              <div className="wn-surface p-5">
-                <p className="wn-eyebrow">Vergelijk</p>
-                <h2 className="mt-2 text-xl font-bold text-[var(--wn-ink)]">Kies een webwinkel</h2>
-                {bestOffer && bestKnownTotal ? (
-                  <>
-                    <p className="mt-4 text-sm text-[var(--wn-text-muted)]">Vanaf bekende prijs</p>
-                    <p className="mt-1 text-3xl font-bold text-[var(--wn-petrol-deep)]">{formatMoney(bestKnownTotal)}</p>
-                    <WinkelnuButton href="#aanbiedingen" variant="warm" className="mt-5 w-full">Bekijk aanbiedingen</WinkelnuButton>
-                  </>
+          <aside className="hidden lg:block lg:sticky lg:top-24">
+            <div className="wn-surface p-5">
+              <p className="wn-eyebrow">Aanbiedingen</p>
+              <h2 className="wn-heading mt-2 text-2xl">Kies je winkel</h2>
+              <p className="wn-body-muted mt-3 text-sm leading-6">Vergelijk de bekende prijsinformatie en ga daarna rechtstreeks naar de webwinkel.</p>
+
+              <div className="mt-5">
+                {offers.length === 0 ? (
+                  <p className="rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4 text-sm text-[var(--wn-petrol-deep)]">Geen actieve aanbiedingen beschikbaar.</p>
                 ) : (
-                  <p className="wn-body-muted mt-4 text-sm">Er zijn momenteel geen actieve aanbiedingen beschikbaar.</p>
+                  <div className="mt-5 space-y-4">
+                    {offers.map(({ offer, merchant, totalAmount }, index) => {
+                      const outboundHref = `/uit/${encodeURIComponent(offer.id)}?from=${encodeURIComponent(`/product/${product.slug}`)}`
+                      const shippingKnown = Boolean(offer.shippingCost)
+                      const shippingLabel = shippingKnown
+                        ? `Verzending: ${formatMoney(offer.shippingCost!.amount)}`
+                        : 'Verzendkosten niet bekend in de feed'
+
+                      return (
+                        <div key={offer.id}>
+                          <p className="mb-2 text-xs font-semibold text-[var(--wn-text-muted)]">
+                            {index === 0 ? 'Eerste op basis van bekende prijs' : `Optie ${index + 1}`}
+                          </p>
+                          <OfferCard
+                            merchantName={merchant?.name ?? 'Webwinkel'}
+                            itemPrice={formatMoney(offer.price.amount)}
+                            totalPrice={formatMoney(totalAmount)}
+                            shippingLabel={shippingLabel}
+                            shippingKnown={shippingKnown}
+                            availability={offer.availability ?? 'unknown'}
+                            href={outboundHref}
+                            isBest={index === 0}
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
                 )}
 
                 <div className="mt-5 rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4 text-xs leading-5 text-[var(--wn-petrol-deep)]">
