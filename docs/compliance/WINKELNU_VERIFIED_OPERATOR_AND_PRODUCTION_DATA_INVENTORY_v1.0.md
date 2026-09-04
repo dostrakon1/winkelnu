@@ -1,6 +1,6 @@
-# Winkelnu Verified Operator & Production Data Inventory v1.1
+# Winkelnu Verified Operator & Production Data Inventory v1.2
 
-Status: **legal operator confirmed; production runtime/company-detail verification still open**
+Status: **operator and KVK verified; production runtime and remaining statutory details still open**
 
 Date: 2026-09-04
 
@@ -16,17 +16,19 @@ This document records the factual production and compliance inventory for Winkel
 | Domain | Verified | `winkelnu.nl` registered on 2026-09-03 |
 | Repository | Verified | `dostrakon1/winkelnu` |
 | Legal operator | **VERIFIED** | Project owner explicitly confirmed on 2026-09-04 that Winkelnu.nl is operated by **Akflow** |
+| KVK number | **VERIFIED** | Akflow's own current public privacy page states KVK **42111391** |
 | Public contact email | Verified existing Akflow channel | `info@akflow.nl` |
-| Exact KvK number to publish | **VERIFY BEFORE FINAL LAUNCH** | Do not copy an unverified number into public legal text |
+| Full legal name | **VERIFY BEFORE FINAL LAUNCH** | Akflow's current public privacy page still contains a placeholder for this field |
+| Legal form | **VERIFY BEFORE FINAL LAUNCH** | Current public source still contains a placeholder |
 | VAT identification number | **VERIFY BEFORE FINAL LAUNCH** | Publish only when verified and relevant |
-| Registered/business address | **VERIFY PUBLICATION DETAILS** | Do not invent or expose an address automatically |
+| Registered/business address | **VERIFY PUBLICATION DETAILS** | Current public Akflow privacy source does not provide a confirmed public address |
 | Public telephone number for Winkelnu | Optional / not selected | Do not publish merely because Akflow has a phone channel |
 
 ### Operator rule
 
-Public legal pages may now state: **Winkelnu.nl wordt geëxploiteerd door Akflow.**
+Public legal pages may state: **Winkelnu.nl wordt geëxploiteerd door Akflow, KVK 42111391.**
 
-The operator decision is resolved. Exact statutory company-detail fields remain a separate verification task.
+The operator and KVK decision are resolved. Remaining statutory fields are separate verification tasks.
 
 ## 2. Current application data flows verified from the repository
 
@@ -89,7 +91,7 @@ Important limitation: absence from `package.json` does not prove that platform-l
 
 | Service / party | Role | Public legal status |
 | --- | --- | --- |
-| Akflow | Legal operator of Winkelnu | **Confirmed** |
+| Akflow | Legal operator of Winkelnu | **Confirmed; KVK 42111391 verified** |
 | GitHub | Source repository and CI | Development service; not ordinary storefront visitor processing merely because source is hosted there |
 | Vercel | Planned/expected Next.js production hosting | **Verify actual production project, logging, analytics and retention** |
 | Supabase | Database/server data access/internal Auth | Project use established; **verify exact production region/logging/retention** |
@@ -160,7 +162,7 @@ Do not invent exact durations for public copy.
 
 ## 8. Privacy rights and contact route
 
-Akflow is the confirmed operator and `info@akflow.nl` is the currently verified contact channel available for Winkelnu privacy questions.
+Akflow is the confirmed operator, KVK 42111391 is verified, and `info@akflow.nl` is the current verified contact channel available for Winkelnu privacy questions.
 
 The public privacy page should keep data-minimisation expectations realistic: because Winkelnu currently has no shopper account and application-level click attribution is intentionally limited, Akflow may have little or no data that can be directly associated with a particular visitor.
 
@@ -177,7 +179,7 @@ Additional sub-IDs, conversion postbacks or attribution identifiers require a ne
 
 ## 10. Public legal pages
 
-Implemented in Launch Readiness v1.3:
+Implemented:
 
 - `/privacy`
 - `/cookies`
@@ -185,13 +187,13 @@ Implemented in Launch Readiness v1.3:
 - `/over-winkelnu`
 - `/disclaimer`
 
-They may identify Akflow as operator. Exact company-detail fields must still be completed from verified records before final public-launch sign-off where legally required.
+Akflow and KVK 42111391 may now be shown as verified operator details. Full legal name, legal form, address and VAT ID remain subject to factual verification before publication where required.
 
 ## 11. Remaining blocker register
 
-### Blocker A — exact statutory company details
+### Blocker A — remaining statutory company details
 
-Operator identity is resolved, but exact KvK/address/VAT publication facts still require verification.
+Operator identity and KVK are resolved. Full legal name, legal form, public address and VAT publication facts still require verification.
 
 ### Blocker B — actual production processors/settings
 
@@ -210,18 +212,19 @@ Some retention behavior is known, but visitor-related periods are not fully defi
 This inventory becomes `verified-complete` when evidence exists for:
 
 1. Akflow operator identity — **complete**;
-2. exact company/KvK/address details intended for publication;
-3. public privacy/contact channel — **current channel confirmed**;
-4. production Vercel project/settings;
-5. production Supabase project/region/settings;
-6. all active affiliate networks/merchants;
-7. actual browser cookies/storage on production;
-8. analytics/measurement state;
-9. visitor-related retention decisions;
-10. any additional public contact/support processors.
+2. KVK 42111391 — **complete**;
+3. exact remaining company/address details intended for publication;
+4. public privacy/contact channel — **current channel confirmed**;
+5. production Vercel project/settings;
+6. production Supabase project/region/settings;
+7. all active affiliate networks/merchants;
+8. actual browser cookies/storage on production;
+9. analytics/measurement state;
+10. visitor-related retention decisions;
+11. any additional public contact/support processors.
 
 ## Next step
 
-**Launch Readiness v1.4 — Production Compliance Verification & Company Detail Completion**
+**Launch Readiness v1.5 — Live Runtime, SEO & Accessibility Acceptance**
 
-Verify the deployed runtime and complete exact statutory company information before declaring the legal/compliance launch gate fully passed.
+Once the intended deployment is reachable, verify the actual production runtime, browser storage, canonical/SEO behavior and end-to-end public journeys. Remaining statutory company fields can be completed in parallel from authoritative business records.
