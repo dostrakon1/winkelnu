@@ -1,16 +1,12 @@
 import Link from 'next/link'
+import { WinkelnuBrand } from './winkelnu-brand'
 
 export function WinkelnuHeader() {
   return (
     <header className="bg-[image:var(--wn-gradient-market)] text-white">
       <div className="wn-container py-4">
         <div className="flex items-center justify-between gap-5">
-          <Link
-            href="/"
-            className="shrink-0 text-sm font-bold uppercase tracking-[0.24em] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)]"
-          >
-            Winkelnu.nl
-          </Link>
+          <WinkelnuBrand inverse />
 
           <nav className="hidden items-center gap-6 text-sm font-medium text-white/78 md:flex" aria-label="Hoofdnavigatie">
             <Link href="/zoeken" className="flex min-h-12 items-center transition hover:text-white">Producten</Link>
@@ -40,7 +36,8 @@ export function WinkelnuHeader() {
               Menu
             </summary>
             <div className="absolute right-0 z-50 mt-3 w-[min(20rem,calc(100vw-2rem))] rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.12)] bg-[var(--wn-cream)] p-3 text-[var(--wn-ink)] shadow-[var(--wn-shadow-lg)]">
-              <nav className="flex flex-col" aria-label="Mobiele navigatie">
+              <div className="px-3 pb-3 pt-1"><WinkelnuBrand /></div>
+              <nav className="flex flex-col border-t border-[color:rgba(18,59,58,0.10)] pt-2" aria-label="Mobiele navigatie">
                 <Link href="/zoeken" className="flex min-h-12 items-center rounded-xl px-3 text-sm font-semibold hover:bg-white">Producten</Link>
                 <Link href="/#categorieen" className="flex min-h-12 items-center rounded-xl px-3 text-sm font-semibold hover:bg-white">Categorieën</Link>
                 <Link href="/zoeken?sort=price_asc" className="flex min-h-12 items-center rounded-xl px-3 text-sm font-semibold hover:bg-white">Aanbiedingen</Link>
@@ -60,7 +57,7 @@ export function WinkelnuHeader() {
           </details>
         </div>
 
-        <p className="mt-3 text-xs text-white/56 md:hidden">Ontdek. Vergelijk. Kies je winkel.</p>
+        <p className="mt-2 pl-[3.25rem] text-xs text-white/56 md:hidden">Ontdek. Vergelijk. Kies je winkel.</p>
       </div>
     </header>
   )
