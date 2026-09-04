@@ -66,7 +66,23 @@ Before the production domain is attached or moved to a candidate deployment:
 15. Run `npm run check:db-contract`.
 16. Record the exact deployment provider reference/ID and candidate SHA before domain promotion.
 17. Only after all items above pass may `winkelnu.nl` be promoted to the candidate deployment.
-18. After promotion run `npm run verify:live-deployment` against `https://winkelnu.nl` and complete the v1.6 first-real-feed evidence gate.
+
+## Domain cutover execution gate
+Immediately after the accepted candidate is attached to the production domain:
+1. Set `WINKELNU_CUTOVER_ORIGIN=https://winkelnu.nl`.
+2. Decide the `www` policy explicitly: `WINKELNU_CUTOVER_WWW_MODE=redirect` or `unused`.
+3. If `redirect`, configure `www.winkelnu.nl` so it resolves and redirects to `https://winkelnu.nl`.
+4. Confirm DNS for the apex host resolves from an external resolver; do not rely only on the provider dashboard saying configuration is valid.
+5. Run `npm run verify:domain-cutover`.
+6. Require HTTP → HTTPS redirect on the apex domain.
+7. Require the HTTPS homepage to remain on the canonical apex origin.
+8. Require `robots.txt` to advertise `https://winkelnu.nl/sitemap.xml`.
+9. Require `sitemap.xml` to contain canonical `https://winkelnu.nl` URLs.
+10. Archive the non-sensitive JSON verifier output with the exact deployment/SHA evidence.
+11. Run `npm run verify:live-deployment` against `https://winkelnu.nl`.
+12. Complete the v1.6 first-real-feed acceptance against at least one real production-shaped product and offer.
+13. Treat DNS propagation as incomplete until the verifier succeeds from an external network/resolver.
+14. If the cutover verifier fails, do not work around the failure by changing canonical metadata to match a temporary deployment hostname.
 
 ## Production promotion gate
 1. Confirm the production Supabase project and target deployment environment.
@@ -89,7 +105,7 @@ Before the production domain is attached or moved to a candidate deployment:
 18. Confirm human operations requires Supabase Auth plus allowlist/role authorization and never exposes service-role credentials.
 19. Confirm feed recovery writes produce both audit events and an idempotency request record.
 20. Record the first production import correlation ID as the go-live audit reference.
-21. Complete the Public storefront gate above before treating the public domain as launch-ready.
+21. Complete the Domain cutover execution gate and Public storefront gate above before treating the public domain as launch-ready.
 
 ## Rollback / stop conditions
 Do not enable or continue recurring imports when any of these is true:
@@ -125,6 +141,10 @@ Do not publicly promote the storefront when any of these is true:
 - known and unknown shipping costs are presented as if they had the same certainty;
 - primary public journeys fail keyboard/mobile/accessibility checks;
 - exact-HEAD CI or the production build is failing;
+- DNS for the canonical domain does not resolve externally;
+- apex HTTP does not redirect to HTTPS;
+- the configured `www` policy is not satisfied;
+- `verify:domain-cutover` fails;
 - post-promotion `verify:live-deployment` fails.
 
 If a promoted release fails its live acceptance, restore a previously accepted immutable deployment when available and fix forward on a new Git SHA. Do not silently mutate the accepted release identity or delete historical import, click, operator audit or idempotency records to conceal a failure.
