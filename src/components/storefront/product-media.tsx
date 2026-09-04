@@ -23,12 +23,19 @@ function safeImageUrl(value?: string | null): string | null {
 
 function ProductMediaFallback({ variant }: { variant: 'card' | 'detail' }) {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[linear-gradient(145deg,#f4efe6_0%,#e7eee9_100%)] px-6 text-center text-[var(--wn-petrol)]">
-      <svg viewBox="0 0 48 48" aria-hidden="true" className={variant === 'detail' ? 'h-16 w-16 opacity-70' : 'h-11 w-11 opacity-65'}>
-        <path d="M12 16h24l-2 24H14L12 16Z" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
-        <path d="M18 18v-4a6 6 0 0 1 12 0v4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-      </svg>
-      <span className="max-w-44 text-xs font-semibold leading-5 text-[color:rgba(18,59,58,0.66)]">Productafbeelding niet beschikbaar</span>
+    <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 overflow-hidden bg-[linear-gradient(145deg,#f8f3e9_0%,#e7eee9_100%)] px-6 text-center text-[var(--wn-petrol)]">
+      <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full bg-[color:rgba(233,120,61,0.10)]" aria-hidden="true" />
+      <div className="absolute -bottom-16 -left-12 h-40 w-40 rounded-full bg-[color:rgba(18,59,58,0.06)]" aria-hidden="true" />
+      <div className={`relative inline-flex items-center justify-center rounded-[22px] bg-[var(--wn-petrol)] text-white shadow-[var(--wn-shadow-sm)] ${variant === 'detail' ? 'h-20 w-20' : 'h-14 w-14'}`}>
+        <svg viewBox="0 0 40 40" aria-hidden="true" className={variant === 'detail' ? 'h-14 w-14' : 'h-10 w-10'} fill="none">
+          <path d="M7 12.5 13.2 28 20 17.3 26.8 28 33 12.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-[var(--wn-warm)] ring-2 ring-[var(--wn-petrol)]" />
+      </div>
+      <div className="relative">
+        <span className="block text-sm font-extrabold tracking-[-0.02em] text-[var(--wn-petrol-deep)]">winkelnu</span>
+        <span className="mt-1 block max-w-48 text-xs font-medium leading-5 text-[color:rgba(18,59,58,0.60)]">Productafbeelding niet beschikbaar</span>
+      </div>
     </div>
   )
 }
