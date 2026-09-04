@@ -129,9 +129,19 @@ Policy architecture now established:
 
 - `docs/compliance/WINKELNU_COMPLIANCE_PRIVACY_AFFILIATE_POLICY_ARCHITECTURE_v1.0.md` defines the merchant-of-record boundary, affiliate disclosure layers, commission-independent organic ranking baseline, price/ranking transparency, privacy data inventory, cookie/consent architecture, retention decision points, public legal route contract and future-feature privacy rules.
 
+Verified evidence inventory now established:
+
+- `docs/compliance/WINKELNU_VERIFIED_OPERATOR_AND_PRODUCTION_DATA_INVENTORY_v1.0.md` separates repository-verified application behavior from production facts that still require confirmation;
+- application-level affiliate click attribution is confirmed privacy-minimal;
+- no dedicated public analytics, advertising pixel, session replay or A/B testing SDK is declared in the current package baseline;
+- Supabase Auth/session behavior is scoped to the internal operator area;
+- Vercel/Supabase production logging, analytics and retention remain explicit live-verification items rather than guessed policy facts;
+- the existence of Akflow as a registered business is recorded only as background and does not establish that Akflow is Winkelnu's legal operator.
+
 Still required for public launch:
 
-- verified legal operator identity and monitored contact/privacy route;
+- explicit confirmation of the legal operator of Winkelnu;
+- verified company/KvK/contact details intended for publication;
 - verified production processor/logging/analytics/cookie inventory;
 - final public pages for affiliate/comparison methodology, privacy, cookies, operator information and disclaimer;
 - footer legal navigation and any necessary consent-preference control;
@@ -139,11 +149,13 @@ Still required for public launch:
 
 ## Legal/compliance launch blocker
 
-The repository now contains the authoritative **policy architecture**, but still does **not** contain the final public legal/compliance routes.
+The repository now contains both the authoritative **policy architecture** and an evidence-based **production data inventory**, but still does **not** contain the final public legal/compliance routes.
 
 This distinction is intentional. The architecture forbids filling those pages with guessed operator identity, generic processor lists or invented retention facts.
 
-Before public pages are written, the next compliance step must verify the real operator identity, contact route and production data-processing/tracking behavior. Only then should those facts be rendered into public legal pages and footer links.
+The largest remaining identity blocker is now narrow and explicit: although Akflow is an existing registered business, the current evidence does not establish that Akflow is legally the operator of Winkelnu. That must be explicitly confirmed before the public legal pages can name an operator.
+
+Production Vercel/Supabase settings and actual browser storage also remain live verification items before the final privacy/cookie copy is frozen.
 
 Do not mark Winkelnu public-launch-ready until this gate is closed.
 
@@ -197,12 +209,13 @@ Before public promotion, validate with at least one production-shaped real feed:
 | Sitemap | Ready for early catalog | 500-product scale ceiling remains |
 | Affiliate outbound semantics | Implemented | final live redirect acceptance still required |
 | Compliance/privacy/affiliate architecture | **Implemented** | v1.0 policy baseline committed |
-| Verified operator + production data inventory | **BLOCKER** | required before final legal copy |
+| Verified operator + production data inventory | **Implemented with explicit unresolved facts** | evidence inventory committed; legal operator and live processor settings still need confirmation |
+| Legal operator identity | **BLOCKER** | explicit operator/KvK/contact publication facts required |
 | Internal operator indexing | Hardened | noindex plus robots; auth remains security boundary |
 | Exact production CI/build | Pending per final release commit | must be green on the promoted SHA |
 | Real production-shaped feed QA | Pending | required before launch |
 | Accessibility/manual mobile QA | Pending | required before launch |
-| Public legal/compliance pages | **BLOCKER** | build after verified v1.2 facts |
+| Public legal/compliance pages | **BLOCKER** | build after operator/live facts are confirmed |
 | Production domain/canonical verification | Pending | validate on final deployed hostname |
 
 ## Definition of public-launch-ready
@@ -219,6 +232,6 @@ Winkelnu may be considered public-launch-ready only when:
 
 ## Next step
 
-**Launch Readiness v1.2 — Verified Operator & Production Data Inventory**
+**Launch Readiness v1.3 — Public Legal Pages & Footer Legal Navigation**
 
-Verify the legal operator identity, monitored contact/privacy channel, real production processors, hosting/security logging, analytics/browser storage, retention settings and transfer facts. This must be a factual evidence step so the final public legal pages can be built without placeholders or assumptions.
+The substantive affiliate/comparison and disclaimer language can now be built from verified architecture. Privacy, cookies and operator/company pages must use confirmed operator/contact/production facts and must not publish invented placeholders. Before those pages can be finalized, explicitly confirm who legally operates Winkelnu and which company/contact details should be public.
