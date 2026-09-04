@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   },
   description: 'Ontdek en vergelijk producten en aanbiedingen van meerdere winkels op één plek.',
   applicationName: 'Winkelnu',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: 'website',
     locale: 'nl_NL',
