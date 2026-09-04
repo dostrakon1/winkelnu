@@ -9,12 +9,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     catalog.listProducts({ limit: 500 }),
   ])
 
+  const informationRoutes = [
+    '/over-winkelnu',
+    '/affiliate-en-vergelijking',
+    '/privacy',
+    '/cookies',
+    '/disclaimer',
+  ]
+
   return [
     {
       url: baseUrl,
       changeFrequency: 'daily',
       priority: 1,
     },
+    ...informationRoutes.map((path) => ({
+      url: `${baseUrl}${path}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.4,
+    })),
     ...categories.map((category) => ({
       url: `${baseUrl}/categorie/${category.slug}`,
       changeFrequency: 'daily' as const,
