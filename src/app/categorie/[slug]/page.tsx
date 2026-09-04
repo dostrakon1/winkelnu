@@ -93,6 +93,7 @@ export default async function CategoryPage({
                 title={product.title}
                 brand={product.brand}
                 description={product.description}
+                imageUrl={product.imageUrl}
                 price={bestOffer ? formatMoney(bestOffer.totalAmount) : null}
                 merchantName={bestOffer?.merchant?.name}
                 offerCount={offerCount}
