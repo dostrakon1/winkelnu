@@ -15,7 +15,7 @@ export default function PrivacyPage() {
     >
       <section>
         <h2 className="text-xl font-bold">Verantwoordelijke</h2>
-        <p className="mt-3">Winkelnu.nl wordt geëxploiteerd door Akflow. Voor privacyvragen kun je contact opnemen via <a className="font-semibold underline underline-offset-4" href="mailto:info@akflow.nl">info@akflow.nl</a>.</p>
+        <p className="mt-3">Winkelnu.nl wordt geëxploiteerd door Akflow, ingeschreven bij de Kamer van Koophandel onder nummer 42111391. Voor privacyvragen kun je contact opnemen via <a className="font-semibold underline underline-offset-4" href="mailto:info@akflow.nl">info@akflow.nl</a>.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Bezoeken, zoeken en vergelijken</h2>
