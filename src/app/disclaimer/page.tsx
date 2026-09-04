@@ -4,6 +4,7 @@ import { LegalPage } from '@/components/storefront/legal-page'
 export const metadata: Metadata = {
   title: 'Disclaimer',
   description: 'Disclaimer over prijzen, beschikbaarheid, externe webwinkels en informatie op Winkelnu.',
+  alternates: { canonical: '/disclaimer' },
 }
 
 export default function DisclaimerPage() {
