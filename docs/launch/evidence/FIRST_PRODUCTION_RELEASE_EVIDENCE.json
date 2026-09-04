@@ -1,0 +1,35 @@
+{
+  "release": {
+    "sha": "",
+    "environment": "production",
+    "origin": "https://winkelnu.nl",
+    "deploymentReference": "",
+    "acceptedAtUtc": ""
+  },
+  "gates": {
+    "exactHeadCi": "PENDING",
+    "releasePromotion": "PENDING",
+    "supabaseConnection": "PENDING",
+    "productionReadiness": "PENDING",
+    "databaseContract": "PENDING",
+    "domainCutover": "PENDING",
+    "liveDeployment": "PENDING",
+    "legalCompliance": "PENDING",
+    "keyboardMobileAccessibility": "PENDING",
+    "runtimePrivacy": "PENDING",
+    "firstRealFeed": "PENDING",
+    "affiliateRedirect": "PENDING",
+    "singleClickAttribution": "PENDING"
+  },
+  "feed": {
+    "merchant": "",
+    "productSlug": "",
+    "offerId": "",
+    "merchantHost": ""
+  },
+  "decision": {
+    "status": "BLOCK",
+    "approvedBy": "",
+    "notes": "Evidence template only. Replace PENDING gates with PASS only after the corresponding verification has actually completed successfully."
+  }
+}
