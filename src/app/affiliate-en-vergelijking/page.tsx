@@ -4,6 +4,7 @@ import { LegalPage } from '@/components/storefront/legal-page'
 export const metadata: Metadata = {
   title: 'Affiliate & vergelijking',
   description: 'Hoe Winkelnu aanbiedingen vergelijkt, affiliate-links gebruikt en gesponsorde plaatsingen behandelt.',
+  alternates: { canonical: '/affiliate-en-vergelijking' },
 }
 
 export default function AffiliateComparisonPage() {
