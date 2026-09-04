@@ -4,7 +4,6 @@ import { LegalPage } from '@/components/storefront/legal-page'
 export const metadata: Metadata = {
   title: 'Over Winkelnu',
   description: 'Over Winkelnu.nl en de rol van Akflow als exploitant van het vergelijkingsplatform.',
-  alternates: { canonical: '/over-winkelnu' },
 }
 
 export default function AboutWinkelnuPage() {
@@ -24,11 +23,11 @@ export default function AboutWinkelnuPage() {
       </section>
       <section>
         <h2 className="text-xl font-bold">Exploitant</h2>
-        <p className="mt-3">Winkelnu.nl wordt geëxploiteerd door Akflow. Akflow staat ingeschreven bij de Kamer van Koophandel.</p>
+        <p className="mt-3">Winkelnu.nl wordt geëxploiteerd door Akflow. Akflow staat ingeschreven bij de Kamer van Koophandel onder nummer 42111391.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Contact</h2>
-        <p className="mt-3">Voor algemene vragen over Winkelnu of vragen over privacy kun je contact opnemen via de vermelde Akflow-contactroute.</p>
+        <p className="mt-3">Voor algemene vragen over Winkelnu of vragen over privacy kun je contact opnemen via <a className="font-semibold underline underline-offset-4" href="mailto:info@akflow.nl">info@akflow.nl</a>.</p>
       </section>
     </LegalPage>
   )
