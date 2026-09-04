@@ -73,9 +73,9 @@ export default async function CategoryPage({
             title={discovery.category.name}
             description="Vergelijk producten en aanbiedingen van verschillende winkels. Bekende verzendkosten tellen mee; ontbrekende verzendkosten worden duidelijk aangegeven."
           />
-          <div className="mt-7 flex flex-wrap gap-3">
-            <WinkelnuButton href="/zoeken" variant="secondary">Zoek binnen Winkelnu</WinkelnuButton>
-            <WinkelnuButton href="/" variant="secondary">Terug naar home</WinkelnuButton>
+          <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
+            <WinkelnuButton href="/zoeken" variant="secondary" className="w-full sm:w-auto">Zoek binnen Winkelnu</WinkelnuButton>
+            <WinkelnuButton href="/" variant="secondary" className="w-full sm:w-auto">Terug naar home</WinkelnuButton>
           </div>
         </div>
       </section>
@@ -90,7 +90,7 @@ export default async function CategoryPage({
             actionLabel="Bekijk alle producten"
           />
         ) : (
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
             {discovery.items.map(({ product, bestOffer, offerCount }) => (
               <ProductCard
                 key={product.id}
@@ -115,7 +115,7 @@ export default async function CategoryPage({
               <Link
                 rel="prev"
                 href={discovery.page === 2 ? `/categorie/${discovery.category.slug}` : `/categorie/${discovery.category.slug}?page=${discovery.page - 1}`}
-                className="text-sm font-semibold text-[var(--wn-petrol)] hover:underline"
+                className="flex min-h-12 items-center text-sm font-semibold text-[var(--wn-petrol)] hover:underline"
               >
                 ← Vorige
               </Link>
@@ -125,7 +125,7 @@ export default async function CategoryPage({
               <Link
                 rel="next"
                 href={`/categorie/${discovery.category.slug}?page=${discovery.page + 1}`}
-                className="text-sm font-semibold text-[var(--wn-petrol)] hover:underline"
+                className="flex min-h-12 items-center text-sm font-semibold text-[var(--wn-petrol)] hover:underline"
               >
                 Volgende →
               </Link>
