@@ -4,6 +4,7 @@ import { LegalPage } from '@/components/storefront/legal-page'
 export const metadata: Metadata = {
   title: 'Cookies',
   description: 'Informatie over cookies, browseropslag en tracking op Winkelnu.nl.',
+  alternates: { canonical: '/cookies' },
 }
 
 export default function CookiesPage() {
