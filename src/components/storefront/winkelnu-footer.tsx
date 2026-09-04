@@ -49,7 +49,7 @@ export function WinkelnuFooter() {
         </div>
 
         <div className="mt-10 flex flex-col gap-4 border-t border-white/12 pt-6 text-xs leading-5 text-white/58 sm:flex-row sm:items-end sm:justify-between">
-          <p>© {year} Winkelnu.nl · Exploitant: Akflow</p>
+          <p>© {year} Winkelnu.nl · Exploitant: Akflow · KVK 42111391</p>
           <p className="max-w-2xl sm:text-right">
             Sommige links kunnen affiliate-links zijn. Winkelnu kan een vergoeding ontvangen als je via zo’n link iets koopt, zonder dat dit jouw prijs verhoogt.
           </p>
