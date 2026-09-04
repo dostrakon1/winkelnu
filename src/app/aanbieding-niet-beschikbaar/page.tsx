@@ -1,29 +1,32 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { StorefrontEmptyState } from '@/components/storefront/storefront-empty-state'
+import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
+import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 
 export const metadata: Metadata = {
   title: 'Aanbieding niet beschikbaar',
+  description: 'Deze aanbieding is verlopen of tijdelijk niet beschikbaar. Bekijk Winkelnu voor actuele product- en winkelinformatie.',
   robots: { index: false, follow: true },
 }
 
 export default function OfferUnavailablePage() {
   return (
-    <main className="min-h-screen">
-      <section className="mx-auto max-w-2xl px-6 py-24 text-center sm:py-32">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Winkelnu.nl</p>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-zinc-950 sm:text-5xl">
-          Deze aanbieding is niet meer beschikbaar.
-        </h1>
-        <p className="mt-6 text-lg leading-8 text-zinc-600">
-          De aanbieding kan zijn verlopen of tijdelijk niet beschikbaar zijn. Bekijk het product opnieuw om actuele aanbiedingen te vergelijken.
-        </p>
-        <Link
-          href="/"
-          className="mt-8 inline-flex rounded-full bg-zinc-950 px-6 py-3 text-sm font-semibold text-white hover:bg-zinc-800"
-        >
-          Terug naar Winkelnu
-        </Link>
+    <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
+      <WinkelnuHeader />
+
+      <section className="bg-[image:var(--wn-gradient-morning)]">
+        <div className="wn-container wn-section">
+          <StorefrontEmptyState
+            eyebrow="Aanbieding verlopen"
+            title="Deze aanbieding is niet meer beschikbaar."
+            description="De prijs, voorraad of affiliate-link kan inmiddels zijn gewijzigd. Bekijk de actuele producten en vergelijk opnieuw welke winkelinformatie nu beschikbaar is."
+            actionHref="/zoeken"
+            actionLabel="Bekijk actuele producten"
+          />
+        </div>
       </section>
+
+      <WinkelnuFooter />
     </main>
   )
 }
