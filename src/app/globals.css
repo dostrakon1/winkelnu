@@ -202,13 +202,13 @@ textarea {
 
 .wn-button {
   display: inline-flex;
-  min-height: 2.75rem;
+  min-height: 3rem;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   border: 1px solid transparent;
   border-radius: var(--wn-radius-pill);
-  padding: 0.7rem 1.25rem;
+  padding: 0.75rem 1.25rem;
   font-size: var(--wn-text-sm);
   font-weight: 700;
   line-height: 1;
@@ -304,6 +304,10 @@ textarea {
 @media (max-width: 639px) {
   .wn-container {
     width: min(100% - 2rem, 72rem);
+  }
+
+  .wn-card-interactive:hover {
+    transform: none;
   }
 }
 
