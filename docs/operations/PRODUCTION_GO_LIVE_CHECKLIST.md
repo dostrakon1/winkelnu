@@ -45,28 +45,51 @@ Before the public domain is treated as launch-ready, verify all of the following
 12. Perform keyboard, focus-visible, mobile viewport and screen-reader spot checks on the primary discovery and comparison journeys.
 13. Verify real feed imagery, missing-image fallbacks, unavailable offers and stale-data behavior using production-shaped data.
 14. Run a final production build and exact-HEAD CI check before public promotion.
+15. Run `npm run verify:live-deployment` immediately after the accepted deployment is promoted to the production origin.
+
+## Release promotion gate
+Before the production domain is attached or moved to a candidate deployment:
+1. Select one immutable full 40-character Git commit SHA. Do not approve a branch name or abbreviated SHA as the release identity.
+2. Confirm the GitHub Quality workflow for that exact SHA completed successfully.
+3. Confirm the deployment provider built the candidate from the same SHA; when available, `VERCEL_GIT_COMMIT_SHA` or `GITHUB_SHA` must match the accepted release SHA.
+4. Set `WINKELNU_RELEASE_SHA` to that exact SHA.
+5. Set `WINKELNU_RELEASE_ENVIRONMENT=production`.
+6. Set `WINKELNU_RELEASE_ORIGIN=https://winkelnu.nl`.
+7. Confirm `NEXT_PUBLIC_SITE_URL=https://winkelnu.nl` exactly matches the release origin.
+8. Confirm `CATALOG_PERSISTENCE=supabase`; never publicly promote the memory/synthetic catalog path.
+9. Confirm `SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_URL` point at the same production Supabase origin.
+10. Confirm all required production Supabase, operator-policy and scheduler configuration is present.
+11. Review the provider dashboard for accidental public exposure of service-role, client-secret, cron or partner credentials.
+12. Run `npm run verify:release-promotion` and archive only its non-sensitive JSON result.
+13. Run `npm run verify:supabase`.
+14. Run `npm run verify:production-readiness`.
+15. Run `npm run check:db-contract`.
+16. Record the exact deployment provider reference/ID and candidate SHA before domain promotion.
+17. Only after all items above pass may `winkelnu.nl` be promoted to the candidate deployment.
+18. After promotion run `npm run verify:live-deployment` against `https://winkelnu.nl` and complete the v1.6 first-real-feed evidence gate.
 
 ## Production promotion gate
 1. Confirm the production Supabase project and target deployment environment.
 2. Apply exactly the committed migrations `0001`–`0017` in order.
 3. Apply `supabase/seed.sql` only when the documented production bootstrap requires it.
 4. Configure production server secrets; never expose service-role or partner secrets with `NEXT_PUBLIC_`.
-5. Run `npm run verify:supabase`.
-6. Run `npm run verify:production-readiness` and `npm run check:db-contract`.
-7. Confirm the production readiness RPCs report the expected protected-table and security contract.
-8. Confirm operator tables have no unintended public/anon/authenticated grants or policies and recovery execution remains service-role-only.
-9. Confirm denied operator actions do not create idempotency claims and browser-facing recovery errors are sanitized.
-10. Confirm the 90-day minimum idempotency retention policy is present and no unreviewed delete automation exists.
-11. Add real partner credentials only as server environment variables referenced by registry `secret_ref` values.
-12. Activate partners one at a time after preview validation.
-13. Enable scheduler only after one manual production import completes successfully.
-14. Keep storefront independent from worker failures; failed imports must not take the site offline.
-15. Confirm stale offers are excluded after 72 hours and freshness metadata behaves as expected.
-16. Confirm scheduler secret and machine operations endpoints are inaccessible without Bearer authorization.
-17. Confirm human operations requires Supabase Auth plus allowlist/role authorization and never exposes service-role credentials.
-18. Confirm feed recovery writes produce both audit events and an idempotency request record.
-19. Record the first production import correlation ID as the go-live audit reference.
-20. Complete the Public storefront gate above before pointing the public domain at this deployment.
+5. Complete the Release promotion gate above before domain cutover.
+6. Run `npm run verify:supabase`.
+7. Run `npm run verify:production-readiness` and `npm run check:db-contract`.
+8. Confirm the production readiness RPCs report the expected protected-table and security contract.
+9. Confirm operator tables have no unintended public/anon/authenticated grants or policies and recovery execution remains service-role-only.
+10. Confirm denied operator actions do not create idempotency claims and browser-facing recovery errors are sanitized.
+11. Confirm the 90-day minimum idempotency retention policy is present and no unreviewed delete automation exists.
+12. Add real partner credentials only as server environment variables referenced by registry `secret_ref` values.
+13. Activate partners one at a time after preview validation.
+14. Enable scheduler only after one manual production import completes successfully.
+15. Keep storefront independent from worker failures; failed imports must not take the site offline.
+16. Confirm stale offers are excluded after 72 hours and freshness metadata behaves as expected.
+17. Confirm scheduler secret and machine operations endpoints are inaccessible without Bearer authorization.
+18. Confirm human operations requires Supabase Auth plus allowlist/role authorization and never exposes service-role credentials.
+19. Confirm feed recovery writes produce both audit events and an idempotency request record.
+20. Record the first production import correlation ID as the go-live audit reference.
+21. Complete the Public storefront gate above before treating the public domain as launch-ready.
 
 ## Rollback / stop conditions
 Do not enable or continue recurring imports when any of these is true:
@@ -89,12 +112,19 @@ Do not enable or continue recurring imports when any of these is true:
 - audit or idempotency persistence fails for operator mutations.
 
 Do not publicly promote the storefront when any of these is true:
+- candidate release cannot be tied to one exact full Git SHA;
+- exact candidate-SHA CI is not successful;
+- the provider deployment SHA differs from the accepted release SHA;
+- `NEXT_PUBLIC_SITE_URL` or canonical output points at the wrong host;
+- production catalog persistence is `memory` rather than `supabase`;
+- Supabase public/server environment values point at different projects;
 - required public legal/compliance information is incomplete or still contains placeholders;
 - search/filter pages become indexable crawl traps;
 - canonical or sitemap URLs point at the wrong hostname;
 - affiliate or merchant-of-record disclosures are misleading or absent;
 - known and unknown shipping costs are presented as if they had the same certainty;
 - primary public journeys fail keyboard/mobile/accessibility checks;
-- exact-HEAD CI or the production build is failing.
+- exact-HEAD CI or the production build is failing;
+- post-promotion `verify:live-deployment` fails.
 
-Rollback for import operations is operational: pause/disable the affected feed integration and scheduler. Do not delete historical import, click, operator audit or idempotency records to conceal a failure.
+If a promoted release fails its live acceptance, restore a previously accepted immutable deployment when available and fix forward on a new Git SHA. Do not silently mutate the accepted release identity or delete historical import, click, operator audit or idempotency records to conceal a failure.
