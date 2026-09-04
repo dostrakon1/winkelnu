@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ComparisonSignals } from '@/components/storefront/comparison-signals'
 import { ProductCard } from '@/components/storefront/product-card'
 import { SectionHeader } from '@/components/storefront/section-header'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
@@ -27,7 +28,7 @@ export default async function HomePage() {
       <section className="relative overflow-hidden border-b border-[color:rgba(18,59,58,0.10)] bg-[image:var(--wn-gradient-welcome)]">
         <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)]" aria-hidden="true" />
         <div className="wn-container relative py-16 sm:py-24 lg:py-28">
-          <div className="grid items-end gap-12 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <div className="grid items-end gap-12 lg:grid-cols-[minmax(0,1fr)_20rem]">
             <div className="max-w-3xl">
               <p className="wn-eyebrow mb-4">Slim winkelen begint hier</p>
               <h1 className="wn-heading text-5xl sm:text-7xl">Slimmer ontdekken en vergelijken.</h1>
@@ -38,29 +39,15 @@ export default async function HomePage() {
               <WinkelnuSearchField className="mt-9 max-w-3xl" />
 
               <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-[color:rgba(30,36,35,0.62)] sm:text-sm">
-                <span>Prijs + bekende verzending</span>
+                <span>Bekende verzendkosten tellen mee</span>
                 <span>Meerdere winkels naast elkaar</span>
                 <span>Je rekent af bij de winkel zelf</span>
               </div>
             </div>
 
-            <aside className="hidden rounded-3xl border border-[color:rgba(18,59,58,0.12)] bg-[color:rgba(255,255,255,0.72)] p-5 shadow-[var(--wn-shadow-lg)] backdrop-blur lg:block">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-petrol)]">Winkelnu vergelijkt</p>
-              <div className="mt-5 space-y-4">
-                <div>
-                  <p className="text-sm text-[color:rgba(30,36,35,0.56)]">Prijs</p>
-                  <div className="mt-1 h-2 rounded-full bg-[var(--wn-petrol-soft)]"><div className="h-2 w-[86%] rounded-full bg-[var(--wn-petrol)]" /></div>
-                </div>
-                <div>
-                  <p className="text-sm text-[color:rgba(30,36,35,0.56)]">Verzendkosten</p>
-                  <div className="mt-1 h-2 rounded-full bg-[var(--wn-petrol-soft)]"><div className="h-2 w-[62%] rounded-full bg-[var(--wn-warm)]" /></div>
-                </div>
-                <div>
-                  <p className="text-sm text-[color:rgba(30,36,35,0.56)]">Beschikbaarheid</p>
-                  <div className="mt-1 h-2 rounded-full bg-[var(--wn-petrol-soft)]"><div className="h-2 w-[74%] rounded-full bg-[#4f7a63]" /></div>
-                </div>
-              </div>
-              <p className="wn-body-muted mt-5 text-sm leading-6">Rustig vergelijken, daarna rechtstreeks door naar de winkel.</p>
+            <aside className="hidden lg:block">
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-petrol)]">Zo vergelijkt Winkelnu</p>
+              <ComparisonSignals compact />
             </aside>
           </div>
 
@@ -91,7 +78,7 @@ export default async function HomePage() {
           <SectionHeader
             eyebrow="Ontdek producten"
             title="Aanbiedingen uit meerdere winkels"
-            description="Vergelijk op bekende totaalprijs, beschikbaarheid en winkel."
+            description="Vergelijk prijs, bekende verzendkosten, beschikbaarheid en winkel."
             actionHref="/zoeken"
             actionLabel="Bekijk alle producten"
           />
@@ -112,6 +99,7 @@ export default async function HomePage() {
                   merchantName={bestOffer.merchant?.name}
                   offerCount={offerCount}
                   availability={bestOffer.offer.availability}
+                  shippingKnown={Boolean(bestOffer.offer.shippingCost)}
                 />
               )
             })}
