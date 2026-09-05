@@ -1,6 +1,11 @@
 import type { MetadataRoute } from 'next'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
+// The sitemap depends on live catalog data when Supabase persistence is enabled.
+// Keep it runtime-generated so production builds do not depend on database availability
+// or service-role JWT validation at build time.
+export const dynamic = 'force-dynamic'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://winkelnu.nl').replace(/\/$/, '')
   const catalog = await createStorefrontCatalogService()
