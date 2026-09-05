@@ -4,6 +4,8 @@ Status: template-ready; live preview evidence is not yet available.
 
 > This document is the canonical handoff record for the first real Supabase preview activation. Do not mark an item `verified` unless the evidence was produced against the actual preview project. Never paste secrets, access tokens, private feed URLs or service-role keys into this file.
 
+> Execution evidence from the 2026-09-05 M1.0 preview session is recorded separately in `M1_0_PREVIEW_ACTIVATION_EVIDENCE_2026-09-05.md`; this file remains the reusable blank template enforced by `check:preview-evidence-template`.
+
 ## Activation identity
 - Repository commit SHA: `PENDING`
 - Activation date/time (UTC): `PENDING`
@@ -29,7 +31,7 @@ Acceptance: the recorded commit SHA must be the exact commit deployed/tested and
 Acceptance: all checks pass without printing or persisting secret values.
 
 ## 3. Migration state
-Expected migration set: `0001` through `0015`.
+Expected migration set: `0001` through `0017`.
 
 - Applied migration range: `PENDING`
 - Migration application method: `PENDING`
