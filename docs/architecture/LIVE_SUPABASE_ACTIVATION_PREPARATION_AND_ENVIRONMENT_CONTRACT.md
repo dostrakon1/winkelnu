@@ -33,7 +33,7 @@ Machine trigger secrets remain separate from human Auth and are not part of the 
 ## Activation gates
 Repository-ready is not the same as live-ready. Live preview activation requires:
 1. a real Supabase project;
-2. migrations `0001`–`0015` applied to that project;
+2. migrations `0001`–`0017` applied to that project;
 3. real project credentials loaded securely;
 4. preflight environment verification;
 5. connection smoke test;

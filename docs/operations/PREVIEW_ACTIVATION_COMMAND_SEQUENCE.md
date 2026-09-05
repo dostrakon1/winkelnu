@@ -51,13 +51,13 @@ npm run check:migration-manifest
 npm run check:db-contract
 ```
 
-Expected set: migrations `0001` through `0015`, exactly once and in filename order.
+Expected set: migrations `0001` through `0017`, exactly once and in filename order.
 
 Acceptance: both checks green.
 
 ## Step 4 — Apply migrations to the empty preview project
 Operator:
-- apply committed migrations `0001` through `0015` in filename order using the chosen Supabase migration workflow;
+- apply committed migrations `0001` through `0017` in filename order using the chosen Supabase migration workflow;
 - do not manually rewrite SQL in the dashboard;
 - stop immediately on any failed statement.
 

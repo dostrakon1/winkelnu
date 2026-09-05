@@ -33,6 +33,8 @@ Apply exactly these migrations in filename order:
 13. `0013_operator_action_idempotency.sql`
 14. `0014_operations_security_readiness.sql`
 15. `0015_operator_action_retention_policy.sql`
+16. `0016_explicit_data_api_service_role_grants.sql`
+17. `0017_external_key_unique_constraints.sql`
 
 Do not skip, reorder or manually edit a migration in the Supabase dashboard. If a migration fails, stop immediately and diagnose against the committed SQL before applying any later migration.
 
@@ -41,7 +43,7 @@ For the first preview activation, record these facts outside secrets:
 
 - repository commit SHA;
 - Supabase preview project ref;
-- migration range applied (`0001`–`0015`);
+- migration range applied (`0001`–`0017`);
 - date/time of apply;
 - operator performing the apply;
 - result of `verify:activation-env`;
@@ -69,7 +71,7 @@ Stop conditions:
 - no owner is configured.
 
 ## Phase B — Apply migrations
-Apply migrations `0001` through `0015` exactly once and in order to the empty preview project.
+Apply migrations `0001` through `0017` exactly once and in order to the empty preview project.
 
 After application, do not switch persistence yet.
 
@@ -160,7 +162,7 @@ Perform a storefront smoke test and confirm worker/import failures cannot take s
 ## Acceptance gate
 Preview Supabase is accepted only when all are true:
 
-- exact committed migrations `0001`–`0015` are applied;
+- exact committed migrations `0001`–`0017` are applied;
 - environment preflight passes;
 - live connection verification passes;
 - production-readiness verification passes;

@@ -30,7 +30,7 @@ The next phase starts only when all of the following external prerequisites exis
 1. A dedicated preview Supabase project exists and is separate from production.
 2. The project ref, project URL, publishable key and service-role key are stored securely outside Git.
 3. At least one explicit preview operator email/account is selected, with an `owner` role mapping.
-4. There is access to apply the committed migrations `0001`–`0015` to that preview project.
+4. There is access to apply the committed migrations `0001`–`0017` to that preview project.
 5. There is access to configure preview deployment/environment variables while keeping `CATALOG_PERSISTENCE=memory` until the switch gate.
 
 No secret value belongs in repository files, GitHub issues, screenshots or the evidence pack.
