@@ -9,6 +9,10 @@ import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 import { WinkelnuSearchField } from '@/components/storefront/winkelnu-search-field'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
+// Production uses the live Supabase catalog. Keep the homepage runtime-rendered so
+// deployment builds never depend on database/JWT availability during prerendering.
+export const dynamic = 'force-dynamic'
+
 function formatMoney(amount: string): string {
   return new Intl.NumberFormat('nl-NL', {
     style: 'currency',
