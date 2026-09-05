@@ -34,3 +34,6 @@ next-env.d.ts
 # editors
 .vscode/
 .idea/
+
+# Supabase CLI local state
+supabase/.temp/
