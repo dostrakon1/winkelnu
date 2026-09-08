@@ -5,7 +5,12 @@ export type PublicCatalogEnvironment = {
   CATALOG_PERSISTENCE?: string
 }
 
-export function isPublicCatalogEnabled(env: PublicCatalogEnvironment = process.env): boolean {
+export function isPublicCatalogEnabled(
+  env: PublicCatalogEnvironment = {
+    WINKELNU_PUBLIC_CATALOG_ENABLED: process.env.WINKELNU_PUBLIC_CATALOG_ENABLED,
+    CATALOG_PERSISTENCE: process.env.CATALOG_PERSISTENCE,
+  },
+): boolean {
   return env.WINKELNU_PUBLIC_CATALOG_ENABLED === 'true' && env.CATALOG_PERSISTENCE === 'supabase'
 }
 
