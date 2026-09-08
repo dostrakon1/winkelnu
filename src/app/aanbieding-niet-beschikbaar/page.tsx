@@ -1,33 +1,28 @@
 import type { Metadata } from 'next'
-import { StorefrontEmptyState } from '@/components/storefront/storefront-empty-state'
+import Link from 'next/link'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 
 export const metadata: Metadata = {
   title: 'Aanbieding niet beschikbaar',
-  description: 'Deze aanbieding is verlopen of tijdelijk niet beschikbaar. Bekijk Winkelnu voor actuele product- en winkelinformatie.',
+  description: 'Deze aanbieding is momenteel niet beschikbaar. Lees onze koopgidsen of probeer het later opnieuw.',
   robots: { index: false, follow: true },
 }
 
-export default function OfferUnavailablePage() {
+export default function UnavailableOfferPage() {
   return (
-    <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
+    <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
       <WinkelnuHeader />
-
-      <section className="bg-[image:var(--wn-gradient-morning)]">
-        <div className="wn-container wn-section">
-          <StorefrontEmptyState
-            eyebrow="Aanbieding verlopen"
-            title="Deze aanbieding is niet meer beschikbaar."
-            description="De prijs, voorraad of affiliate-link kan inmiddels zijn gewijzigd. Bekijk de actuele producten en vergelijk opnieuw welke winkelinformatie nu beschikbaar is."
-            actionHref="/zoeken"
-            actionLabel="Bekijk actuele producten"
-            headingLevel="h1"
-          />
+      <main className="wn-container wn-section">
+        <div className="wn-surface mx-auto max-w-2xl p-8 sm:p-12">
+          <p className="wn-eyebrow">Nog niet beschikbaar</p>
+          <h1 className="wn-heading mt-4 text-3xl sm:text-4xl">Deze aanbieding is momenteel niet beschikbaar.</h1>
+          <p className="wn-body-muted mt-5 leading-8">Winkelnu toont alleen aanbiedingen wanneer de gegevens en de bijbehorende koppeling daarvoor geschikt zijn. We kunnen je daarom nu geen actuele prijs of beschikbaarheid beloven.</p>
+          <p className="wn-body-muted mt-4 leading-8">Je kunt onze koopgidsen wel gebruiken om te bepalen welke eigenschappen belangrijk zijn. Probeer de productzoeker later opnieuw zodra de catalogus is vrijgegeven.</p>
+          <div className="mt-8 flex flex-wrap gap-3"><Link href="/koopgidsen" className="wn-button wn-button-primary">Lees de koopgidsen</Link><Link href="/" className="wn-button wn-button-secondary">Terug naar home</Link></div>
         </div>
-      </section>
-
+      </main>
       <WinkelnuFooter />
-    </main>
+    </div>
   )
 }
