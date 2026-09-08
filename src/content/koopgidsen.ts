@@ -140,7 +140,7 @@ export const buyingGuides: BuyingGuide[] = [
     slug: 'koffiezetapparaat-kopen', category: 'keuken-koffie', title: 'Koffiezetapparaat kopen: van filter tot volautomaat',
     description: 'Kies een koffiezetapparaat op basis van smaak, gebruiksgemak, onderhoud, hoeveelheid koffie en terugkerende kosten.',
     intro: 'Een koffiezetapparaat moet aansluiten bij hoe je koffie drinkt. Zet je vooral een volle kan, wil je met één druk op de knop espresso of vind je het leuk om zelf te experimenteren? Het antwoord bepaalt welk type zinvol is.',
-    updated: '2026-09-08', readingMinutes: 6,
+    updated: '2026-09-09', readingMinutes: 6,
     quickChoice: [
       { situation: 'Meerdere koppen gewone koffie', advice: 'Een filterkoffiezetapparaat is vaak praktisch en overzichtelijk in gebruik.' },
       { situation: 'Snel één kop met weinig handelingen', advice: 'Een capsule- of padsysteem kan handig zijn; vergelijk de terugkerende kosten en afvalstromen.' },
@@ -156,7 +156,7 @@ export const buyingGuides: BuyingGuide[] = [
     ],
     checklist: ['Bepaal hoeveel koppen je meestal achter elkaar zet.', 'Kies tussen gemak en zelf controle over het zetproces.', 'Controleer ruimte, waterreservoir en eventuele molen.', 'Bekijk reiniging, ontkalking en melksysteemonderhoud.', 'Bereken koffie- en onderhoudskosten per gebruik.', 'Controleer garantie, onderdelen en eventuele systeemcompatibiliteit.'],
     sources: [
-      { title: 'Milieu Centraal — Koffiezetapparaat', url: 'https://www.milieucentraal.nl/energie-besparen/apparaten-in-huis/koffiezetapparaat/', note: 'Achtergrond over energieverbruik en bewuste apparaatkeuzes.' },
+      { title: 'Milieu Centraal — Water koken en koffiezetten', url: 'https://www.milieucentraal.nl/energie-besparen/apparaten-in-huis/water-koken-en-koffiezetten/', note: 'Officiële achtergrond over energieverbruik, warmhouden en het voorkomen van verspilling bij koffiezetten.' },
       { title: 'Specialty Coffee Association — Coffee Standards', url: 'https://sca.coffee/research/coffee-standards', note: 'Algemene achtergrond over koffie- en zetstandaarden; geen endorsement van een specifiek apparaat.' },
     ],
   },
