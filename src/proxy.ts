@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { isPublicCatalogEnabled, isPublicCatalogPath } from '@/application/catalog/public-catalog-release'
 import { updateSupabaseAuthSession } from '@/infrastructure/supabase/auth-proxy'
 
+// This file must live beside src/app so Next.js discovers the request boundary.
 export async function proxy(request: NextRequest) {
   if (isPublicCatalogPath(request.nextUrl.pathname) && !isPublicCatalogEnabled()) {
     const headers = { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' }
