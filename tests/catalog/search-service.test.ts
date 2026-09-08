@@ -61,7 +61,7 @@ function repository(): CatalogReadRepository {
 
 describe('CatalogService searchProducts', () => {
   it('filters on term, brand, total price and stock status', async () => {
-    const service = new CatalogService(repository())
+    const service = new CatalogService(repository(), () => '2026-09-03T01:00:00.000Z')
     const result = await service.searchProducts({
       term: 'headphone',
       brand: 'SoundCo',
@@ -77,7 +77,7 @@ describe('CatalogService searchProducts', () => {
   })
 
   it('sorts on total price instead of product price only', async () => {
-    const service = new CatalogService(repository())
+    const service = new CatalogService(repository(), () => '2026-09-03T01:00:00.000Z')
     const result = await service.searchProducts({
       inStockOnly: false,
       sort: 'price_asc',

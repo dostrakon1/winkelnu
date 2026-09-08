@@ -110,7 +110,7 @@ function repository(): CatalogReadRepository {
 
 describe('CatalogService', () => {
   it('ranks offers on purchase total including shipping', async () => {
-    const service = new CatalogService(repository())
+    const service = new CatalogService(repository(), () => '2026-09-03T01:00:00.000Z')
     const result = await service.getProduct(product.slug)
 
     expect(result?.offers.map((item) => item.merchant?.name)).toEqual(['Winkel B', 'Winkel A'])
@@ -118,7 +118,7 @@ describe('CatalogService', () => {
   })
 
   it('uses the cheapest landed offer as the listing offer', async () => {
-    const service = new CatalogService(repository())
+    const service = new CatalogService(repository(), () => '2026-09-03T01:00:00.000Z')
     const items = await service.listProducts({ limit: 1 })
 
     expect(items[0]?.bestOffer?.merchant?.id).toBe('merchant:b')
@@ -127,17 +127,17 @@ describe('CatalogService', () => {
   })
 
   it('returns null for an unknown product', async () => {
-    const service = new CatalogService(repository())
+    const service = new CatalogService(repository(), () => '2026-09-03T01:00:00.000Z')
     await expect(service.getProduct('missing')).resolves.toBeNull()
   })
 
   it('returns null for an unknown category', async () => {
-    const service = new CatalogService(repository())
+    const service = new CatalogService(repository(), () => '2026-09-03T01:00:00.000Z')
     await expect(service.getCategoryDiscovery({ categorySlug: 'missing' })).resolves.toBeNull()
   })
 
   it('paginates category discovery with lookahead and ranks visible items by total price', async () => {
-    const service = new CatalogService(repository())
+    const service = new CatalogService(repository(), () => '2026-09-03T01:00:00.000Z')
     const firstPage = await service.getCategoryDiscovery({ categorySlug: category.slug, page: 1, pageSize: 1 })
     const secondPage = await service.getCategoryDiscovery({ categorySlug: category.slug, page: 2, pageSize: 1 })
 
