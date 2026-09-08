@@ -4,22 +4,26 @@ import { LegalPage } from '@/components/storefront/legal-page'
 
 export const metadata: Metadata = {
   title: 'Disclaimer',
-  description: 'Disclaimer over prijzen, beschikbaarheid, externe webwinkels en informatie op Winkelnu.',
+  description: 'Informatie over de inhoud van Winkelnu en links naar externe webwinkels.',
   alternates: { canonical: '/disclaimer' },
 }
 
 export default function DisclaimerPage() {
   return (
     <LegalPage
-      eyebrow="Juridisch"
+      eyebrow="Informatie"
       title="Disclaimer"
-      intro="Winkelnu doet zijn best om product- en aanbiedingsinformatie duidelijk en actueel te tonen, maar externe webwinkels blijven de bron van de definitieve commerciële voorwaarden."
+      intro="Winkelnu biedt keuzehulpen en werkt aan een platform voor het vergelijken van aanbiedingen. We streven naar duidelijke en betrouwbare informatie."
     >
-      <section><h2 className="text-xl font-bold">Geen verkoper</h2><p className="mt-3">Winkelnu verkoopt geen producten namens externe webwinkels. Een aankoop komt tot stand bij de gekozen webwinkel. Die webwinkel is verantwoordelijk voor betaling, levering, retour, garantie en klantenservice.</p></section>
-      <section><h2 className="text-xl font-bold">Prijzen en beschikbaarheid</h2><p className="mt-3">Prijzen, verzendkosten en voorraad kunnen wijzigen tussen het moment waarop Winkelnu gegevens ontvangt en het moment waarop je de webwinkel bezoekt. De informatie op de website van de webwinkel is daarom leidend voor de uiteindelijke bestelling.</p></section>
-      <section><h2 className="text-xl font-bold">Externe links</h2><p className="mt-3">Winkelnu verwijst naar websites van derden. We zijn niet verantwoordelijk voor de inhoud, beveiliging, beschikbaarheid of voorwaarden van die externe websites.</p></section>
-      <section><h2 className="text-xl font-bold">Affiliate-relaties</h2><p className="mt-3">Sommige uitgaande links zijn affiliate-links. Winkelnu kan een vergoeding ontvangen wanneer je na zo’n verwijzing een aankoop doet. Meer uitleg staat op de pagina <Link href="/affiliate-en-vergelijking" className="font-semibold underline underline-offset-4">Affiliate & vergelijking</Link>.</p></section>
-      <section><h2 className="text-xl font-bold">Exploitant</h2><p className="mt-3">Winkelnu.nl wordt geëxploiteerd door Akflow. De volledige bedrijfs- en contactgegevens staan op de pagina <Link href="/over-winkelnu#exploitant" className="font-semibold underline underline-offset-4">Over Winkelnu</Link>.</p></section>
+      <section>
+        <h2 className="text-xl font-bold">Informatie en bronnen</h2>
+        <p className="mt-3">Onze koopgidsen zijn bedoeld als algemene keuzehulp. Controleer productspecificaties en voorwaarden bij de fabrikant of webwinkel voordat je een aankoop doet.</p>
+      </section>
+      <section>
+        <h2 className="text-xl font-bold">Externe websites</h2>
+        <p className="mt-3">Winkelnu verwijst naar websites van derden. De inhoud, beschikbaarheid en voorwaarden van die websites kunnen veranderen. De gekozen webwinkel is verantwoordelijk voor de aankoop en de bijbehorende klantenservice.</p>
+      </section>
+      <p className="wn-body-muted">Meer informatie over onze vergelijking en commerciële links vind je op <Link href="/affiliate-en-vergelijking" className="font-semibold text-[var(--wn-petrol)] underline underline-offset-4">Hoe Winkelnu werkt</Link>.</p>
     </LegalPage>
   )
 }
