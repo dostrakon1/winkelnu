@@ -1,9 +1,12 @@
 import type { Metadata } from 'next'
 import { LegalPage } from '@/components/storefront/legal-page'
+import { OperatorDetails } from '@/components/storefront/operator-details'
+import { operator } from '@/content/operator'
 
 export const metadata: Metadata = {
   title: 'Privacy',
   description: 'Privacy-informatie over gegevensverwerking op Winkelnu.nl.',
+  alternates: { canonical: '/privacy' },
 }
 
 export default function PrivacyPage() {
@@ -15,7 +18,9 @@ export default function PrivacyPage() {
     >
       <section>
         <h2 className="text-xl font-bold">Verantwoordelijke</h2>
-        <p className="mt-3">Winkelnu.nl wordt geëxploiteerd door Akflow, ingeschreven bij de Kamer van Koophandel onder nummer 42111391. Voor privacyvragen kun je contact opnemen via <a className="font-semibold underline underline-offset-4" href="mailto:info@akflow.nl">info@akflow.nl</a>.</p>
+        <p className="mt-3">Winkelnu.nl wordt geëxploiteerd door {operator.tradeName}, de eenmanszaak van {operator.legalName}. Voor vragen over onze verwerking van persoonsgegevens kun je ons bereiken via de onderstaande gegevens.</p>
+        <OperatorDetails />
+        <p className="wn-body-muted mt-3 text-sm">Het adres is een correspondentieadres en geen bezoekadres.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Bezoeken, zoeken en vergelijken</h2>
@@ -27,7 +32,7 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2 className="text-xl font-bold">Hosting en technische logs</h2>
-        <p className="mt-3">Hosting-, database- en beveiligingsdiensten kunnen technische loggegevens verwerken die nodig zijn voor beschikbaarheid, beveiliging en foutanalyse. De exacte productie-instellingen en bewaartermijnen worden als onderdeel van de go-live-controle geverifieerd en deze privacy-informatie wordt aangepast wanneer de feitelijke verwerking wijzigt.</p>
+        <p className="mt-3">Hosting-, database- en beveiligingsdiensten kunnen technische loggegevens verwerken die nodig zijn voor beschikbaarheid, beveiliging en foutanalyse. De exacte productie-instellingen en bewaartermijnen worden als onderdeel van de live-controle geverifieerd en deze privacy-informatie wordt aangepast wanneer de feitelijke verwerking wijzigt.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Interne toegang</h2>
@@ -43,7 +48,7 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2 className="text-xl font-bold">Jouw privacyrechten</h2>
-        <p className="mt-3">Heb je een vraag over persoonsgegevens of wil je een privacyrecht uitoefenen, neem dan contact op via info@akflow.nl. Omdat Winkelnu geen openbaar klantaccount heeft en clickattributie bewust beperkt houdt, kan het voorkomen dat we weinig of geen gegevens hebben die rechtstreeks aan jou te koppelen zijn.</p>
+        <p className="mt-3">Heb je een vraag over persoonsgegevens of wil je een privacyrecht uitoefenen, neem dan contact op via <a className="font-semibold underline underline-offset-4" href={`mailto:${operator.email}`}>{operator.email}</a>. Omdat Winkelnu geen openbaar klantaccount heeft en clickattributie bewust beperkt houdt, kan het voorkomen dat we weinig of geen gegevens hebben die rechtstreeks aan jou te koppelen zijn.</p>
       </section>
     </LegalPage>
   )

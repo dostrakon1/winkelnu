@@ -1,9 +1,12 @@
 import type { Metadata } from 'next'
 import { LegalPage } from '@/components/storefront/legal-page'
+import { OperatorDetails } from '@/components/storefront/operator-details'
+import { operator } from '@/content/operator'
 
 export const metadata: Metadata = {
   title: 'Over Winkelnu',
-  description: 'Over Winkelnu.nl en de rol van Akflow als exploitant van het vergelijkingsplatform.',
+  description: 'Over Winkelnu.nl, onze redactionele keuzehulpen en Akflow als exploitant.',
+  alternates: { canonical: '/over-winkelnu' },
 }
 
 export default function AboutWinkelnuPage() {
@@ -11,23 +14,21 @@ export default function AboutWinkelnuPage() {
     <LegalPage
       eyebrow="Over ons"
       title="Over Winkelnu"
-      intro="Winkelnu.nl is een onafhankelijk opgezet vergelijkings- en discoveryplatform dat producten en aanbiedingen van verschillende webwinkels overzichtelijk bij elkaar brengt."
+      intro="Winkelnu helpt je bewuster kiezen. We publiceren praktische koopgidsen en ontwikkelen daarnaast een platform om producten en aanbiedingen van verschillende webwinkels te vergelijken."
     >
       <section>
-        <h2 className="text-xl font-bold">Wat Winkelnu doet</h2>
-        <p className="mt-3">Winkelnu helpt bezoekers ontdekken, vergelijken en vervolgens zelf een webwinkel kiezen. We bouwen rond een merchant-onafhankelijke productlaag zodat meerdere aanbiedingen bij hetzelfde product kunnen worden vergeleken.</p>
+        <h2 className="text-xl font-bold">Wat Winkelnu nu doet</h2>
+        <p className="mt-3">Onze redactionele koopgidsen helpen je bepalen welke eigenschappen, gebruikskosten en praktische verschillen belangrijk zijn. De gidsen zijn geen eigen laboratoriumtests of actuele productranglijsten. De koppeling met webwinkels voor actuele aanbiedingen is nog in ontwikkeling.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Wat Winkelnu niet doet</h2>
-        <p className="mt-3">Winkelnu is geen verkoper en verwerkt geen betaling voor de externe aanbiedingen die we tonen. Bestellen, betalen, levering, retour en garantie verlopen bij de gekozen webwinkel.</p>
+        <p className="mt-3">Winkelnu is geen verkoper van de externe producten en verwerkt daarvoor geen betaling. Wanneer aanbiedingen beschikbaar komen, vinden bestellen, betalen, levering, retour en garantie plaats bij de gekozen webwinkel. Winkelnu blijft de vergelijkings- en doorverwijslaag.</p>
       </section>
-      <section>
-        <h2 className="text-xl font-bold">Exploitant</h2>
-        <p className="mt-3">Winkelnu.nl wordt geëxploiteerd door Akflow. Akflow staat ingeschreven bij de Kamer van Koophandel onder nummer 42111391.</p>
-      </section>
-      <section>
-        <h2 className="text-xl font-bold">Contact</h2>
-        <p className="mt-3">Voor algemene vragen over Winkelnu of vragen over privacy kun je contact opnemen via <a className="font-semibold underline underline-offset-4" href="mailto:info@akflow.nl">info@akflow.nl</a>.</p>
+      <section id="exploitant" className="scroll-mt-8">
+        <h2 className="text-xl font-bold">Exploitant en bedrijfsgegevens</h2>
+        <p className="mt-3">Winkelnu.nl wordt geëxploiteerd door {operator.tradeName}, de eenmanszaak van {operator.legalName}. Winkelnu is een handelsplatform van deze onderneming en geen afzonderlijke rechtspersoon.</p>
+        <OperatorDetails />
+        <p className="wn-body-muted mt-3 text-sm">Het vermelde adres is een correspondentieadres en geen bezoekadres. Voor vragen of correspondentie kun je contact opnemen via het bovenstaande e-mailadres.</p>
       </section>
     </LegalPage>
   )
