@@ -24,7 +24,7 @@ Public presentation:
 
 The legal basis for this approach is the distinction between access to required information and unnecessary repetition. Article 5 of Directive 2000/31/EC and Dutch Civil Code article 3:15d require accessible service-provider information; they do not prescribe a separate large identity table on every page. GDPR article 13 requires the controller's identity and contact details as part of a transparent privacy notice. An accessible linked section can avoid unnecessary duplication, provided the visitor can actually reach the information.
 
-**Open statutory checks:** verify the exact registered establishment/publication address against official business records, the VAT identifier, and the contact details required for Winkelnu's actual service and future contractual model. A correspondence address must not be relabelled as a registered establishment address without evidence. The applicability of a telephone/contact requirement under the electronic-service rules and any future consumer distance-contract rules remains to be assessed; an email address alone is not asserted to discharge every possible obligation. Do not invent a visiting address or publish a different business's number without an approved contact decision.
+**Open statutory checks:** verify the exact registered establishment/publication address against official business records, the VAT identifier, and the contact details required for Winkelnu's actual service and future contractual model. A correspondence address must not be relabelled as a registered establishment address without evidence. The applicability of a telephone/contact requirement under the electronic-service rules and any future consumer distance-contract rules remains to be assessed; an email address alone is not asserted to discharge every possible obligation. Do not invent a visiting address or publish an unapproved telephone number.
 
 ## 2. Affiliate disclosure without repetitive notices
 
@@ -68,9 +68,9 @@ GitHub Actions is subject to the existing $0 paid-budget restriction. Do not rer
 ## Source references
 
 - Directive 2000/31/EC, articles 5 and 6: https://eur-lex.europa.eu/eli/dir/2000/31/oj
-- Dutch Civil Code, Book 3 article 15d and Book 6 articles 193b–193e: https://wetten.overheid.nl/BWBR0005289/ and https://wetten.overheid.nl/BWBR0005289/ (consult the applicable Book 6 text separately).
+- Dutch Civil Code, Book 3 article 15d: https://wetten.overheid.nl/BWBR0005291/
+- Dutch Civil Code, Book 6 articles 193b–193e: https://wetten.overheid.nl/BWBR0005289/
 - GDPR, articles 12–14: https://eur-lex.europa.eu/eli/reg/2016/679/oj
 - Dutch Telecommunications Act, article 11.7a: https://wetten.overheid.nl/BWBR0009950/
-- European Commission guidance on unfair commercial practices: https://eur-lex.europa.eu/eli/com/2021/932/oj
 
 This is an implementation decision record, not an independent legal opinion or a declaration of completed compliance.
