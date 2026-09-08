@@ -9,10 +9,10 @@ export default function NotFound() {
       <section className="wn-container wn-section">
         <StorefrontEmptyState
           eyebrow="Niet gevonden"
-          title="Deze pagina of dit product bestaat niet meer."
-          description="De link kan verouderd zijn of het product is niet langer beschikbaar in Winkelnu. Zoek opnieuw of ga terug naar het productoverzicht."
-          actionHref="/zoeken"
-          actionLabel="Bekijk producten"
+          title="Deze pagina is niet gevonden."
+          description="De link kan verouderd zijn of de pagina bestaat niet meer. Bekijk onze koopgidsen om verder te zoeken naar informatie die bij je past."
+          actionHref="/koopgidsen"
+          actionLabel="Bekijk koopgidsen"
           headingLevel="h1"
         />
       </section>
