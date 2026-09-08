@@ -33,9 +33,9 @@ export function EditorialIntro({ eyebrow, title, description, children }: {
 export function EditorialNotice() {
   return (
     <aside className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)] p-5 sm:p-6">
-      <h2 className="font-bold text-[var(--wn-petrol-deep)]">Over deze keuzehulpen</h2>
-      <p className="mt-2 text-sm leading-7 text-[var(--wn-petrol-deep)]">Deze informatie helpt je bepalen welke eigenschappen belangrijk zijn. Winkelnu heeft deze producten niet zelf getest en publiceert hier geen actuele prijzen, beschikbaarheid of testwinnaars. Productaanbiedingen worden pas getoond wanneer betrouwbare, toegestane gegevens beschikbaar zijn. Sommige toekomstige links kunnen affiliate-links zijn; lees meer over onze werkwijze.</p>
-      <Link href="/affiliate-en-vergelijking" className="mt-3 inline-flex min-h-11 items-center text-sm font-bold text-[var(--wn-petrol)] underline underline-offset-4">Affiliate & vergelijking →</Link>
+      <h2 className="font-bold text-[var(--wn-petrol-deep)]">Zo gebruik je onze keuzehulpen</h2>
+      <p className="mt-2 text-sm leading-7 text-[var(--wn-petrol-deep)]">Begin bij jouw wensen, vergelijk de eigenschappen en bepaal welke verschillen voor jou belangrijk zijn. De bronnen en werkwijze vind je bij iedere gids.</p>
+      <Link href="/over-winkelnu" className="mt-3 inline-flex min-h-11 items-center text-sm font-bold text-[var(--wn-petrol)] underline underline-offset-4">Meer over Winkelnu →</Link>
     </aside>
   )
 }
