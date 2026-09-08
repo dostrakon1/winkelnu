@@ -60,10 +60,11 @@ describe('minimal legal disclosure contracts', () => {
 
   it('removes repetitive compliance notices without losing source transparency', () => {
     const shell = source('src/components/storefront/editorial-shell.tsx')
-    expect(shell).toContain('Bronnen en werkwijze')
+    expect(shell).toContain('De bronnen en werkwijze vind je bij iedere gids.')
     expect(shell).not.toContain('Sommige toekomstige links')
     const guide = source('src/app/koopgidsen/[slug]/page.tsx')
     expect(guide).toContain('id="bronnen"')
+    expect(guide).toContain('Bronnen en werkwijze')
     expect(guide).toContain('niet zelf getest')
     expect(guide).not.toContain('<EditorialNotice />')
     expect(source('src/app/koopgidsen/page.tsx')).not.toContain('<EditorialNotice />')
