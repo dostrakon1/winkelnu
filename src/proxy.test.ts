@@ -32,7 +32,9 @@ describe('public request boundary', () => {
     expect(response.status).toBe(503)
     expect(response.headers.get('cache-control')).toBe('no-store')
     expect(response.headers.get('x-robots-tag')).toBe('noindex, nofollow')
-    expect(response.headers.get('x-middleware-rewrite')).toBe('https://winkelnu.nl/aanbieding-niet-beschikbaar')
+    expect(response.headers.get('x-middleware-rewrite')).toBeNull()
+    expect(response.headers.get('location')).toBeNull()
+    expect(await response.text()).toContain('niet beschikbaar')
     expect(auth).not.toHaveBeenCalled()
   })
 
