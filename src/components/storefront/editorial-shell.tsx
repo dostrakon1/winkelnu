@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { WinkelnuFooter } from './winkelnu-footer'
 import { WinkelnuHeader } from './winkelnu-header'
 import type { BuyingGuide } from '@/content/koopgidsen'
-import { editorialCategories } from '@/content/koopgidsen'
+import { editorialCategories } from '@/content/koopgidsen-public'
 
 export function EditorialShell({ children }: { children: ReactNode }) {
   return (
