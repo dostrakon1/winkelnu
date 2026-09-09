@@ -1,8 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import type { EditorialCategory } from '@/content/koopgidsen'
-import { guidesForCategory } from '@/content/koopgidsen'
+import { editorialCategories, guidesForCategory } from '@/content/koopgidsen'
 import { getCategoryImage } from '@/content/category-images'
+
+type EditorialCategory = (typeof editorialCategories)[number]
 
 export function CategoryCard({ category }: { category: EditorialCategory }) {
   const image = getCategoryImage(category.slug)
