@@ -141,7 +141,7 @@ export class CatalogService {
     if (!category) return null
 
     const page = Math.max(1, Math.floor(input.page ?? 1))
-    const pageSize = Math.min(48, Math.max(1, Math.floor(input.pageSize ?? 24))
+    const pageSize = Math.min(48, Math.max(1, Math.floor(input.pageSize ?? 24)))
     const offset = (page - 1) * pageSize
     const products = await this.listProducts({
       categorySlug: category.slug,
