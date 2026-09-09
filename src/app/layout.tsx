@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     default: 'Winkelnu.nl — Ontdek. Vergelijk. Kies je winkel.',
     template: '%s | Winkelnu.nl',
   },
-  description: 'Ontdek en vergelijk producten en aanbiedingen van meerdere winkels op één plek.',
+  description: 'Ontdek producten, lees praktische keuzehulpen en vergelijk gecontroleerde winkelprijzen zodra die beschikbaar zijn.',
   applicationName: 'Winkelnu',
   alternates: {
     canonical: '/',
@@ -17,13 +17,13 @@ export const metadata: Metadata = {
     locale: 'nl_NL',
     siteName: 'Winkelnu.nl',
     title: 'Winkelnu.nl — Ontdek. Vergelijk. Kies je winkel.',
-    description: 'Producten en aanbiedingen van verschillende winkels overzichtelijk vergelijken op één plek.',
+    description: 'Ontdek producten en praktische koopgidsen. Gecontroleerde winkelprijzen worden toegevoegd zodra ze beschikbaar zijn.',
     url: '/',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Winkelnu.nl — Ontdek. Vergelijk. Kies je winkel.',
-    description: 'Producten en aanbiedingen van verschillende winkels overzichtelijk vergelijken op één plek.',
+    description: 'Ontdek producten en praktische koopgidsen. Gecontroleerde winkelprijzen worden toegevoegd zodra ze beschikbaar zijn.',
   },
   robots: {
     index: true,
