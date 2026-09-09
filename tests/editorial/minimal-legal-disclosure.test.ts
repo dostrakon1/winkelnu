@@ -14,9 +14,13 @@ describe('minimal legal disclosure contracts', () => {
   it('keeps the full operator identity in one central record', () => {
     const details = source('src/components/storefront/operator-details.tsx')
     const operator = source('src/content/operator.ts')
+    expect(details).toContain('operator.tradeName')
     expect(details).toContain('operator.legalName')
+    expect(details).toContain('operator.legalForm')
+    expect(details).toContain('operator.chamberOfCommerce')
     expect(details).toContain('operator.vatId')
     expect(details).toContain('operator.correspondenceAddress')
+    expect(details).toContain('operator.email')
     expect(details).toContain('<details')
     expect(details).toContain('<summary')
     expect(details).toContain('geen bezoekadres')
@@ -25,6 +29,16 @@ describe('minimal legal disclosure contracts', () => {
     expect(operator).toContain('email:')
     expect(source(about)).toContain('<OperatorDetails />')
     expect(source(about)).toContain('id="exploitant"')
+  })
+
+  it('keeps company information compact and closed by default', () => {
+    const details = source('src/components/storefront/operator-details.tsx')
+    expect(details).toContain('Meer bedrijfsgegevens')
+    expect(details).toContain('Heb je een vraag? We helpen je graag via')
+    expect(details).not.toMatch(/<details\s+open(?:\s|=|>)/)
+    expect(details).not.toContain('<table')
+    expect(details).not.toContain('<dl')
+    expect(source(about)).not.toContain('Winkelnu is een initiatief van Akflow.</p>')
   })
 
   it('links to the business details instead of repeating the identity table', () => {
