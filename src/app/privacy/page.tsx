@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { LegalPage } from '@/components/storefront/legal-page'
-import { OperatorDetails } from '@/components/storefront/operator-details'
 import { operator } from '@/content/operator'
 
 export const metadata: Metadata = {
@@ -14,13 +14,11 @@ export default function PrivacyPage() {
     <LegalPage
       eyebrow="Privacy"
       title="Privacy"
-      intro="Winkelnu verwerkt zo min mogelijk persoonsgegevens. Deze pagina legt uit welke gegevensstromen onderdeel zijn van de huidige technische baseline en waar externe partijen hun eigen verantwoordelijkheid hebben."
+      intro="Op deze pagina lees je hoe Winkelnu met persoonsgegevens omgaat."
     >
       <section>
-        <h2 className="text-xl font-bold">Verantwoordelijke</h2>
-        <p className="mt-3">Winkelnu.nl wordt geëxploiteerd door {operator.tradeName}, de eenmanszaak van {operator.legalName}. Voor vragen over onze verwerking van persoonsgegevens kun je ons bereiken via de onderstaande gegevens.</p>
-        <OperatorDetails />
-        <p className="wn-body-muted mt-3 text-sm">Het adres is een correspondentieadres en geen bezoekadres.</p>
+        <h2 className="text-xl font-bold">Wie is verantwoordelijk?</h2>
+        <p className="mt-3">Akflow is verantwoordelijk voor de verwerking van persoonsgegevens via Winkelnu.nl. Voor privacyvragen kun je contact opnemen via <a className="font-semibold underline underline-offset-4" href={`mailto:${operator.email}`}>{operator.email}</a>. De juridische en contactgegevens staan bij <Link href="/over-winkelnu#exploitant" className="font-semibold text-[var(--wn-petrol)] underline underline-offset-4">Bedrijfsgegevens</Link>.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Bezoeken, zoeken en vergelijken</h2>

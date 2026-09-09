@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { buyingGuides, editorialCategories, guidesForCategory } from '@/content/koopgidsen'
-import { EditorialIntro, EditorialNotice, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
+import { EditorialIntro, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
 
 export const metadata: Metadata = {
   title: 'Koopgidsen',
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function BuyingGuidesPage() {
   return (
     <EditorialShell>
-      <EditorialIntro eyebrow="Winkelnu koopgidsen" title="Een goede keuze begint met weten wat je nodig hebt." description="Ontdek praktische keuzehulpen over eigenschappen, gebruiksgemak en kosten. Zonder fictieve aanbiedingen of betaalde ranglijsten." />
+      <EditorialIntro eyebrow="Winkelnu koopgidsen" title="Een goede keuze begint met weten wat je nodig hebt." description="Ontdek praktische keuzehulpen over eigenschappen, gebruiksgemak en kosten. Vind wat bij jouw wensen past." />
       <section className="wn-container wn-section" aria-labelledby="rubrieken">
         <h2 id="rubrieken" className="wn-heading text-3xl">Ontdek een rubriek</h2>
         <div className="mt-8 grid gap-5 md:grid-cols-3">
@@ -34,7 +34,6 @@ export default function BuyingGuidesPage() {
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{buyingGuides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}</div>
         </div>
       </section>
-      <section className="wn-container pb-16"><EditorialNotice /></section>
     </EditorialShell>
   )
 }

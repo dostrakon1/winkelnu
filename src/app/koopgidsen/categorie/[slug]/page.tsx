@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { editorialCategories, getEditorialCategory, guidesForCategory } from '@/content/koopgidsen'
-import { Breadcrumbs, EditorialIntro, EditorialNotice, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
+import { Breadcrumbs, EditorialIntro, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
 
 export const dynamicParams = false
 export function generateStaticParams() { return editorialCategories.map(({ slug }) => ({ slug })) }
@@ -31,7 +31,6 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
         <h2 className="wn-heading mt-14 text-3xl">Keuzehulpen in deze rubriek</h2>
         <div className="mt-8 grid gap-5 md:grid-cols-2">{guides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}</div>
       </section>
-      <section className="wn-container pb-16"><EditorialNotice /></section>
     </EditorialShell>
   )
 }
