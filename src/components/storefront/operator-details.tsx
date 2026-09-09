@@ -3,24 +3,27 @@ import { operator } from '@/content/operator'
 
 export function OperatorDetails() {
   return (
-    <div className="mt-4 space-y-3 text-sm leading-7">
-      <p>
-        <span className="font-semibold">Akflow</span> · Eenmanszaak · KVK {operator.chamberOfCommerce}
+    <div className="mt-3 max-w-2xl space-y-3 text-sm leading-6">
+      <p className="text-[var(--wn-text-muted)]">
+        Winkelnu is een initiatief van{' '}
+        <Link href="https://www.akflow.nl/" className="font-medium text-[var(--wn-petrol)] underline underline-offset-4 hover:text-[var(--wn-petrol-deep)]">Akflow</Link>.
       </p>
       <p>
-        Voor vragen over Winkelnu kun je mailen naar{' '}
-        <a className="font-semibold text-[var(--wn-petrol)] underline underline-offset-4" href={`mailto:${operator.email}`}>{operator.email}</a>.
+        Heb je een vraag? We helpen je graag via{' '}
+        <a className="font-medium text-[var(--wn-petrol)] underline underline-offset-4 hover:text-[var(--wn-petrol-deep)]" href={`mailto:${operator.email}`}>{operator.email}</a>.
       </p>
-      <details className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white px-4 py-3">
-        <summary className="cursor-pointer font-semibold text-[var(--wn-petrol)]">Juridische en contactgegevens</summary>
-        <dl className="mt-4 space-y-3 border-t border-[var(--wn-border)] pt-4">
-          <div><dt className="font-semibold">Juridische naam</dt><dd>{operator.legalName}</dd></div>
-          <div><dt className="font-semibold">Btw-identificatienummer</dt><dd>{operator.vatId}</dd></div>
-          <div><dt className="font-semibold">Correspondentieadres</dt><dd>{operator.correspondenceAddress}</dd></div>
-        </dl>
-        <p className="wn-body-muted mt-4 text-sm">Dit is een correspondentieadres, geen bezoekadres.</p>
+      <details className="group pt-1">
+        <summary className="w-fit cursor-pointer rounded-sm py-1 font-medium text-[var(--wn-petrol)] underline underline-offset-4 hover:text-[var(--wn-petrol-deep)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-petrol)]">Meer bedrijfsgegevens</summary>
+        <div className="mt-3 space-y-2 border-l-2 border-[var(--wn-border)] pl-4 text-sm leading-6 text-[var(--wn-text-muted)]">
+          <p><span className="font-medium text-[var(--wn-ink)]">Handelsnaam:</span> {operator.tradeName}</p>
+          <p><span className="font-medium text-[var(--wn-ink)]">Juridische naam:</span> {operator.legalName}</p>
+          <p><span className="font-medium text-[var(--wn-ink)]">Rechtsvorm:</span> {operator.legalForm}</p>
+          <p><span className="font-medium text-[var(--wn-ink)]">KVK:</span> {operator.chamberOfCommerce}</p>
+          <p><span className="font-medium text-[var(--wn-ink)]">Btw-id:</span> {operator.vatId}</p>
+          <p><span className="font-medium text-[var(--wn-ink)]">Correspondentieadres:</span> {operator.correspondenceAddress}</p>
+          <p>Dit is een correspondentieadres en geen bezoekadres.</p>
+        </div>
       </details>
-      <p className="wn-body-muted text-sm">Meer informatie over de onderneming vind je bij <Link href="https://www.akflow.nl/" className="font-semibold text-[var(--wn-petrol)] underline underline-offset-4">Akflow</Link>.</p>
     </div>
   )
 }
