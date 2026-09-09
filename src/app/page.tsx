@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
+import { CategoryCard } from '@/components/storefront/category-card'
 import { EditorialNotice, GuideCard } from '@/components/storefront/editorial-shell'
 import { ProductCard } from '@/components/storefront/product-card'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
-import { buyingGuides, editorialCategories, guidesForCategory } from '@/content/koopgidsen'
+import { buyingGuides, editorialCategories } from '@/content/koopgidsen'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 export const metadata: Metadata = {
@@ -96,8 +97,8 @@ export default async function HomePage() {
             <p className="wn-eyebrow">Keuzehulp per onderwerp</p>
             <h2 className="wn-heading mt-3 text-3xl sm:text-4xl">Waar wil je meer over weten?</h2>
             <p className="wn-body-muted mt-4 max-w-2xl">Kies een rubriek en ontdek welke eigenschappen je helpen bij een bewuste aankoop.</p>
-            <div className="mt-8 grid gap-5 md:grid-cols-3">
-              {editorialCategories.map((category) => <article key={category.slug} className="wn-surface flex flex-col p-6 sm:p-7"><p className="wn-eyebrow">Keuzehulp</p><h3 className="mt-3 text-2xl font-bold">{category.title}</h3><p className="wn-body-muted mt-3 flex-1 text-sm leading-7">{category.description}</p><p className="mt-5 text-xs font-medium text-[var(--wn-text-muted)]">{guidesForCategory(category.slug).length} koopgidsen</p><Link href={`/koopgidsen/categorie/${category.slug}`} className="mt-4 inline-flex min-h-12 items-center font-bold text-[var(--wn-petrol)] hover:underline">Ontdek deze rubriek →</Link></article>)}
+            <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {editorialCategories.map((category) => <CategoryCard key={category.slug} category={category} />)}
             </div>
           </div>
         </section>
