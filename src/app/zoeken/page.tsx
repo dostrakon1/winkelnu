@@ -10,8 +10,8 @@ import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 export const metadata: Metadata = {
-  title: 'Zoeken',
-  description: 'Zoek en filter producten en aanbiedingen op Winkelnu.',
+  title: 'Producten zoeken',
+  description: 'Zoek producten op Winkelnu en vergelijk winkelprijzen zodra gecontroleerde aanbiedingen beschikbaar zijn.',
   alternates: { canonical: '/zoeken' },
   robots: { index: false, follow: true },
 }
@@ -57,9 +57,9 @@ export default async function SearchPage({
       <section className="border-b border-[color:rgba(18,59,58,0.10)] bg-[image:var(--wn-gradient-welcome)]">
         <div className="wn-container py-12 sm:py-16">
           <SectionHeader
-            eyebrow="Zoeken & filteren"
-            title="Vind de aanbieding die bij je past."
-            description="Vergelijk producten op prijs, bekende verzendkosten, beschikbaarheid, categorie en merk."
+            eyebrow="Zoeken & ontdekken"
+            title="Vind een product dat bij je past."
+            description="Zoek op product, categorie en merk. Zodra gecontroleerde winkelprijzen zijn gekoppeld, kun je hier ook op prijs, verzendkosten en voorraad vergelijken."
           />
 
           <form action="/zoeken" method="get" className="wn-surface mt-8 grid gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4">
@@ -113,7 +113,7 @@ export default async function SearchPage({
         <SectionHeader
           eyebrow={`Pagina ${result.page}`}
           title={query.term ? `Resultaten voor “${query.term}”` : 'Producten'}
-          description="Bekende verzendkosten worden meegenomen. Als verzendkosten ontbreken, tonen we dat bij het product."
+          description="Productinformatie is al beschikbaar. Winkelprijzen, voorraad en verzendkosten verschijnen alleen wanneer daarvoor gecontroleerde aanbiedingsdata is gekoppeld."
         />
 
         {result.products.length === 0 ? (
@@ -121,32 +121,28 @@ export default async function SearchPage({
             <StorefrontEmptyState
               eyebrow="Geen resultaten"
               title="We vinden nog geen product met deze combinatie."
-              description="Pas je zoekterm of filters aan. Je kunt ook alle filters wissen en opnieuw beginnen."
+              description="Pas je zoekterm of filters aan. Prijs- en voorraadfilters tonen alleen producten waarvoor al gecontroleerde winkeldata beschikbaar is."
               actionHref="/zoeken"
               actionLabel="Wis alle filters"
             />
           </div>
         ) : (
           <div className="mt-8 grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
-            {result.products.map(({ product, bestOffer, offerCount }) => {
-              if (!bestOffer) return null
-
-              return (
-                <ProductCard
-                  key={product.id}
-                  slug={product.slug}
-                  title={product.title}
-                  brand={product.brand}
-                  description={product.description}
-                  imageUrl={product.imageUrl}
-                  price={formatMoney(bestOffer.totalAmount)}
-                  merchantName={bestOffer.merchant?.name}
-                  offerCount={offerCount}
-                  availability={bestOffer.offer.availability}
-                  shippingKnown={Boolean(bestOffer.offer.shippingCost)}
-                />
-              )
-            })}
+            {result.products.map(({ product, bestOffer, offerCount }) => (
+              <ProductCard
+                key={product.id}
+                slug={product.slug}
+                title={product.title}
+                brand={product.brand}
+                description={product.description}
+                imageUrl={product.imageUrl}
+                price={bestOffer ? formatMoney(bestOffer.totalAmount) : null}
+                merchantName={bestOffer?.merchant?.name}
+                offerCount={offerCount}
+                availability={bestOffer?.offer.availability}
+                shippingKnown={Boolean(bestOffer?.offer.shippingCost)}
+              />
+            ))}
           </div>
         )}
 
