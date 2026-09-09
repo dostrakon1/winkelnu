@@ -6,7 +6,7 @@ import { EditorialNotice, GuideCard } from '@/components/storefront/editorial-sh
 import { ProductCard } from '@/components/storefront/product-card'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
-import { buyingGuides, editorialCategories } from '@/content/koopgidsen'
+import { buyingGuides, editorialCategories } from '@/content/koopgidsen-public'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 export const metadata: Metadata = {

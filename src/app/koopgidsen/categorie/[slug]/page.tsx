@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { editorialCategories, getEditorialCategory, guidesForCategory } from '@/content/koopgidsen'
+import { editorialCategories, getEditorialCategory, guidesForCategory } from '@/content/koopgidsen-public'
 import { getCategoryImage } from '@/content/category-images'
 import { Breadcrumbs, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
 
