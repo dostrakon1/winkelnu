@@ -170,12 +170,18 @@ export class CatalogService {
     })
 
     const normalizedBrand = query.brand?.toLocaleLowerCase('nl-NL')
+    const requiresOffer = query.minPrice != null
+      || query.maxPrice != null
+      || query.inStockOnly
+      || query.sort === 'price_asc'
+      || query.sort === 'price_desc'
+
     let filtered = candidates
       .map((item) => ({ item, score: searchScore(item.product, query.term) }))
       .filter(({ item, score }) => {
         if (score < 0) return false
         if (normalizedBrand && item.product.brand?.toLocaleLowerCase('nl-NL') !== normalizedBrand) return false
-        if (!item.bestOffer) return false
+        if (!item.bestOffer) return !requiresOffer
 
         const total = cents(item.bestOffer.totalAmount)
         if (query.minPrice != null && total < Math.round(query.minPrice * 100)) return false

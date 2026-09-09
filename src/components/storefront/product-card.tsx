@@ -58,7 +58,10 @@ export function ProductCard({
             </div>
           </div>
         ) : (
-          <p className="wn-body-muted text-sm">Momenteel geen actieve aanbieding.</p>
+          <div>
+            <p className="font-semibold text-[var(--wn-petrol-deep)]">Nog geen winkelprijzen gekoppeld.</p>
+            <p className="wn-body-muted mt-1 text-xs leading-5">De productinformatie kun je alvast bekijken.</p>
+          </div>
         )}
         <WinkelnuButton href={`/product/${slug}`} className="mt-4 w-full">
           {hasOffer ? 'Vergelijk aanbiedingen' : 'Bekijk product'}

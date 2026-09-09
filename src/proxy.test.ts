@@ -10,7 +10,8 @@ import { config, proxy } from './proxy'
 
 beforeEach(() => {
   vi.stubEnv('WINKELNU_PUBLIC_CATALOG_ENABLED', undefined)
-  vi.stubEnv('CATALOG_PERSISTENCE', 'supabase')
+  vi.stubEnv('WINKELNU_CURATED_CATALOG_ENABLED', undefined)
+  vi.stubEnv('CATALOG_PERSISTENCE', 'memory')
   vi.clearAllMocks()
   auth.mockResolvedValue(NextResponse.next())
 })
@@ -27,7 +28,7 @@ describe('public request boundary', () => {
     for (const route of ['zoeken', 'categorie', 'product', 'uit']) expect(config.matcher).toContain(`/${route}/:path*`)
   })
 
-  it.each(['/zoeken', '/zoeken/', '/categorie/test', '/product/test', '/uit/test'])('blocks %s before public release', async (path) => {
+  it.each(['/zoeken', '/zoeken/', '/categorie/test', '/product/test', '/uit/test'])('blocks %s for synthetic memory persistence', async (path) => {
     const response = await proxy(request(path))
     expect(response.status).toBe(503)
     expect(response.headers.get('cache-control')).toBe('no-store')
@@ -38,7 +39,7 @@ describe('public request boundary', () => {
     expect(auth).not.toHaveBeenCalled()
   })
 
-  it('blocks non-GET requests without passing them to a page or repository', async () => {
+  it('blocks non-GET requests while the catalog is closed', async () => {
     const response = await proxy(request('/uit/test', 'POST'))
     expect(response.status).toBe(503)
     expect(response.headers.get('cache-control')).toBe('no-store')
@@ -53,7 +54,21 @@ describe('public request boundary', () => {
     expect(auth).toHaveBeenCalledOnce()
   })
 
-  it('opens only with both explicit release settings', async () => {
+  it('opens the curated catalog without exposing unreleased Supabase commerce data', async () => {
+    vi.stubEnv('CATALOG_PERSISTENCE', 'supabase')
+    const response = await proxy(request('/zoeken'))
+    expect(response.headers.get('x-middleware-next')).toBe('1')
+  })
+
+  it('can close the curated fallback with the emergency kill switch', async () => {
+    vi.stubEnv('CATALOG_PERSISTENCE', 'supabase')
+    vi.stubEnv('WINKELNU_CURATED_CATALOG_ENABLED', 'false')
+    const response = await proxy(request('/zoeken'))
+    expect(response.status).toBe(503)
+  })
+
+  it('also opens an explicitly released Supabase catalog', async () => {
+    vi.stubEnv('CATALOG_PERSISTENCE', 'supabase')
     vi.stubEnv('WINKELNU_PUBLIC_CATALOG_ENABLED', 'true')
     const response = await proxy(request('/zoeken'))
     expect(response.headers.get('x-middleware-next')).toBe('1')

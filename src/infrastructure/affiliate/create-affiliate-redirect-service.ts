@@ -1,16 +1,17 @@
 import { AffiliateRedirectService } from '@/application/affiliate/affiliate-redirect-service'
-import { assertPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
+import { assertPublicCatalogEnabled, getPublicCatalogMode } from '@/application/catalog/public-catalog-release'
 import { InMemoryAffiliateAttributionRepository } from '@/infrastructure/affiliate/in-memory-affiliate-attribution-repository'
 import { SupabaseAffiliateAttributionRepository } from '@/infrastructure/affiliate/supabase-affiliate-attribution-repository'
-import { createSyntheticCatalogRepository } from '@/infrastructure/catalog/synthetic-catalog'
+import { createCuratedCatalogRepository } from '@/infrastructure/catalog/curated-catalog'
 
 export async function createAffiliateRedirectService(): Promise<AffiliateRedirectService> {
-  // No destination resolution or click attribution before public release.
   assertPublicCatalogEnabled()
-  const mode = process.env.CATALOG_PERSISTENCE ?? 'memory'
+  const mode = getPublicCatalogMode()
 
-  if (mode === 'memory') {
-    const catalog = await createSyntheticCatalogRepository()
+  // Curated products intentionally have no offers or outbound destinations. The
+  // existing redirect service therefore fails closed with offer_not_found.
+  if (mode === 'curated') {
+    const catalog = await createCuratedCatalogRepository()
     return new AffiliateRedirectService(new InMemoryAffiliateAttributionRepository(catalog))
   }
 
@@ -18,5 +19,5 @@ export async function createAffiliateRedirectService(): Promise<AffiliateRedirec
     return new AffiliateRedirectService(new SupabaseAffiliateAttributionRepository())
   }
 
-  throw new Error(`Unsupported CATALOG_PERSISTENCE value: ${mode}`)
+  throw new Error('No public affiliate redirect mode is available.')
 }
