@@ -30,7 +30,7 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2 className="text-xl font-bold">Hosting en technische logs</h2>
-        <p className="mt-3">Hosting-, database- en beveiligingsdiensten kunnen technische loggegevens verwerken die nodig zijn voor beschikbaarheid, beveiliging en foutanalyse. De exacte productie-instellingen en bewaartermijnen worden als onderdeel van de live-controle geverifieerd en deze privacy-informatie wordt aangepast wanneer de feitelijke verwerking wijzigt.</p>
+        <p className="mt-3">Hosting-, database- en beveiligingsdiensten kunnen technische loggegevens verwerken die nodig zijn voor beschikbaarheid, beveiliging en foutanalyse. Bewaartermijnen kunnen per gebruikte dienst en configuratie verschillen. Waar Winkelnu die termijnen zelf kan instellen, beperken we de opslag tot wat voor het betreffende technische doel nodig is en werken we deze informatie bij wanneer de feitelijke verwerking wijzigt.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Interne toegang</h2>
@@ -42,12 +42,13 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2 className="text-xl font-bold">Bewaren</h2>
-        <p className="mt-3">We bewaren gegevens niet langer dan nodig is voor het doel waarvoor ze worden verwerkt, rekening houdend met beveiliging, operationele controle en wettelijke verplichtingen. Waar specifieke bewaartermijnen technisch of juridisch worden vastgesteld, verwerken we die in deze pagina.</p>
+        <p className="mt-3">We bewaren gegevens niet langer dan nodig is voor het doel waarvoor ze worden verwerkt, rekening houdend met beveiliging, operationele controle en wettelijke verplichtingen. Als de verwerking of technische configuratie verandert, beoordelen we ook opnieuw welke bewaartermijnen daarbij passend zijn.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Jouw privacyrechten</h2>
         <p className="mt-3">Heb je een vraag over persoonsgegevens of wil je een privacyrecht uitoefenen, neem dan contact op via <a className="font-semibold underline underline-offset-4" href={`mailto:${operator.email}`}>{operator.email}</a>. Omdat Winkelnu geen openbaar klantaccount heeft en clickattributie bewust beperkt houdt, kan het voorkomen dat we weinig of geen gegevens hebben die rechtstreeks aan jou te koppelen zijn.</p>
       </section>
+      <p className="wn-body-muted text-sm">Laatst inhoudelijk gecontroleerd: 10 september 2026.</p>
     </LegalPage>
   )
 }
