@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { editorialCategories, guidesForCategory } from '@/content/koopgidsen'
+import { editorialCategories, guidesForCategory } from '@/content/koopgidsen-public'
 import { getCategoryImage } from '@/content/category-images'
 
 type EditorialCategory = (typeof editorialCategories)[number]

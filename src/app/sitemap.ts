@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
-import { buyingGuides, editorialCategories } from '@/content/koopgidsen'
+import { buyingGuides, editorialCategories } from '@/content/koopgidsen-public'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 // Live commerce URLs remain runtime-generated and are excluded until release.

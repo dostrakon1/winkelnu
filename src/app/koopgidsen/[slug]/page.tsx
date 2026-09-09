@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { buyingGuides, editorialCategories, getBuyingGuide } from '@/content/koopgidsen'
+import { buyingGuides, editorialCategories, getBuyingGuide } from '@/content/koopgidsen-public'
 import { Breadcrumbs, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
 
 export const dynamicParams = false

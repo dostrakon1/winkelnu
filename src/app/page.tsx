@@ -6,7 +6,7 @@ import { EditorialNotice, GuideCard } from '@/components/storefront/editorial-sh
 import { ProductCard } from '@/components/storefront/product-card'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
-import { buyingGuides, editorialCategories } from '@/content/koopgidsen'
+import { buyingGuides, editorialCategories } from '@/content/koopgidsen-public'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 export const metadata: Metadata = {
@@ -16,12 +16,22 @@ export const metadata: Metadata = {
   openGraph: { title: 'Winkelnu.nl — Ontdek. Vergelijk. Kies je winkel.', description: 'Producten ontdekken, praktische koopgidsen lezen en later betrouwbare winkelprijzen vergelijken.', url: '/' },
 }
 
+const featuredGuideSlugs = new Set([
+  'laptop-kopen',
+  'wasmachine-kopen',
+  'koffiezetapparaat-kopen',
+  'accuboormachine-kopen',
+  'wandelschoenen-kopen',
+  'bordspel-kiezen',
+])
+
 export default async function HomePage() {
   const catalogEnabled = isPublicCatalogEnabled()
   const catalog = catalogEnabled ? await createStorefrontCatalogService() : null
   const [catalogProducts, catalogCategories] = catalog
     ? await Promise.all([catalog.listProducts({ limit: 8 }), catalog.listCategories()])
     : [[], []]
+  const featuredGuides = buyingGuides.filter((guide) => featuredGuideSlugs.has(guide.slug))
 
   return (
     <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
@@ -104,8 +114,8 @@ export default async function HomePage() {
         </section>
 
         <section className="wn-container wn-section">
-          <div className="flex flex-wrap items-end justify-between gap-5"><div><p className="wn-eyebrow">Praktische keuzehulpen</p><h2 className="wn-heading mt-3 text-3xl sm:text-4xl">Begin met een goede voorbereiding.</h2></div><Link href="/koopgidsen" className="inline-flex min-h-12 items-center font-bold text-[var(--wn-petrol)] hover:underline">Alle koopgidsen →</Link></div>
-          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{buyingGuides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}</div>
+          <div className="flex flex-wrap items-end justify-between gap-5"><div><p className="wn-eyebrow">Uitgelichte keuzehulpen</p><h2 className="wn-heading mt-3 text-3xl sm:text-4xl">Begin met een goede voorbereiding.</h2><p className="wn-body-muted mt-4 max-w-2xl">Eén praktische keuzehulp uit iedere hoofdcategorie. Op de koopgidsenpagina vind je alle achttien gidsen.</p></div><Link href="/koopgidsen" className="inline-flex min-h-12 items-center font-bold text-[var(--wn-petrol)] hover:underline">Alle 18 koopgidsen →</Link></div>
+          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{featuredGuides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}</div>
         </section>
 
         <section className="border-y border-[var(--wn-border)] bg-white/50"><div className="wn-container wn-section"><div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"><div><p className="wn-eyebrow">Vergelijk met kennis</p><h2 className="wn-heading mt-3 text-3xl sm:text-4xl">Ontdek wat bij jou past.</h2><p className="wn-body-muted mt-5 leading-8">Van belangrijke specificaties tot gebruikskosten en onderhoud: onze gidsen helpen je de verschillen te begrijpen. Zo kun je gerichter zoeken en kiezen.</p><Link href="/koopgidsen" className="mt-5 inline-flex min-h-12 items-center font-bold text-[var(--wn-petrol)] hover:underline">Ontdek de koopgidsen →</Link></div><EditorialNotice /></div></div></section>
