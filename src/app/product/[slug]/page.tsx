@@ -80,7 +80,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                     <p className="mt-2 text-3xl font-bold text-[var(--wn-petrol-deep)]">{formatMoney(bestKnownTotal)}</p>
                     <WinkelnuButton href="#aanbiedingen" variant="warm" className="mt-4 w-full">Vergelijk winkels</WinkelnuButton>
                   </div>
-                ) : null}
+                ) : (
+                  <div className="mt-6 rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-5 lg:hidden">
+                    <p className="font-semibold text-[var(--wn-petrol-deep)]">Nog geen winkelprijzen gekoppeld.</p>
+                    <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Je kunt de productinformatie alvast bekijken. Gecontroleerde winkelprijzen verschijnen hier zodra ze beschikbaar zijn.</p>
+                  </div>
+                )}
               </div>
             </section>
 
@@ -97,15 +102,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   <p className="wn-eyebrow">Vergelijk winkels</p>
                   <h2 className="wn-heading mt-2 text-2xl sm:text-3xl">Beschikbare aanbiedingen</h2>
                 </div>
-                <p className="wn-body-muted max-w-md text-sm">We tonen bekende prijsinformatie uit de feed. Controleer de uiteindelijke prijs en voorwaarden altijd bij de webwinkel.</p>
+                <p className="wn-body-muted max-w-md text-sm">Wanneer winkeldata is gekoppeld, tonen we bekende prijsinformatie. Controleer de uiteindelijke prijs en voorwaarden altijd bij de webwinkel.</p>
               </div>
 
-              <ComparisonSignals />
+              {offers.length > 0 ? <ComparisonSignals /> : null}
 
               {offers.length === 0 ? (
                 <div className="wn-surface mt-5 p-6">
-                  <p className="font-semibold">Er zijn momenteel geen actieve aanbiedingen voor dit product.</p>
-                  <p className="wn-body-muted mt-2 text-sm">Probeer later opnieuw of zoek een vergelijkbaar product.</p>
+                  <p className="font-semibold">Nog geen winkelprijzen gekoppeld.</p>
+                  <p className="wn-body-muted mt-2 text-sm leading-6">Winkelnu toont dit product alvast in de catalogus. Zodra een gecontroleerde winkel- of affiliatefeed een aanbieding voor dit product levert, verschijnt die hier automatisch.</p>
+                  {category ? <WinkelnuButton href={`/categorie/${category.slug}`} variant="secondary" className="mt-5">Bekijk vergelijkbare producten</WinkelnuButton> : null}
                 </div>
               ) : (
                 <div className="mt-5 space-y-4 lg:hidden">
@@ -142,12 +148,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <aside className="hidden lg:block lg:sticky lg:top-24">
             <div className="wn-surface p-5">
               <p className="wn-eyebrow">Aanbiedingen</p>
-              <h2 className="wn-heading mt-2 text-2xl">Kies je winkel</h2>
-              <p className="wn-body-muted mt-3 text-sm leading-6">Vergelijk de bekende prijsinformatie en ga daarna rechtstreeks naar de webwinkel.</p>
+              <h2 className="wn-heading mt-2 text-2xl">{offers.length > 0 ? 'Kies je winkel' : 'Winkelprijzen volgen'}</h2>
+              <p className="wn-body-muted mt-3 text-sm leading-6">{offers.length > 0 ? 'Vergelijk de bekende prijsinformatie en ga daarna rechtstreeks naar de webwinkel.' : 'Dit product staat al in de Winkelnu-catalogus. We tonen pas prijzen en winkels zodra daarvoor gecontroleerde aanbiedingsdata beschikbaar is.'}</p>
 
               <div className="mt-5">
                 {offers.length === 0 ? (
-                  <p className="rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4 text-sm text-[var(--wn-petrol-deep)]">Geen actieve aanbiedingen beschikbaar.</p>
+                  <div className="rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4 text-sm leading-6 text-[var(--wn-petrol-deep)]">Nog geen winkelprijzen gekoppeld. We verzinnen geen prijzen of voorraadstatus.</div>
                 ) : (
                   <div className="mt-5 space-y-4">
                     {offers.map(({ offer, merchant, totalAmount }, index) => {
@@ -179,7 +185,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 )}
 
                 <div className="mt-5 rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4 text-xs leading-5 text-[var(--wn-petrol-deep)]">
-                  Winkelnu is geen verkoper. Je koopt bij de gekozen webwinkel; die webwinkel bepaalt de uiteindelijke prijs, betaling, levering, retour en garantie.
+                  Winkelnu is geen verkoper. Als aanbiedingen beschikbaar zijn, koop je bij de gekozen webwinkel; die webwinkel bepaalt de uiteindelijke prijs, betaling, levering, retour en garantie.
                 </div>
               </div>
             </div>

@@ -35,11 +35,11 @@ export async function generateMetadata({
   if (!category) return { title: 'Categorie niet gevonden' }
 
   const canonical = page === 1 ? `/categorie/${category.slug}` : `/categorie/${category.slug}?page=${page}`
-  const title = page === 1 ? `${category.name} vergelijken` : `${category.name} vergelijken — pagina ${page}`
+  const title = page === 1 ? `${category.name} ontdekken` : `${category.name} — pagina ${page}`
 
   return {
     title,
-    description: `Bekijk en vergelijk producten en actuele aanbiedingen in ${category.name} bij verschillende winkels.`,
+    description: `Ontdek producten in ${category.name} en vergelijk winkelprijzen zodra gecontroleerde aanbiedingen beschikbaar zijn.`,
     alternates: { canonical },
     robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true },
   }
@@ -71,7 +71,7 @@ export default async function CategoryPage({
           <SectionHeader
             eyebrow="Categorie"
             title={discovery.category.name}
-            description="Vergelijk producten en aanbiedingen van verschillende winkels. Bekende verzendkosten tellen mee; ontbrekende verzendkosten worden duidelijk aangegeven."
+            description="Ontdek producten in deze categorie. Zodra betrouwbare winkeldata beschikbaar is, verschijnen prijzen, voorraad en aanbiedingen automatisch bij hetzelfde product."
           />
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
             <WinkelnuButton href="/zoeken" variant="secondary" className="w-full sm:w-auto">Zoek binnen Winkelnu</WinkelnuButton>
@@ -84,8 +84,8 @@ export default async function CategoryPage({
         {discovery.items.length === 0 ? (
           <StorefrontEmptyState
             eyebrow="Categorie nog leeg"
-            title="Hier staan op dit moment nog geen actieve producten."
-            description="Aanbod kan veranderen wanneer aangesloten winkels hun productfeeds bijwerken. Bekijk ondertussen alle producten op Winkelnu."
+            title="Hier staan op dit moment nog geen producten."
+            description="De Winkelnu-catalogus wordt stapsgewijs uitgebreid. Bekijk ondertussen de andere productcategorieën."
             actionHref="/zoeken"
             actionLabel="Bekijk alle producten"
           />

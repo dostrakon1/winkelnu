@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
-import { buyingGuides, editorialCategories } from '@/content/koopgidsen'
 import { CategoryCard } from '@/components/storefront/category-card'
+import { buyingGuides, editorialCategories } from '@/content/koopgidsen'
 import { EditorialIntro, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
 
 export const metadata: Metadata = {
