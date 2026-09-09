@@ -26,8 +26,7 @@ export default function AboutWinkelnuPage() {
         <p className="mt-3">Meer over onze werkwijze lees je op <Link href="/affiliate-en-vergelijking" className="font-semibold text-[var(--wn-petrol)] underline underline-offset-4">Hoe Winkelnu werkt</Link>.</p>
       </section>
       <section id="exploitant" className="scroll-mt-8 border-t border-[var(--wn-border)] pt-8">
-        <h2 className="text-xl font-bold">Bedrijfsgegevens</h2>
-        <p className="mt-3">Winkelnu is een initiatief van Akflow.</p>
+        <h2 className="text-lg font-semibold">Bedrijfsgegevens</h2>
         <OperatorDetails />
       </section>
     </LegalPage>
