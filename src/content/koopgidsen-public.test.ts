@@ -20,7 +20,7 @@ describe('public editorial launch set', () => {
   })
 
   it('links every guide to a published category with approved imagery', () => {
-    const categorySlugs = new Set(editorialCategories.map(({ slug }) => slug))
+    const categorySlugs = new Set<string>(editorialCategories.map(({ slug }) => slug))
     for (const guide of buyingGuides) expect(categorySlugs.has(guide.category), guide.slug).toBe(true)
     for (const category of editorialCategories) expect(getCategoryImage(category.slug), category.slug).toBeDefined()
   })
