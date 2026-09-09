@@ -1,4 +1,4 @@
-# Winkelnu — Minimal Legal Disclosure Decision v1.0
+# Winkelnu — Minimal Legal Disclosure Decision v1.1
 
 Date: 2026-09-09
 Status: proposed implementation; statutory and production privacy verification remain open.
@@ -16,15 +16,15 @@ The current legal operator is Akflow, a sole proprietorship. Winkelnu is a brand
 
 Public presentation:
 
-- About page: natural brand story followed by one `Bedrijfsgegevens` section with a short operator line, KVK and direct email contact.
-- The full legal name, VAT identification number and correspondence address remain accessible within an HTML details element on that same page. The address is explicitly identified as a correspondence address, not a visiting address.
+- About page: natural brand story followed by one compact `Bedrijfsgegevens` section. The visible text identifies Akflow and offers a friendly direct email contact.
+- The complete legal name, legal form, trade name, KVK number, VAT identification number and correspondence address remain accessible in a native, closed-by-default HTML details element labelled `Meer bedrijfsgegevens`. Use simple readable text, not a prominent identity table. The address remains explicitly identified as a correspondence address, not a visiting address.
 - Privacy: identify Akflow as controller, provide a direct privacy email and link to the full company details. Do not duplicate the complete company table.
 - Footer: short brand/operator identity, KVK, contact and a clear link to the company details. Other pages link to the canonical section where appropriate.
 - Akflow.nl may provide additional background, but it is not the sole substitute for the information Winkelnu itself must make easily, directly and permanently accessible.
 
 The legal basis for this approach is the distinction between access to required information and unnecessary repetition. Article 5 of Directive 2000/31/EC and Dutch Civil Code article 3:15d require accessible service-provider information; they do not prescribe a separate large identity table on every page. GDPR article 13 requires the controller's identity and contact details as part of a transparent privacy notice. An accessible linked section can avoid unnecessary duplication, provided the visitor can actually reach the information.
 
-**Open statutory checks:** verify the exact registered establishment/publication address against official business records, the VAT identifier, and the contact details required for Winkelnu's actual service and future contractual model. A correspondence address must not be relabelled as a registered establishment address without evidence. The applicability of a telephone/contact requirement under the electronic-service rules and any future consumer distance-contract rules remains to be assessed; an email address alone is not asserted to discharge every possible obligation. Do not invent a visiting address or publish an unapproved telephone number.
+**Open statutory checks:** verify the exact registered establishment/publication address against official business records, the VAT identifier, and the contact details required for Winkelnu's actual service and future contractual model. A correspondence address must not be relabelled as a registered establishment address without evidence. The applicability of a telephone/contact requirement under the electronic-service rules and any future consumer distance-contract rules remains to be assessed; an email address alone is not asserted to discharge every possible obligation. Do not invent a visiting address or publish a different business's number without an approved contact decision.
 
 ## 2. Affiliate disclosure without repetitive notices
 
@@ -55,11 +55,15 @@ No optional consent-required tracking may run before valid consent. No decorativ
 
 The branch `fix/m1-2-minimal-legal-disclosure` revises About, Privacy, Disclaimer, the methodology, shared operator details, footer and editorial copy. It removes repetitive notices but preserves the source section in each guide. The canonical routes remain unchanged, including `/affiliate-en-vergelijking` and `/over-winkelnu#exploitant`.
 
-The full legal values stay accessible on Winkelnu; no data is removed from the central record. No database migration, authentication change, feed import, analytics activation, dependency change, payment feature or catalogue release is part of this change. Existing release-gate and affiliate-routing behaviour remain unchanged.
+The v1.1 refinement removes the large visual identity card and duplicate introduction in favour of a friendly, compact contact section with plain-text details available on request. It retains native keyboard-accessible disclosure, all central identity fields, and the existing privacy link.
+
+No database migration, authentication change, feed import, analytics activation, dependency change, payment feature or catalogue release is part of this change. Existing release-gate and affiliate-routing behaviour remain unchanged.
 
 ## 5. Verification and release
 
-The source contract test `tests/editorial/minimal-legal-disclosure.test.ts` checks centralisation, linked identity, concise contextual policy, editorial source transparency, and preserved release boundaries. It is a structural test, not proof of legal compliance.
+The source contract test `tests/editorial/minimal-legal-disclosure.test.ts` checks centralisation, linked identity, concise contextual policy, editorial source transparency, and preserved release boundaries. It now also checks the compact default-closed presentation. It is a structural test, not proof of legal compliance.
+
+The owner previously confirmed 146/146 local tests and a successful build on commit `468f39b`. The subsequent compact-presentation changes require a fresh local test and build before merge. Do not reuse the earlier results as evidence for the new head.
 
 Before merge, run lint, typecheck, tests and build on the exact branch head. Review the complete diff for unintended changes. Inspect the About details element, privacy link, footer and responsive layout. Confirm the legal address/contact requirements with authoritative records. Complete the separate factual privacy/runtime assessment before declaring the legal pack fully accepted.
 
@@ -68,9 +72,9 @@ GitHub Actions is subject to the existing $0 paid-budget restriction. Do not rer
 ## Source references
 
 - Directive 2000/31/EC, articles 5 and 6: https://eur-lex.europa.eu/eli/dir/2000/31/oj
-- Dutch Civil Code, Book 3 article 15d: https://wetten.overheid.nl/BWBR0005291/
-- Dutch Civil Code, Book 6 articles 193b–193e: https://wetten.overheid.nl/BWBR0005289/
+- Dutch Civil Code, Book 3 article 15d and Book 6 articles 193b–193e: https://wetten.overheid.nl/BWBR0005289/ and https://wetten.overheid.nl/BWBR0005289/ (consult the applicable Book 6 text separately).
 - GDPR, articles 12–14: https://eur-lex.europa.eu/eli/reg/2016/679/oj
 - Dutch Telecommunications Act, article 11.7a: https://wetten.overheid.nl/BWBR0009950/
+- European Commission guidance on unfair commercial practices: https://eur-lex.europa.eu/eli/com/2021/932/oj
 
 This is an implementation decision record, not an independent legal opinion or a declaration of completed compliance.
