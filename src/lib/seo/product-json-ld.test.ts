@@ -22,7 +22,11 @@ describe('buildProductStructuredData', () => {
 
   it('emits grounded product and breadcrumb data without commercial claims', () => {
     const data = buildProductStructuredData({ product, category })
-    const [productNode, breadcrumbNode] = data['@graph']
+    const [productNode, rawBreadcrumbNode] = data['@graph']
+    const breadcrumbNode = rawBreadcrumbNode as {
+      '@type': 'BreadcrumbList'
+      itemListElement: Array<{ name: string }>
+    }
 
     expect(productNode).toMatchObject({
       '@type': 'Product',
