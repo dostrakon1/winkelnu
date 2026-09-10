@@ -1,3 +1,16 @@
+export type Money = {
+  amount: string
+  currency: 'EUR'
+}
+
+export type Merchant = {
+  id: string
+  slug: string
+  name: string
+  websiteUrl: string
+  isActive: boolean
+}
+
 export type ProductSpecification = {
   label: string
   value: string
@@ -49,30 +62,25 @@ export type Product = {
   visualKind?: ProductVisualKind
 }
 
-export type Category = {
-  id: string
-  name: string
-  slug: string
-  parentId?: string
-}
-
-export type Merchant = {
-  id: string
-  name: string
-  slug: string
-  networkId?: string
-}
-
-export type OfferAvailability = 'in_stock' | 'out_of_stock' | 'preorder' | 'unknown'
-
 export type Offer = {
   id: string
   productId: string
   merchantId: string
-  price: string
-  currency: 'EUR'
-  shippingCost?: string
-  availability: OfferAvailability
+  merchantProductId: string
+  price: Money
+  shippingCost?: Money
+  availability?: string
+  productUrl: string
   affiliateUrl: string
+  sourceUpdatedAt?: string
+  importedAt: string
   lastSeenAt: string
+  isActive: boolean
+}
+
+export type Category = {
+  id: string
+  slug: string
+  name: string
+  parentId?: string
 }
