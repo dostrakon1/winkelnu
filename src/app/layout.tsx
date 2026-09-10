@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { WinkelnuWebAnalytics } from '@/components/analytics/winkelnu-web-analytics'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -34,7 +35,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="nl">
-      <body>{children}</body>
+      <body>
+        {children}
+        <WinkelnuWebAnalytics />
+      </body>
     </html>
   )
 }
