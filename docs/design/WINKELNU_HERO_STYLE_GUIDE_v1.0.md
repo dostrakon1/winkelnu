@@ -166,7 +166,7 @@ Een nieuwe hero wordt pas definitief wanneer minimaal desktop en mobiel visueel 
 
 ## 12. Sectiebeeld — Productvergelijker
 
-Status: **beeldconcept goedgekeurd; asset nog te produceren en koppelen**.
+Status: **live en geïntegreerd op de homepage**.
 
 **Bestand:** `public/images/sections/section-productvergelijker.webp`  
 **Mobiele variant indien nodig:** `public/images/sections/section-productvergelijker-mobile.webp`
@@ -199,3 +199,88 @@ Status: **beeldconcept goedgekeurd; asset nog te produceren en koppelen**.
 - de foto moet zichtbaar sfeer toevoegen, maar de bestaande Productvergelijker-callout blijft herkenbaar onderdeel van het Winkelnu-designsysteem.
 
 Het Productvergelijker-sectiebeeld is een aanvulling op het Hero Style System en vervangt het page-hero-systeem niet.
+
+## 13. Winkelnu Surface Motif
+
+Status: **vast onderdeel van de visuele identiteit**.
+
+Het `Winkelnu Surface Motif` is de rustige geometrische achtergrondtaal die zichtbaar is op productillustraties en die voortaan als herkenbare grafische signatuur van Winkelnu mag worden gebruikt.
+
+### Kernvorm
+
+De standaardcompositie bestaat uit:
+
+- een warm off-white/crème basisvlak;
+- een grote, zachte salie-/mintvorm die gedeeltelijk buiten het vlak valt, bij voorkeur linksonder;
+- een tweede warme beige/perzikvorm die gedeeltelijk buiten het vlak valt, bij voorkeur rechtsboven;
+- veel negatieve ruimte tussen de vormen;
+- zachte, afgeronde geometrie zonder harde lijnen, patronen of drukke decoratie.
+
+De vormen mogen cirkelvormig, ovaal of organisch afgerond zijn, maar moeten altijd voelen als familie van de bestaande productillustraties. Ze zijn ondersteunend en mogen nooit belangrijker worden dan product, tekst of fotografie.
+
+### Kleurkarakter
+
+Gebruik de bestaande Winkelnu-kleurwereld als bron:
+
+- basis: warm crème / gebroken wit;
+- koel accent: zacht salie, mint of vergrijsd groen;
+- warm accent: licht beige, zand of zachte perzik;
+- lijnwerk en functionele elementen: diep petrol;
+- verzadiging blijft laag en vriendelijk.
+
+Geen felle primaire kleuren, neon, zware contrastblokken of gradients binnen de losse motif-vormen. Het motief moet juist door **kleurvlakken, schaal en compositie** herkenbaar zijn.
+
+### Plaatsing
+
+Als standaardrichting geldt:
+
+- koel/mint vlak vanaf links-onder of linksonder buiten beeld;
+- warm/perzik vlak vanaf rechts-boven of rechtsboven buiten beeld;
+- beide vormen zijn bewust gedeeltelijk afgesneden;
+- het midden blijft relatief rustig voor het hoofdonderwerp;
+- asymmetrie heeft de voorkeur boven een perfect gespiegeld ontwerp.
+
+De precieze schaal mag per component verschillen, zolang de verhoudingen en visuele rust herkenbaar blijven.
+
+### Waar gebruiken
+
+Het Surface Motif is geschikt voor:
+
+- productillustratievlakken en productcards;
+- categoriekaarten;
+- hero-surfaces waar fotografie niet nodig is of als subtiele grafische laag naast fotografie;
+- vergelijkkaarten en keuzehulpen;
+- lege states en ondersteunende modules;
+- koopgids- en informatieblokken wanneer een fotografisch beeld te dominant zou zijn.
+
+Het motief hoeft **niet overal tegelijk** terug te komen. Herkenbaarheid ontstaat door herhaling op geselecteerde oppervlakken, niet door elke sectie te decoreren.
+
+### Combinatie met fotografie
+
+Wanneer Surface Motif en fotografie in één compositie voorkomen:
+
+- blijft fotografie de emotionele laag;
+- blijft het motief subtiel en grafisch;
+- mag het motief nooit over een gezicht of essentieel productdetail heen vallen;
+- worden crème/mint/perzik-vormen gebruikt om overgang, rust of merkherkenning te creëren;
+- moet het eindbeeld nog steeds natuurlijk en niet collage-achtig aanvoelen.
+
+### Productillustraties
+
+De huidige lijnillustraties gelden als referentie voor deze stijl:
+
+- diep petrol lijnwerk;
+- eenvoudige herkenbare productvorm;
+- royale witruimte;
+- Surface Motif als zachte achtergrond;
+- geen fotorealistische productclaim wanneer echte productfotografie ontbreekt.
+
+Dit maakt de illustraties bewust redactioneel: ze ondersteunen oriëntatie zonder te doen alsof het een exacte productfoto is.
+
+### Consistentieregel
+
+Nieuwe vormen of kleuren worden alleen toegevoegd wanneer ze aantoonbaar binnen dezelfde rustige Winkelnu-familie passen. Een nieuwe categorie mag een ander onderwerp krijgen, maar niet ineens een andere decoratieve beeldtaal.
+
+**Kort merkprincipe:** `rustige crème basis + koel mint vlak + warm perzik vlak + diep petrol detail`.
+
+Deze Surface Motif-regels gelden naast het Hero Style System en vormen samen de vaste visuele taal voor toekomstige Winkelnu-pagina's en componenten.
