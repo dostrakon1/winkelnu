@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { editorialCategories, guidesForCategory } from '@/content/koopgidsen-public'
+import { editorialCategories, guidesForCategory } from '@/content/editorial-catalog'
 import { getCategoryImage } from '@/content/category-images'
+import { WinkelnuSurfaceMotif } from '@/components/storefront/winkelnu-surface-motif'
 
 type EditorialCategory = (typeof editorialCategories)[number]
 
@@ -24,7 +25,9 @@ export function CategoryCard({ category }: { category: EditorialCategory }) {
               style={{ objectPosition: image.position }}
             />
           </div>
-        ) : null}
+        ) : (
+          <WinkelnuSurfaceMotif className="aspect-[4/3] transition-transform duration-300 group-hover:scale-[1.015] motion-reduce:transform-none" />
+        )}
         <div className="px-6 pt-6 sm:px-7">
           <p className="wn-eyebrow">Keuzehulp</p>
           <h3 className="mt-3 text-2xl font-bold tracking-tight group-hover:text-[var(--wn-petrol)]">{category.title}</h3>

@@ -3,17 +3,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
-import { editorialCategories, getEditorialCategory, guidesForCategory } from '@/content/koopgidsen-public'
-import { getCategoryImage } from '@/content/category-images'
 import { Breadcrumbs, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
-
-const editorialCategoriesWithCatalog = new Set([
-  'elektronica',
-  'wonen-huishouden',
-  'keuken-koffie',
-  'sport-outdoor',
-  'huis-tuin-klussen',
-])
+import { WinkelnuSurfaceMotif } from '@/components/storefront/winkelnu-surface-motif'
+import { getCategoryImage } from '@/content/category-images'
+import { editorialCategories, getEditorialCategory, guidesForCategory } from '@/content/editorial-catalog'
+import { getCatalogCategorySlug } from '@/content/guide-catalog-links'
+import { buildEditorialCategoryStructuredData } from '@/lib/seo/editorial-json-ld'
+import { serializeStructuredData } from '@/lib/seo/product-json-ld'
 
 export const dynamicParams = false
 export function generateStaticParams() { return editorialCategories.map(({ slug }) => ({ slug })) }
@@ -37,10 +33,13 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
   if (!category) notFound()
   const guides = guidesForCategory(slug)
   const image = getCategoryImage(slug)
-  const catalogHref = isPublicCatalogEnabled() && editorialCategoriesWithCatalog.has(slug) ? `/categorie/${slug}` : null
+  const catalogCategorySlug = getCatalogCategorySlug(slug)
+  const catalogHref = isPublicCatalogEnabled() && catalogCategorySlug ? `/categorie/${catalogCategorySlug}` : null
+  const structuredData = buildEditorialCategoryStructuredData({ category, guides })
 
   return (
     <EditorialShell>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeStructuredData(structuredData) }} />
       <div className="wn-container pt-6"><Breadcrumbs items={[{ label: 'Koopgidsen', href: '/koopgidsen' }, { label: category.title }]} /></div>
       <section className="border-b border-[var(--wn-border)] bg-[image:var(--wn-gradient-welcome)]">
         <div className="wn-container grid items-center gap-8 py-10 sm:py-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-12 lg:py-20">
@@ -62,7 +61,9 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
             <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)]">
               <Image src={image.src} alt={image.alt} fill priority sizes="(max-width: 1023px) 100vw, 45vw" className="object-cover" style={{ objectPosition: image.position }} />
             </div>
-          ) : null}
+          ) : (
+            <WinkelnuSurfaceMotif className="aspect-[4/3] rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)]" />
+          )}
         </div>
       </section>
       <section className="wn-container wn-section">

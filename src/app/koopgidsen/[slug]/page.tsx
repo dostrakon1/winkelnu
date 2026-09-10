@@ -1,8 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { buyingGuides, editorialCategories, getBuyingGuide } from '@/content/koopgidsen-public'
+import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
 import { Breadcrumbs, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
+import { buyingGuides, editorialCategories, getBuyingGuide } from '@/content/editorial-catalog'
+import { getCatalogCategorySlug, getGuideCatalogTarget } from '@/content/guide-catalog-links'
+import { buildBuyingGuideStructuredData } from '@/lib/seo/editorial-json-ld'
+import { serializeStructuredData } from '@/lib/seo/product-json-ld'
 
 export const dynamicParams = false
 export function generateStaticParams() { return buyingGuides.map(({ slug }) => ({ slug })) }
@@ -20,8 +24,13 @@ export default async function BuyingGuidePage({ params }: { params: Promise<{ sl
   if (!guide) notFound()
   const category = editorialCategories.find((item) => item.slug === guide.category)
   const related = buyingGuides.filter((item) => item.slug !== guide.slug && item.category === guide.category)
+  const catalogTarget = isPublicCatalogEnabled() ? getGuideCatalogTarget(guide.slug) : null
+  const catalogCategorySlug = isPublicCatalogEnabled() ? getCatalogCategorySlug(guide.category) : null
+  const structuredData = buildBuyingGuideStructuredData({ guide, category })
+
   return (
     <EditorialShell>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeStructuredData(structuredData) }} />
       <div className="wn-container pt-6"><Breadcrumbs items={[{ label: 'Koopgidsen', href: '/koopgidsen' }, { label: category?.title ?? 'Rubriek', href: `/koopgidsen/categorie/${guide.category}` }, { label: guide.title }]} /></div>
       <article>
         <header className="border-b border-[var(--wn-border)] bg-[image:var(--wn-gradient-welcome)]">
@@ -38,6 +47,17 @@ export default async function BuyingGuidePage({ params }: { params: Promise<{ sl
               <h2 id="snelle-keuze" className="wn-heading text-2xl">De keuze in het kort</h2>
               <div className="mt-5 divide-y divide-[var(--wn-border)]">{guide.quickChoice.map((item) => <div key={item.situation} className="py-4 first:pt-0 last:pb-0"><h3 className="font-bold">{item.situation}</h3><p className="wn-body-muted mt-2 text-sm leading-7">{item.advice}</p></div>)}</div>
             </section>
+            {catalogTarget ? (
+              <section className="mt-6 rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.12)] bg-[var(--wn-petrol-soft)] p-6 sm:p-7" aria-labelledby="passende-producten">
+                <p className="wn-eyebrow">Van keuzehulp naar producten</p>
+                <h2 id="passende-producten" className="wn-heading mt-3 text-2xl">Bekijk {catalogTarget.label.toLocaleLowerCase('nl-NL')} in de catalogus</h2>
+                <p className="wn-body-muted mt-3 max-w-2xl text-sm leading-7">Gebruik de aandachtspunten uit deze gids om modellen te bekijken en, waar er minimaal twee vergelijkbare producten zijn, hun bekende specificaties naast elkaar te zetten. Winkelprijzen verschijnen pas zodra gecontroleerde aanbiedingsdata beschikbaar is.</p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Link href={catalogTarget.href} className="wn-button wn-button-primary">Bekijk {catalogTarget.label.toLocaleLowerCase('nl-NL')} →</Link>
+                  {catalogCategorySlug ? <Link href={`/categorie/${catalogCategorySlug}`} className="wn-button wn-button-secondary">Naar de categorie →</Link> : null}
+                </div>
+              </section>
+            ) : null}
             <div className="mt-12 space-y-12">{guide.sections.map((section, index) => <section key={section.heading} id={`onderdeel-${index + 1}`} className="scroll-mt-8"><h2 className="wn-heading text-2xl sm:text-3xl">{section.heading}</h2><div className="mt-5 space-y-4 text-base leading-8 text-[var(--wn-ink)]">{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>{section.bullets ? <ul className="mt-5 list-disc space-y-2 pl-5 leading-7">{section.bullets.map((item) => <li key={item}>{item}</li>)}</ul> : null}</section>)}</div>
             <section id="checklist" className="mt-12 rounded-[var(--wn-radius-xl)] bg-[var(--wn-petrol-deep)] p-6 text-white sm:p-8"><h2 className="text-2xl font-bold">Checklist voor je aankoop</h2><ul className="mt-6 space-y-4">{guide.checklist.map((item) => <li key={item} className="flex items-start gap-3"><span aria-hidden="true" className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--wn-warm)]"/><span className="leading-7 text-white/85">{item}</span></li>)}</ul></section>
             <section id="bronnen" className="mt-12 border-t border-[var(--wn-border)] pt-8"><h2 className="wn-heading text-2xl">Bronnen en werkwijze</h2><p className="wn-body-muted mt-4 text-sm leading-7">Deze gids is redactioneel opgesteld op basis van algemene productkennis en de onderstaande achtergrondbronnen. We hebben de genoemde producten niet zelf getest. Controleer actuele specificaties en voorwaarden bij de fabrikant of webwinkel.</p><ul className="mt-5 space-y-4">{guide.sources.map((source) => <li key={source.url}><a href={source.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-[var(--wn-petrol)] underline underline-offset-4 hover:text-[var(--wn-petrol-deep)]">{source.title} ↗</a><p className="mt-1 text-sm leading-6 text-[var(--wn-text-muted)]">{source.note}</p></li>)}</ul></section>
