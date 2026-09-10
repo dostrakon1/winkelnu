@@ -96,7 +96,7 @@ export default async function HomePage() {
             <div className="relative mt-8 overflow-hidden rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] shadow-[var(--wn-shadow-xs)]">
               <div
                 className="absolute inset-0 bg-cover bg-[position:72%_48%] sm:left-auto sm:right-0 sm:w-[58%]"
-                style={{ backgroundImage: "url('/images/sections/section-productvergelijker.svg')" }}
+                style={{ backgroundImage: "url('/images/sections/section-productvergelijker.webp')" }}
                 aria-hidden="true"
               />
               <div className="absolute inset-0 bg-[rgba(223,233,228,0.72)] sm:bg-transparent" aria-hidden="true" />
