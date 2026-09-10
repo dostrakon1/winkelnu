@@ -2,12 +2,13 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
 import { CategoryCard } from '@/components/storefront/category-card'
+import { ComparisonProductGrid } from '@/components/storefront/comparison-product-grid'
 import { EditorialNotice, GuideCard } from '@/components/storefront/editorial-shell'
-import { ProductCard } from '@/components/storefront/product-card'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 import { WinkelnuHero } from '@/components/storefront/winkelnu-hero'
 import { buyingGuides, editorialCategories } from '@/content/koopgidsen-public'
+import { getProductComparisonGroup } from '@/domain/catalog/comparison'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 export const metadata: Metadata = {
@@ -95,23 +96,26 @@ export default async function HomePage() {
               <Link href="/categorie/wonen-huishouden" className="wn-button wn-button-primary mt-5 shrink-0 sm:mt-0">Probeer de vergelijker →</Link>
             </div>
 
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-              {catalogProducts.map(({ product, bestOffer, offerCount }) => (
-                <ProductCard
-                  key={product.id}
-                  slug={product.slug}
-                  title={product.title}
-                  brand={product.brand}
-                  description={product.description}
-                  imageUrl={product.imageUrl}
-                  visualKind={product.visualKind}
-                  price={bestOffer ? new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(bestOffer.totalAmount)) : null}
-                  merchantName={bestOffer?.merchant?.name}
-                  offerCount={offerCount}
-                  availability={bestOffer?.offer.availability}
-                  shippingKnown={Boolean(bestOffer?.offer.shippingCost)}
-                />
-              ))}
+            <div className="mt-8">
+              <ComparisonProductGrid
+                showIntro={false}
+                gridClassName="grid gap-5 sm:grid-cols-2 xl:grid-cols-4"
+                items={catalogProducts.map(({ product, bestOffer, offerCount }) => ({
+                  id: product.id,
+                  slug: product.slug,
+                  title: product.title,
+                  brand: product.brand,
+                  description: product.description,
+                  imageUrl: product.imageUrl,
+                  visualKind: product.visualKind,
+                  comparisonGroup: getProductComparisonGroup(product),
+                  price: bestOffer ? new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(bestOffer.totalAmount)) : null,
+                  merchantName: bestOffer?.merchant?.name,
+                  offerCount,
+                  availability: bestOffer?.offer.availability,
+                  shippingKnown: Boolean(bestOffer?.offer.shippingCost),
+                }))}
+              />
             </div>
           </section>
         ) : null}
