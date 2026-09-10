@@ -1,4 +1,4 @@
-import type { Product } from './types'
+import type { Product, ProductVisualKind } from './types'
 
 export const MIN_COMPARISON_PRODUCTS = 2
 export const MAX_COMPARISON_PRODUCTS = 4
@@ -8,8 +8,45 @@ export type ProductComparisonRow = {
   values: Array<string | null>
 }
 
+const COMPARISON_GROUP_BY_VISUAL_KIND: Record<ProductVisualKind, string> = {
+  laptop: 'laptops',
+  headphones: 'headphones',
+  tablet: 'tablets',
+  mouse: 'computer-mice',
+  'stick-vacuum': 'vacuum-cleaners',
+  'canister-vacuum': 'vacuum-cleaners',
+  'smart-lighting': 'smart-lighting',
+  'washing-machine': 'washing-machines',
+  airfryer: 'airfryers',
+  'coffee-machine': 'coffee-machines',
+  'dual-airfryer': 'airfryers',
+  'stand-mixer': 'stand-mixers',
+  toothbrush: 'electric-toothbrushes',
+  shaver: 'shavers',
+  epilator: 'epilators',
+  watch: 'fitness-wearables',
+  'fitness-band': 'fitness-wearables',
+  bottle: 'drink-bottles',
+  tent: 'tents',
+  mower: 'lawn-mowers',
+  'pressure-washer': 'pressure-washers',
+  drill: 'drills',
+  'robot-mower': 'lawn-mowers',
+}
+
 function normalizeLabel(value: string): string {
   return value.trim().toLocaleLowerCase('nl-NL')
+}
+
+export function getProductComparisonGroup(product: Product): string | null {
+  if (!product.visualKind) return null
+  return COMPARISON_GROUP_BY_VISUAL_KIND[product.visualKind] ?? null
+}
+
+export function productsAreComparable(products: Product[]): boolean {
+  if (products.length < MIN_COMPARISON_PRODUCTS || products.length > MAX_COMPARISON_PRODUCTS) return false
+  const group = getProductComparisonGroup(products[0])
+  return Boolean(group && products.every((product) => getProductComparisonGroup(product) === group))
 }
 
 export function parseComparisonProductSlugs(

@@ -7,6 +7,7 @@ import { StorefrontEmptyState } from '@/components/storefront/storefront-empty-s
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
+import { getProductComparisonGroup } from '@/domain/catalog/comparison'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 function formatMoney(amount: string): string {
@@ -71,7 +72,7 @@ export default async function CategoryPage({
           <SectionHeader
             eyebrow="Categorie"
             title={discovery.category.name}
-            description="Ontdek producten in deze categorie en selecteer er twee tot vier om productspecificaties direct naast elkaar te vergelijken. Winkelprijzen, voorraad en aanbiedingen verschijnen alleen wanneer gecontroleerde winkeldata beschikbaar is."
+            description="Ontdek producten in deze categorie. Waar minimaal twee modellen van hetzelfde producttype aanwezig zijn, kun je hun bekende specificaties direct naast elkaar vergelijken. Winkelprijzen, voorraad en aanbiedingen verschijnen alleen wanneer gecontroleerde winkeldata beschikbaar is."
           />
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
             <WinkelnuButton href="/zoeken" variant="secondary" className="w-full sm:w-auto">Zoek binnen Winkelnu</WinkelnuButton>
@@ -99,6 +100,7 @@ export default async function CategoryPage({
               description: product.description,
               imageUrl: product.imageUrl,
               visualKind: product.visualKind,
+              comparisonGroup: getProductComparisonGroup(product),
               price: bestOffer ? formatMoney(bestOffer.totalAmount) : null,
               merchantName: bestOffer?.merchant?.name,
               offerCount,

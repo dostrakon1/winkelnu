@@ -14,6 +14,7 @@ export type ComparisonProductGridItem = {
   description?: string | null
   imageUrl?: string | null
   visualKind?: ProductVisualKind
+  comparisonGroup?: string | null
   price?: string | null
   merchantName?: string | null
   offerCount: number
@@ -28,11 +29,28 @@ type ComparisonProductGridProps = {
 export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
   const [selectedSlugs, setSelectedSlugs] = useState<string[]>([])
   const selectedSet = useMemo(() => new Set(selectedSlugs), [selectedSlugs])
+  const groupCounts = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const item of items) {
+      if (!item.comparisonGroup) continue
+      counts.set(item.comparisonGroup, (counts.get(item.comparisonGroup) ?? 0) + 1)
+    }
+    return counts
+  }, [items])
+  const selectedGroup = selectedSlugs.length > 0
+    ? items.find((item) => item.slug === selectedSlugs[0])?.comparisonGroup ?? null
+    : null
   const compareHref = `/vergelijken?producten=${encodeURIComponent(selectedSlugs.join(','))}`
 
   function toggle(slug: string) {
     setSelectedSlugs((current) => {
       if (current.includes(slug)) return current.filter((candidate) => candidate !== slug)
+      const item = items.find((candidate) => candidate.slug === slug)
+      if (!item?.comparisonGroup || (groupCounts.get(item.comparisonGroup) ?? 0) < MIN_COMPARISON_PRODUCTS) return current
+      const currentGroup = current.length > 0
+        ? items.find((candidate) => candidate.slug === current[0])?.comparisonGroup ?? null
+        : null
+      if (currentGroup && currentGroup !== item.comparisonGroup) return current
       if (current.length >= MAX_COMPARISON_PRODUCTS) return current
       return [...current, slug]
     })
@@ -40,10 +58,26 @@ export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
 
   return (
     <>
+      <p className="mb-5 text-sm leading-6 text-[var(--wn-text-muted)]">
+        Vergelijken is beschikbaar wanneer er minimaal twee producten van hetzelfde type in deze categorie staan.
+      </p>
+
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
         {items.map((item) => {
           const selected = selectedSet.has(item.slug)
+          const hasComparablePeer = Boolean(item.comparisonGroup && (groupCounts.get(item.comparisonGroup) ?? 0) >= MIN_COMPARISON_PRODUCTS)
+          const wrongGroup = Boolean(selectedGroup && item.comparisonGroup !== selectedGroup)
           const limitReached = selectedSlugs.length >= MAX_COMPARISON_PRODUCTS && !selected
+          const disabled = !selected && (!hasComparablePeer || wrongGroup || limitReached)
+          const buttonLabel = selected
+            ? '✓ Geselecteerd voor vergelijking'
+            : !hasComparablePeer
+              ? 'Nog geen vergelijkbaar tweede product'
+              : wrongGroup
+                ? 'Kies hetzelfde producttype'
+                : limitReached
+                  ? 'Maximaal 4 producten'
+                  : '+ Toevoegen aan vergelijking'
 
           return (
             <div key={item.id} className="flex min-w-0 flex-col gap-2">
@@ -63,11 +97,11 @@ export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
               <button
                 type="button"
                 aria-pressed={selected}
-                disabled={limitReached}
+                disabled={disabled}
                 onClick={() => toggle(item.slug)}
                 className={`min-h-11 rounded-[var(--wn-radius-lg)] border px-4 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-petrol)] disabled:cursor-not-allowed disabled:opacity-45 ${selected ? 'border-[var(--wn-petrol)] bg-[var(--wn-petrol-soft)] text-[var(--wn-petrol-deep)]' : 'border-[var(--wn-border)] bg-white text-[var(--wn-petrol)] hover:border-[var(--wn-petrol)]'}`}
               >
-                {selected ? '✓ Geselecteerd voor vergelijking' : limitReached ? 'Maximaal 4 producten' : '+ Toevoegen aan vergelijking'}
+                {buttonLabel}
               </button>
             </div>
           )
@@ -81,8 +115,8 @@ export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
               <p className="font-bold text-[var(--wn-ink)]">{selectedSlugs.length} van maximaal {MAX_COMPARISON_PRODUCTS} geselecteerd</p>
               <p className="mt-1 text-xs leading-5 text-[var(--wn-text-muted)]">
                 {selectedSlugs.length < MIN_COMPARISON_PRODUCTS
-                  ? 'Selecteer nog één product om de verschillen naast elkaar te zien.'
-                  : 'Klaar om productspecificaties naast elkaar te zetten.'}
+                  ? 'Selecteer nog één product van hetzelfde type om de verschillen te zien.'
+                  : 'Klaar om vergelijkbare productspecificaties naast elkaar te zetten.'}
               </p>
             </div>
             <div className="flex gap-2">

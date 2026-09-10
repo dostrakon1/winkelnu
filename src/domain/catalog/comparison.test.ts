@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   MAX_COMPARISON_PRODUCTS,
   buildProductComparisonRows,
+  getProductComparisonGroup,
   parseComparisonProductSlugs,
+  productsAreComparable,
 } from './comparison'
 import type { Product } from './types'
 
@@ -22,6 +24,40 @@ describe('parseComparisonProductSlugs', () => {
       'goed-product',
       'ook-goed',
     ])
+  })
+})
+
+describe('product comparison groups', () => {
+  const product = (id: string, visualKind: Product['visualKind']): Product => ({
+    id,
+    slug: id,
+    title: id,
+    visualKind,
+  })
+
+  it('groups product variants that make sense to compare', () => {
+    expect(getProductComparisonGroup(product('steelstofzuiger', 'stick-vacuum'))).toBe('vacuum-cleaners')
+    expect(getProductComparisonGroup(product('sledestofzuiger', 'canister-vacuum'))).toBe('vacuum-cleaners')
+    expect(getProductComparisonGroup(product('airfryer', 'airfryer'))).toBe('airfryers')
+    expect(getProductComparisonGroup(product('dual-airfryer', 'dual-airfryer'))).toBe('airfryers')
+    expect(getProductComparisonGroup(product('horloge', 'watch'))).toBe('fitness-wearables')
+    expect(getProductComparisonGroup(product('band', 'fitness-band'))).toBe('fitness-wearables')
+    expect(getProductComparisonGroup(product('maaier', 'mower'))).toBe('lawn-mowers')
+    expect(getProductComparisonGroup(product('robotmaaier', 'robot-mower'))).toBe('lawn-mowers')
+  })
+
+  it('rejects unrelated product types even when they can share a broad category', () => {
+    expect(productsAreComparable([
+      product('laptop', 'laptop'),
+      product('hoofdtelefoon', 'headphones'),
+    ])).toBe(false)
+  })
+
+  it('allows two to four products from one comparison group', () => {
+    expect(productsAreComparable([
+      product('a', 'toothbrush'),
+      product('b', 'toothbrush'),
+    ])).toBe(true)
   })
 })
 

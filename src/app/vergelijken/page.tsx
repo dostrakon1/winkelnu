@@ -4,6 +4,7 @@ import {
   MIN_COMPARISON_PRODUCTS,
   buildProductComparisonRows,
   parseComparisonProductSlugs,
+  productsAreComparable,
 } from '@/domain/catalog/comparison'
 import { ProductMedia } from '@/components/storefront/product-media'
 import { SectionHeader } from '@/components/storefront/section-header'
@@ -16,13 +17,37 @@ import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-
 
 export const metadata: Metadata = {
   title: 'Producten vergelijken',
-  description: 'Zet productspecificaties op Winkelnu naast elkaar en bekijk de belangrijkste verschillen.',
+  description: 'Zet vergelijkbare productspecificaties op Winkelnu naast elkaar en bekijk de belangrijkste verschillen.',
   alternates: { canonical: '/vergelijken' },
   robots: { index: false, follow: true },
 }
 
 function formatMoney(amount: string): string {
   return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(amount))
+}
+
+function EmptyComparison({
+  title,
+  description,
+}: {
+  title: string
+  description: string
+}) {
+  return (
+    <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
+      <WinkelnuHeader />
+      <section className="wn-container wn-section">
+        <StorefrontEmptyState
+          eyebrow="Productvergelijker"
+          title={title}
+          description={description}
+          actionHref="/zoeken"
+          actionLabel="Bekijk producten"
+        />
+      </section>
+      <WinkelnuFooter />
+    </main>
+  )
 }
 
 export default async function ComparePage({
@@ -38,26 +63,25 @@ export default async function ComparePage({
 
   if (items.length < MIN_COMPARISON_PRODUCTS) {
     return (
-      <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
-        <WinkelnuHeader />
-        <section className="wn-container wn-section">
-          <StorefrontEmptyState
-            eyebrow="Productvergelijker"
-            title="Selecteer minimaal twee producten."
-            description="Open een productcategorie en voeg twee tot vier producten toe aan de vergelijking. Winkelnu vergelijkt alleen informatie die al bij de producten bekend is."
-            actionHref="/zoeken"
-            actionLabel="Bekijk producten"
-          />
-        </section>
-        <WinkelnuFooter />
-      </main>
+      <EmptyComparison
+        title="Selecteer minimaal twee producten."
+        description="Open een productcategorie en voeg twee tot vier vergelijkbare producten toe. Winkelnu vergelijkt alleen informatie die al bij de producten bekend is."
+      />
     )
   }
 
   const products = items.map((item) => item.product)
+
+  if (!productsAreComparable(products)) {
+    return (
+      <EmptyComparison
+        title="Kies producten van hetzelfde type."
+        description="Een laptop en hoofdtelefoon kunnen bijvoorbeeld in dezelfde brede categorie staan, maar zijn inhoudelijk niet zinvol naast elkaar te vergelijken. Kies daarom twee tot vier modellen van hetzelfde producttype."
+      />
+    )
+  }
+
   const rows = buildProductComparisonRows(products)
-  const categoryIds = new Set(products.map((product) => product.categoryId).filter(Boolean))
-  const mixedCategories = categoryIds.size > 1
   const firstCategoryId = products[0]?.categoryId
   const categories = firstCategoryId ? await catalog.listCategories() : []
   const firstCategory = firstCategoryId
@@ -74,7 +98,7 @@ export default async function ComparePage({
           <SectionHeader
             eyebrow="Productvergelijker"
             title={`Vergelijk ${items.length} producten naast elkaar.`}
-            description="Bekijk de bekende productspecificaties in één overzicht. Ontbrekende gegevens laten we leeg in plaats van ze in te vullen of te schatten."
+            description="We zetten alleen modellen van hetzelfde producttype naast elkaar en tonen uitsluitend bekende productspecificaties. Ontbrekende gegevens laten we leeg in plaats van ze in te vullen of te schatten."
           />
           <div className="mt-6 flex flex-wrap gap-3">
             {firstCategory ? (
@@ -89,12 +113,6 @@ export default async function ComparePage({
       </section>
 
       <section className="wn-container wn-section">
-        {mixedCategories ? (
-          <div className="mb-6 rounded-[var(--wn-radius-lg)] border border-[color:rgba(233,120,61,0.24)] bg-[color:rgba(233,120,61,0.08)] p-4 text-sm leading-6 text-[var(--wn-ink)]">
-            Je vergelijkt producten uit verschillende categorieën. Daardoor zijn niet alle eigenschappen rechtstreeks met elkaar vergelijkbaar.
-          </div>
-        ) : null}
-
         <div className="overflow-x-auto rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white shadow-[var(--wn-shadow-sm)]">
           <div className="min-w-max">
             <div className="grid border-b border-[var(--wn-border)] bg-[var(--wn-petrol-soft)]" style={{ gridTemplateColumns }}>
