@@ -37,6 +37,14 @@ export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
     }
     return counts
   }, [items])
+  const comparableGroups = useMemo(
+    () => Array.from(groupCounts.values()).filter((count) => count >= MIN_COMPARISON_PRODUCTS).length,
+    [groupCounts],
+  )
+  const comparableItems = useMemo(
+    () => items.filter((item) => Boolean(item.comparisonGroup && (groupCounts.get(item.comparisonGroup) ?? 0) >= MIN_COMPARISON_PRODUCTS)).length,
+    [groupCounts, items],
+  )
   const selectedGroup = selectedSlugs.length > 0
     ? items.find((item) => item.slug === selectedSlugs[0])?.comparisonGroup ?? null
     : null
@@ -58,9 +66,28 @@ export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
 
   return (
     <>
-      <p className="mb-5 text-sm leading-6 text-[var(--wn-text-muted)]">
-        Vergelijken is beschikbaar wanneer er minimaal twee producten van hetzelfde type in deze categorie staan.
-      </p>
+      {comparableGroups > 0 ? (
+        <div className="mb-8 rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] p-5 sm:p-6">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+            <div>
+              <p className="wn-eyebrow">Producten vergelijken</p>
+              <h2 className="wn-heading mt-2 text-2xl sm:text-3xl">Zet vergelijkbare modellen direct naast elkaar.</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--wn-text-muted)] sm:text-base">
+                In deze categorie zijn {comparableItems} producten van {comparableGroups === 1 ? 'één vergelijkbaar producttype' : `${comparableGroups} vergelijkbare producttypen`} beschikbaar. Kies hieronder minimaal twee modellen van hetzelfde type; daarna verschijnt de vergelijkknop onder in beeld.
+              </p>
+            </div>
+            <div className="grid gap-2 text-sm font-semibold text-[var(--wn-petrol-deep)] sm:grid-cols-3 lg:grid-cols-1">
+              <span className="rounded-full bg-white/80 px-4 py-2">1. Kies een model</span>
+              <span className="rounded-full bg-white/80 px-4 py-2">2. Kies hetzelfde type</span>
+              <span className="rounded-full bg-white/80 px-4 py-2">3. Vergelijk verschillen</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="mb-7 rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white px-5 py-4 text-sm leading-6 text-[var(--wn-text-muted)]">
+          Productvergelijking wordt hier automatisch beschikbaar zodra minimaal twee modellen van hetzelfde producttype in de catalogus staan.
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
         {items.map((item) => {
@@ -70,14 +97,14 @@ export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
           const limitReached = selectedSlugs.length >= MAX_COMPARISON_PRODUCTS && !selected
           const disabled = !selected && (!hasComparablePeer || wrongGroup || limitReached)
           const buttonLabel = selected
-            ? '✓ Geselecteerd voor vergelijking'
+            ? '✓ Geselecteerd'
             : !hasComparablePeer
-              ? 'Nog geen vergelijkbaar tweede product'
+              ? 'Nog geen vergelijkbaar model'
               : wrongGroup
                 ? 'Kies hetzelfde producttype'
                 : limitReached
                   ? 'Maximaal 4 producten'
-                  : '+ Toevoegen aan vergelijking'
+                  : 'Vergelijk dit product'
 
           return (
             <div key={item.id} className="flex min-w-0 flex-col gap-2">
@@ -97,9 +124,10 @@ export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
               <button
                 type="button"
                 aria-pressed={selected}
+                aria-label={`${buttonLabel}: ${item.title}`}
                 disabled={disabled}
                 onClick={() => toggle(item.slug)}
-                className={`min-h-11 rounded-[var(--wn-radius-lg)] border px-4 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-petrol)] disabled:cursor-not-allowed disabled:opacity-45 ${selected ? 'border-[var(--wn-petrol)] bg-[var(--wn-petrol-soft)] text-[var(--wn-petrol-deep)]' : 'border-[var(--wn-border)] bg-white text-[var(--wn-petrol)] hover:border-[var(--wn-petrol)]'}`}
+                className={`min-h-12 rounded-[var(--wn-radius-lg)] border px-4 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-petrol)] disabled:cursor-not-allowed ${selected ? 'border-[var(--wn-petrol)] bg-[var(--wn-petrol-soft)] text-[var(--wn-petrol-deep)]' : disabled ? 'border-[var(--wn-border)] bg-white text-[var(--wn-text-muted)] opacity-55' : 'border-[var(--wn-petrol)] bg-[var(--wn-petrol)] text-white shadow-sm hover:bg-[var(--wn-petrol-deep)]'}`}
               >
                 {buttonLabel}
               </button>

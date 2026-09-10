@@ -2,9 +2,18 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
 import { editorialCategories, getEditorialCategory, guidesForCategory } from '@/content/koopgidsen-public'
 import { getCategoryImage } from '@/content/category-images'
 import { Breadcrumbs, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
+
+const editorialCategoriesWithCatalog = new Set([
+  'elektronica',
+  'wonen-huishouden',
+  'keuken-koffie',
+  'sport-outdoor',
+  'huis-tuin-klussen',
+])
 
 export const dynamicParams = false
 export function generateStaticParams() { return editorialCategories.map(({ slug }) => ({ slug })) }
@@ -28,6 +37,8 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
   if (!category) notFound()
   const guides = guidesForCategory(slug)
   const image = getCategoryImage(slug)
+  const catalogHref = isPublicCatalogEnabled() && editorialCategoriesWithCatalog.has(slug) ? `/categorie/${slug}` : null
+
   return (
     <EditorialShell>
       <div className="wn-container pt-6"><Breadcrumbs items={[{ label: 'Koopgidsen', href: '/koopgidsen' }, { label: category.title }]} /></div>
@@ -37,7 +48,15 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
             <p className="wn-eyebrow">Redactionele rubriek</p>
             <h1 className="wn-heading mt-4 max-w-4xl text-4xl sm:text-5xl lg:text-6xl">{category.title}</h1>
             <p className="wn-body-muted mt-6 max-w-3xl text-lg leading-8">{category.intro}</p>
-            <Link href="/koopgidsen" className="wn-button wn-button-secondary mt-8">Alle koopgidsen →</Link>
+            <div className="mt-8 flex flex-wrap gap-3">
+              {catalogHref ? <Link href={catalogHref} className="wn-button wn-button-primary">Producten bekijken & vergelijken →</Link> : null}
+              <Link href="/koopgidsen" className={catalogHref ? 'wn-button wn-button-secondary' : 'wn-button wn-button-primary'}>Alle koopgidsen →</Link>
+            </div>
+            {catalogHref ? (
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--wn-text-muted)]">
+                Wil je modellen naast elkaar zetten? Open de productcatalogus van deze categorie en selecteer minimaal twee vergelijkbare producten.
+              </p>
+            ) : null}
           </div>
           {image ? (
             <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)]">

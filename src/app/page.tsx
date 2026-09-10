@@ -82,6 +82,15 @@ export default async function HomePage() {
               ))}
             </div>
 
+            <div className="mt-8 rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] p-5 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-6">
+              <div>
+                <p className="wn-eyebrow">Productvergelijker</p>
+                <h3 className="wn-heading mt-2 text-2xl">Vergelijk modellen op hun bekende specificaties.</h3>
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--wn-text-muted)]">Open een productcategorie en kies minimaal twee modellen van hetzelfde producttype. Winkelnu zet de beschikbare specificaties vervolgens overzichtelijk naast elkaar — ook zolang winkelprijzen nog niet gekoppeld zijn.</p>
+              </div>
+              <Link href="/categorie/wonen-huishouden" className="wn-button wn-button-primary mt-5 shrink-0 sm:mt-0">Probeer de vergelijker →</Link>
+            </div>
+
             <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
               {catalogProducts.map(({ product, bestOffer, offerCount }) => (
                 <ProductCard
@@ -107,7 +116,7 @@ export default async function HomePage() {
           <div className="wn-container wn-section scroll-mt-6">
             <p className="wn-eyebrow">Keuzehulp per onderwerp</p>
             <h2 className="wn-heading mt-3 text-3xl sm:text-4xl">Waar wil je meer over weten?</h2>
-            <p className="wn-body-muted mt-4 max-w-2xl">Kies een rubriek en ontdek welke eigenschappen je helpen bij een bewuste aankoop.</p>
+            <p className="wn-body-muted mt-4 max-w-2xl">Kies een redactionele rubriek voor uitleg en koopgidsen. Wil je concrete modellen naast elkaar zetten, gebruik dan de productcatalogus hierboven.</p>
             <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {editorialCategories.map((category) => <CategoryCard key={category.slug} category={category} />)}
             </div>
