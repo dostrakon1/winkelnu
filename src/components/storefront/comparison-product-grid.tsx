@@ -24,9 +24,15 @@ export type ComparisonProductGridItem = {
 
 type ComparisonProductGridProps = {
   items: ComparisonProductGridItem[]
+  showIntro?: boolean
+  gridClassName?: string
 }
 
-export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
+export function ComparisonProductGrid({
+  items,
+  showIntro = true,
+  gridClassName = 'grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3',
+}: ComparisonProductGridProps) {
   const [selectedSlugs, setSelectedSlugs] = useState<string[]>([])
   const selectedSet = useMemo(() => new Set(selectedSlugs), [selectedSlugs])
   const groupCounts = useMemo(() => {
@@ -66,30 +72,32 @@ export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
 
   return (
     <>
-      {comparableGroups > 0 ? (
-        <div className="mb-7 rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] px-5 py-4 sm:px-6 sm:py-5">
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-            <div>
-              <p className="wn-eyebrow">Producten vergelijken</p>
-              <h2 className="wn-heading mt-2 text-2xl">Zet vergelijkbare modellen direct naast elkaar.</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--wn-text-muted)]">
-                In deze categorie zijn {comparableItems} producten van {comparableGroups === 1 ? 'één vergelijkbaar producttype' : `${comparableGroups} vergelijkbare producttypen`} beschikbaar. Kies minimaal twee modellen van hetzelfde type; daarna verschijnt de vergelijkknop onder in beeld.
-              </p>
-            </div>
-            <div className="grid gap-2 text-xs font-semibold text-[var(--wn-petrol-deep)] sm:grid-cols-3 lg:grid-cols-1">
-              <span className="rounded-full bg-white/80 px-3 py-2">1. Kies een model</span>
-              <span className="rounded-full bg-white/80 px-3 py-2">2. Kies hetzelfde type</span>
-              <span className="rounded-full bg-white/80 px-3 py-2">3. Vergelijk verschillen</span>
+      {showIntro ? (
+        comparableGroups > 0 ? (
+          <div className="mb-7 rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] px-5 py-4 sm:px-6 sm:py-5">
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+              <div>
+                <p className="wn-eyebrow">Producten vergelijken</p>
+                <h2 className="wn-heading mt-2 text-2xl">Zet vergelijkbare modellen direct naast elkaar.</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--wn-text-muted)]">
+                  In deze categorie zijn {comparableItems} producten van {comparableGroups === 1 ? 'één vergelijkbaar producttype' : `${comparableGroups} vergelijkbare producttypen`} beschikbaar. Kies minimaal twee modellen van hetzelfde type; daarna verschijnt de vergelijkknop onder in beeld.
+                </p>
+              </div>
+              <div className="grid gap-2 text-xs font-semibold text-[var(--wn-petrol-deep)] sm:grid-cols-3 lg:grid-cols-1">
+                <span className="rounded-full bg-white/80 px-3 py-2">1. Kies een model</span>
+                <span className="rounded-full bg-white/80 px-3 py-2">2. Kies hetzelfde type</span>
+                <span className="rounded-full bg-white/80 px-3 py-2">3. Vergelijk verschillen</span>
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <div className="mb-7 rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white px-5 py-4 text-sm leading-6 text-[var(--wn-text-muted)]">
-          Productvergelijking wordt hier automatisch beschikbaar zodra minimaal twee modellen van hetzelfde producttype in de catalogus staan.
-        </div>
-      )}
+        ) : (
+          <div className="mb-7 rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white px-5 py-4 text-sm leading-6 text-[var(--wn-text-muted)]">
+            Productvergelijking wordt hier automatisch beschikbaar zodra minimaal twee modellen van hetzelfde producttype in de catalogus staan.
+          </div>
+        )
+      ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
+      <div className={gridClassName}>
         {items.map((item) => {
           const selected = selectedSet.has(item.slug)
           const hasComparablePeer = Boolean(item.comparisonGroup && (groupCounts.get(item.comparisonGroup) ?? 0) >= MIN_COMPARISON_PRODUCTS)

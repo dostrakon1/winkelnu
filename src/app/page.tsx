@@ -2,11 +2,13 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
 import { CategoryCard } from '@/components/storefront/category-card'
+import { ComparisonProductGrid } from '@/components/storefront/comparison-product-grid'
 import { EditorialNotice, GuideCard } from '@/components/storefront/editorial-shell'
-import { ProductCard } from '@/components/storefront/product-card'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
+import { WinkelnuHero } from '@/components/storefront/winkelnu-hero'
 import { buyingGuides, editorialCategories } from '@/content/koopgidsen-public'
+import { getProductComparisonGroup } from '@/domain/catalog/comparison'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 export const metadata: Metadata = {
@@ -37,20 +39,20 @@ export default async function HomePage() {
     <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
       <WinkelnuHeader />
       <main id="inhoud">
-        <section className="relative overflow-hidden border-b border-[var(--wn-border)] bg-[image:var(--wn-gradient-welcome)]">
-          <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)]" aria-hidden="true" />
-          <div className="wn-container relative grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_21rem] lg:py-24">
-            <div className="max-w-3xl">
-              <p className="wn-eyebrow">Ontdek. Vergelijk. Kies je winkel.</p>
-              <h1 className="wn-heading mt-4 text-4xl sm:text-6xl lg:text-[4.25rem]">Beter kiezen begint met weten waar je op let.</h1>
-              <p className="wn-body-muted mt-6 max-w-2xl text-lg leading-8 sm:text-xl">Winkelnu helpt je producten te ontdekken en verschillen beter te begrijpen. Met duidelijke productinformatie en praktische koopgidsen ga je gerichter op zoek naar wat bij jou past.</p>
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--wn-text-muted)] sm:text-base">We bouwen de prijsvergelijking stap voor stap uit. Winkelprijzen, voorraad en verzendkosten tonen we alleen wanneer daarvoor gecontroleerde winkeldata beschikbaar is.</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                {catalogEnabled ? <Link href="/zoeken" className="wn-button wn-button-primary">Bekijk producten →</Link> : null}
-                <Link href="/koopgidsen" className={catalogEnabled ? 'wn-button wn-button-secondary' : 'wn-button wn-button-primary'}>Ontdek de koopgidsen</Link>
-              </div>
-            </div>
-            <aside className="wn-surface p-6 sm:p-8">
+        <WinkelnuHero
+          imageSrc="/images/heroes/hero-home.webp"
+          priority
+          aside={(
+            <aside
+              className="wn-surface p-6 sm:p-8"
+              style={{
+                backgroundColor: 'rgba(239,244,239,0.62)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                borderColor: 'rgba(255,255,255,0.44)',
+                boxShadow: '0 16px 36px rgba(18,59,58,0.08)',
+              }}
+            >
               <p className="wn-eyebrow">Zo helpt Winkelnu je</p>
               <div className="mt-6 space-y-6">
                 {[
@@ -60,8 +62,17 @@ export default async function HomePage() {
                 ].map((item) => <div key={item.number} className="flex gap-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xs font-bold text-[var(--wn-petrol)]">{item.number}</span><div><h2 className="font-bold">{item.title}</h2><p className="wn-body-muted mt-1 text-sm leading-6">{item.description}</p></div></div>)}
               </div>
             </aside>
+          )}
+        >
+          <p className="wn-eyebrow">Ontdek. Vergelijk. Kies je winkel.</p>
+          <h1 className="wn-heading mt-4 text-4xl sm:text-6xl lg:text-[4.25rem]">Beter kiezen begint met weten waar je op let.</h1>
+          <p className="wn-body-muted mt-6 max-w-2xl text-lg leading-8 sm:text-xl">Winkelnu helpt je producten te ontdekken en verschillen beter te begrijpen. Met duidelijke productinformatie en praktische koopgidsen ga je gerichter op zoek naar wat bij jou past.</p>
+          <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--wn-text-muted)] sm:text-base">We bouwen de prijsvergelijking stap voor stap uit. Winkelprijzen, voorraad en verzendkosten tonen we alleen wanneer daarvoor gecontroleerde winkeldata beschikbaar is.</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            {catalogEnabled ? <Link href="/zoeken" className="wn-button wn-button-primary">Bekijk producten →</Link> : null}
+            <Link href="/koopgidsen" className={catalogEnabled ? 'wn-button wn-button-secondary' : 'wn-button wn-button-primary'}>Ontdek de koopgidsen</Link>
           </div>
-        </section>
+        </WinkelnuHero>
 
         {catalogEnabled && catalogProducts.length > 0 ? (
           <section id="producten" className="wn-container wn-section scroll-mt-6">
@@ -91,23 +102,26 @@ export default async function HomePage() {
               <Link href="/categorie/wonen-huishouden" className="wn-button wn-button-primary mt-5 shrink-0 sm:mt-0">Probeer de vergelijker →</Link>
             </div>
 
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-              {catalogProducts.map(({ product, bestOffer, offerCount }) => (
-                <ProductCard
-                  key={product.id}
-                  slug={product.slug}
-                  title={product.title}
-                  brand={product.brand}
-                  description={product.description}
-                  imageUrl={product.imageUrl}
-                  visualKind={product.visualKind}
-                  price={bestOffer ? new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(bestOffer.totalAmount)) : null}
-                  merchantName={bestOffer?.merchant?.name}
-                  offerCount={offerCount}
-                  availability={bestOffer?.offer.availability}
-                  shippingKnown={Boolean(bestOffer?.offer.shippingCost)}
-                />
-              ))}
+            <div className="mt-8">
+              <ComparisonProductGrid
+                showIntro={false}
+                gridClassName="grid gap-5 sm:grid-cols-2 xl:grid-cols-4"
+                items={catalogProducts.map(({ product, bestOffer, offerCount }) => ({
+                  id: product.id,
+                  slug: product.slug,
+                  title: product.title,
+                  brand: product.brand,
+                  description: product.description,
+                  imageUrl: product.imageUrl,
+                  visualKind: product.visualKind,
+                  comparisonGroup: getProductComparisonGroup(product),
+                  price: bestOffer ? new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(bestOffer.totalAmount)) : null,
+                  merchantName: bestOffer?.merchant?.name,
+                  offerCount,
+                  availability: bestOffer?.offer.availability,
+                  shippingKnown: Boolean(bestOffer?.offer.shippingCost),
+                }))}
+              />
             </div>
           </section>
         ) : null}
