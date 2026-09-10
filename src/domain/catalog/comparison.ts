@@ -2,6 +2,7 @@ import type { Product, ProductVisualKind } from './types'
 
 export const MIN_COMPARISON_PRODUCTS = 2
 export const MAX_COMPARISON_PRODUCTS = 4
+export const NOT_APPLICABLE_COMPARISON_VALUE = 'Niet van toepassing'
 
 export type ProductComparisonRow = {
   label: string
@@ -34,8 +35,53 @@ const COMPARISON_GROUP_BY_VISUAL_KIND: Record<ProductVisualKind, string> = {
   'robot-mower': 'lawn-mowers',
 }
 
+const PRODUCT_TYPE_LABEL_BY_VISUAL_KIND: Record<ProductVisualKind, string> = {
+  laptop: 'Laptop',
+  headphones: 'Hoofdtelefoon',
+  tablet: 'Tablet',
+  mouse: 'Computermuis',
+  'stick-vacuum': 'Steelstofzuiger',
+  'canister-vacuum': 'Sledestofzuiger',
+  'smart-lighting': 'Slimme verlichting',
+  'washing-machine': 'Wasmachine',
+  airfryer: 'Airfryer',
+  'coffee-machine': 'Koffiemachine',
+  'dual-airfryer': 'Dual-zone airfryer',
+  'stand-mixer': 'Keukenmachine',
+  toothbrush: 'Elektrische tandenborstel',
+  shaver: 'Scheerapparaat',
+  epilator: 'Epilator',
+  watch: 'Sporthorloge',
+  'fitness-band': 'Fitnessband',
+  bottle: 'Drinkfles',
+  tent: 'Tent',
+  mower: 'Grasmaaier',
+  'pressure-washer': 'Hogedrukreiniger',
+  drill: 'Accuboormachine',
+  'robot-mower': 'Robotmaaier',
+}
+
+const NOT_APPLICABLE_SPECIFICATIONS: Partial<Record<string, ProductVisualKind[]>> = {
+  gebruiksduur: ['canister-vacuum'],
+  actieradius: ['stick-vacuum'],
+  stofreservoir: ['canister-vacuum'],
+  stofzak: ['stick-vacuum'],
+}
+
 function normalizeLabel(value: string): string {
   return value.trim().toLocaleLowerCase('nl-NL')
+}
+
+function getProductTypeLabel(product: Product): string | null {
+  if (!product.visualKind) return null
+  return PRODUCT_TYPE_LABEL_BY_VISUAL_KIND[product.visualKind] ?? null
+}
+
+function missingSpecificationValue(product: Product, key: string): string | null {
+  if (!product.visualKind) return null
+  return NOT_APPLICABLE_SPECIFICATIONS[key]?.includes(product.visualKind)
+    ? NOT_APPLICABLE_COMPARISON_VALUE
+    : null
 }
 
 export function getProductComparisonGroup(product: Product): string | null {
@@ -73,6 +119,11 @@ export function buildProductComparisonRows(products: Product[]): ProductComparis
   if (products.length === 0) return []
 
   const rows: ProductComparisonRow[] = []
+  const productTypes = products.map(getProductTypeLabel)
+
+  if (productTypes.some(Boolean)) {
+    rows.push({ label: 'Producttype', values: productTypes })
+  }
 
   if (products.some((product) => product.brand)) {
     rows.push({
@@ -102,7 +153,7 @@ export function buildProductComparisonRows(products: Product[]): ProductComparis
       const match = (product.specifications ?? []).find(
         (specification) => normalizeLabel(specification.label) === key,
       )
-      return match?.value.trim() || null
+      return match?.value.trim() || missingSpecificationValue(product, key)
     })
 
     if (values.some(Boolean)) rows.push({ label, values })
