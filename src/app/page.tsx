@@ -45,7 +45,13 @@ export default async function HomePage() {
           aside={(
             <aside
               className="wn-surface p-6 sm:p-8"
-              style={{ backgroundColor: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(12px)' }}
+              style={{
+                backgroundColor: 'rgba(239,244,239,0.62)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                borderColor: 'rgba(255,255,255,0.44)',
+                boxShadow: '0 16px 36px rgba(18,59,58,0.08)',
+              }}
             >
               <p className="wn-eyebrow">Zo helpt Winkelnu je</p>
               <div className="mt-6 space-y-6">
