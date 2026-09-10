@@ -93,13 +93,22 @@ export default async function HomePage() {
               ))}
             </div>
 
-            <div className="mt-8 rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] p-5 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-6">
-              <div>
-                <p className="wn-eyebrow">Productvergelijker</p>
-                <h3 className="wn-heading mt-2 text-2xl">Vergelijk modellen op hun bekende specificaties.</h3>
-                <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--wn-text-muted)]">Open een productcategorie en kies minimaal twee modellen van hetzelfde producttype. Winkelnu zet de beschikbare specificaties vervolgens overzichtelijk naast elkaar — ook zolang winkelprijzen nog niet gekoppeld zijn.</p>
+            <div className="relative mt-8 overflow-hidden rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] shadow-[var(--wn-shadow-xs)]">
+              <div
+                className="absolute inset-0 bg-cover bg-[position:72%_48%] sm:left-auto sm:right-0 sm:w-[58%]"
+                style={{ backgroundImage: "url('/images/sections/section-productvergelijker.svg')" }}
+                aria-hidden="true"
+              />
+              <div className="absolute inset-0 bg-[rgba(223,233,228,0.72)] sm:bg-transparent" aria-hidden="true" />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,#dfe9e4_0%,rgba(223,233,228,0.98)_42%,rgba(223,233,228,0.82)_55%,rgba(223,233,228,0.30)_68%,rgba(223,233,228,0.06)_82%,rgba(223,233,228,0)_100%)]" aria-hidden="true" />
+              <div className="relative z-10 p-5 sm:flex sm:min-h-48 sm:items-center sm:justify-between sm:gap-8 sm:p-6 lg:p-8">
+                <div className="max-w-2xl">
+                  <p className="wn-eyebrow">Productvergelijker</p>
+                  <h3 className="wn-heading mt-2 text-2xl">Vergelijk modellen op hun bekende specificaties.</h3>
+                  <p className="mt-3 text-sm leading-7 text-[var(--wn-text-muted)]">Open een productcategorie en kies minimaal twee modellen van hetzelfde producttype. Winkelnu zet de beschikbare specificaties vervolgens overzichtelijk naast elkaar — ook zolang winkelprijzen nog niet gekoppeld zijn.</p>
+                </div>
+                <Link href="/categorie/wonen-huishouden" className="wn-button wn-button-primary mt-5 shrink-0 sm:mt-0">Probeer de vergelijker →</Link>
               </div>
-              <Link href="/categorie/wonen-huishouden" className="wn-button wn-button-primary mt-5 shrink-0 sm:mt-0">Probeer de vergelijker →</Link>
             </div>
 
             <div className="mt-8">
