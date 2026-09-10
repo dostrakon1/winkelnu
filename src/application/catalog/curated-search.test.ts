@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { CatalogService } from './catalog-service'
 import type { CatalogSearchQuery } from './search-query'
+import { getProductComparisonGroup } from '@/domain/catalog/comparison'
 import { createCuratedCatalogRepository } from '@/infrastructure/catalog/curated-catalog'
 
 function query(overrides: Partial<CatalogSearchQuery> = {}): CatalogSearchQuery {
@@ -39,5 +40,13 @@ describe('curated product-only search', () => {
     expect(result.products.map((item) => item.product.title)).toEqual(
       [...result.products.map((item) => item.product.title)].sort((a, b) => a.localeCompare(b, 'nl-NL')),
     )
+  })
+
+  it('filters by the normalized comparison product type', async () => {
+    const service = new CatalogService(await createCuratedCatalogRepository())
+    const result = await service.searchProducts(query({ productType: 'vacuum-cleaners' }))
+
+    expect(result.products.length).toBeGreaterThan(1)
+    expect(result.products.every((item) => getProductComparisonGroup(item.product) === 'vacuum-cleaners')).toBe(true)
   })
 })

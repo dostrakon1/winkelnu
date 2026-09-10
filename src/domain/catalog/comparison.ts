@@ -9,7 +9,7 @@ export type ProductComparisonRow = {
   values: Array<string | null>
 }
 
-const COMPARISON_GROUP_BY_VISUAL_KIND: Record<ProductVisualKind, string> = {
+const COMPARISON_GROUP_BY_VISUAL_KIND = {
   laptop: 'laptops',
   headphones: 'headphones',
   tablet: 'tablets',
@@ -33,6 +33,30 @@ const COMPARISON_GROUP_BY_VISUAL_KIND: Record<ProductVisualKind, string> = {
   'pressure-washer': 'pressure-washers',
   drill: 'drills',
   'robot-mower': 'lawn-mowers',
+} as const satisfies Record<ProductVisualKind, string>
+
+export type ProductComparisonGroup = (typeof COMPARISON_GROUP_BY_VISUAL_KIND)[ProductVisualKind]
+
+const COMPARISON_GROUP_LABEL: Record<ProductComparisonGroup, string> = {
+  laptops: 'Laptops',
+  headphones: 'Hoofdtelefoons',
+  tablets: 'Tablets',
+  'computer-mice': 'Computermuizen',
+  'vacuum-cleaners': 'Stofzuigers',
+  'smart-lighting': 'Slimme verlichting',
+  'washing-machines': 'Wasmachines',
+  airfryers: 'Airfryers',
+  'coffee-machines': 'Koffiemachines',
+  'stand-mixers': 'Keukenmachines',
+  'electric-toothbrushes': 'Elektrische tandenborstels',
+  shavers: 'Scheerapparaten',
+  epilators: 'Epilators',
+  'fitness-wearables': 'Sporthorloges & activity trackers',
+  'drink-bottles': 'Drinkflessen',
+  tents: 'Tenten',
+  'lawn-mowers': 'Grasmaaiers',
+  'pressure-washers': 'Hogedrukreinigers',
+  drills: 'Accuboormachines',
 }
 
 const PRODUCT_TYPE_LABEL_BY_VISUAL_KIND: Record<ProductVisualKind, string> = {
@@ -84,9 +108,21 @@ function missingSpecificationValue(product: Product, key: string): string | null
     : null
 }
 
-export function getProductComparisonGroup(product: Product): string | null {
+export function getProductComparisonGroup(product: Product): ProductComparisonGroup | null {
   if (!product.visualKind) return null
   return COMPARISON_GROUP_BY_VISUAL_KIND[product.visualKind] ?? null
+}
+
+export function getProductComparisonGroupLabel(group: ProductComparisonGroup): string {
+  return COMPARISON_GROUP_LABEL[group]
+}
+
+export function parseProductComparisonGroup(value: string | undefined): ProductComparisonGroup | undefined {
+  const normalized = value?.trim().toLocaleLowerCase('nl-NL')
+  if (!normalized) return undefined
+  return Object.prototype.hasOwnProperty.call(COMPARISON_GROUP_LABEL, normalized)
+    ? normalized as ProductComparisonGroup
+    : undefined
 }
 
 export function productsAreComparable(products: Product[]): boolean {
