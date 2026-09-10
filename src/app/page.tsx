@@ -6,6 +6,7 @@ import { EditorialNotice, GuideCard } from '@/components/storefront/editorial-sh
 import { ProductCard } from '@/components/storefront/product-card'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
+import { WinkelnuHero } from '@/components/storefront/winkelnu-hero'
 import { buyingGuides, editorialCategories } from '@/content/koopgidsen-public'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
@@ -37,20 +38,14 @@ export default async function HomePage() {
     <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
       <WinkelnuHeader />
       <main id="inhoud">
-        <section className="relative overflow-hidden border-b border-[var(--wn-border)] bg-[image:var(--wn-gradient-welcome)]">
-          <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)]" aria-hidden="true" />
-          <div className="wn-container relative grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_21rem] lg:py-24">
-            <div className="max-w-3xl">
-              <p className="wn-eyebrow">Ontdek. Vergelijk. Kies je winkel.</p>
-              <h1 className="wn-heading mt-4 text-4xl sm:text-6xl lg:text-[4.25rem]">Beter kiezen begint met weten waar je op let.</h1>
-              <p className="wn-body-muted mt-6 max-w-2xl text-lg leading-8 sm:text-xl">Winkelnu helpt je producten te ontdekken en verschillen beter te begrijpen. Met duidelijke productinformatie en praktische koopgidsen ga je gerichter op zoek naar wat bij jou past.</p>
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--wn-text-muted)] sm:text-base">We bouwen de prijsvergelijking stap voor stap uit. Winkelprijzen, voorraad en verzendkosten tonen we alleen wanneer daarvoor gecontroleerde winkeldata beschikbaar is.</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                {catalogEnabled ? <Link href="/zoeken" className="wn-button wn-button-primary">Bekijk producten →</Link> : null}
-                <Link href="/koopgidsen" className={catalogEnabled ? 'wn-button wn-button-secondary' : 'wn-button wn-button-primary'}>Ontdek de koopgidsen</Link>
-              </div>
-            </div>
-            <aside className="wn-surface p-6 sm:p-8">
+        <WinkelnuHero
+          imageSrc="/images/heroes/hero-home.webp"
+          priority
+          aside={(
+            <aside
+              className="wn-surface p-6 sm:p-8"
+              style={{ backgroundColor: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(12px)' }}
+            >
               <p className="wn-eyebrow">Zo helpt Winkelnu je</p>
               <div className="mt-6 space-y-6">
                 {[
@@ -60,8 +55,17 @@ export default async function HomePage() {
                 ].map((item) => <div key={item.number} className="flex gap-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xs font-bold text-[var(--wn-petrol)]">{item.number}</span><div><h2 className="font-bold">{item.title}</h2><p className="wn-body-muted mt-1 text-sm leading-6">{item.description}</p></div></div>)}
               </div>
             </aside>
+          )}
+        >
+          <p className="wn-eyebrow">Ontdek. Vergelijk. Kies je winkel.</p>
+          <h1 className="wn-heading mt-4 text-4xl sm:text-6xl lg:text-[4.25rem]">Beter kiezen begint met weten waar je op let.</h1>
+          <p className="wn-body-muted mt-6 max-w-2xl text-lg leading-8 sm:text-xl">Winkelnu helpt je producten te ontdekken en verschillen beter te begrijpen. Met duidelijke productinformatie en praktische koopgidsen ga je gerichter op zoek naar wat bij jou past.</p>
+          <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--wn-text-muted)] sm:text-base">We bouwen de prijsvergelijking stap voor stap uit. Winkelprijzen, voorraad en verzendkosten tonen we alleen wanneer daarvoor gecontroleerde winkeldata beschikbaar is.</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            {catalogEnabled ? <Link href="/zoeken" className="wn-button wn-button-primary">Bekijk producten →</Link> : null}
+            <Link href="/koopgidsen" className={catalogEnabled ? 'wn-button wn-button-secondary' : 'wn-button wn-button-primary'}>Ontdek de koopgidsen</Link>
           </div>
-        </section>
+        </WinkelnuHero>
 
         {catalogEnabled && catalogProducts.length > 0 ? (
           <section id="producten" className="wn-container wn-section scroll-mt-6">
