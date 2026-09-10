@@ -91,6 +91,7 @@ export default async function HomePage() {
                   brand={product.brand}
                   description={product.description}
                   imageUrl={product.imageUrl}
+                  visualKind={product.visualKind}
                   price={bestOffer ? new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(bestOffer.totalAmount)) : null}
                   merchantName={bestOffer?.merchant?.name}
                   offerCount={offerCount}
