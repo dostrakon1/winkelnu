@@ -62,7 +62,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
           <div className="min-w-0 space-y-8">
             <section className="grid gap-7 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-start">
-              <ProductMedia src={product.imageUrl} alt={product.title} variant="detail" />
+              <ProductMedia src={product.imageUrl} alt={product.title} variant="detail" visualKind={product.visualKind} />
 
               <div>
                 <div className="flex flex-wrap gap-2">
@@ -94,6 +94,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               gtin={product.gtin}
               mpn={product.mpn}
               offerCount={offers.length}
+              specifications={product.specifications}
+              source={product.source}
             />
 
             <section id="aanbiedingen" className="scroll-mt-24">

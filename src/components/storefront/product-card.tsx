@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import type { ProductVisualKind } from '@/domain/catalog/types'
 import { ProductMedia } from './product-media'
 import { WinkelnuBadge } from './winkelnu-badge'
 import { WinkelnuButton } from './winkelnu-button'
@@ -9,6 +10,7 @@ type ProductCardProps = {
   brand?: string | null
   description?: string | null
   imageUrl?: string | null
+  visualKind?: ProductVisualKind
   price?: string | null
   merchantName?: string | null
   offerCount: number
@@ -22,6 +24,7 @@ export function ProductCard({
   brand,
   description,
   imageUrl,
+  visualKind,
   price,
   merchantName,
   offerCount,
@@ -35,7 +38,7 @@ export function ProductCard({
   return (
     <article className="wn-surface wn-card-interactive group flex h-full flex-col p-4 sm:p-5">
       <Link href={`/product/${slug}`} aria-label={`Bekijk ${title}`} className="block overflow-hidden rounded-[var(--wn-radius-lg)]">
-        <ProductMedia src={imageUrl} alt={title} />
+        <ProductMedia src={imageUrl} alt={title} visualKind={visualKind} />
       </Link>
       <div className="mt-4 flex-1 sm:mt-5">
         <p className="text-xs font-bold uppercase tracking-[0.12em] text-[color:rgba(18,59,58,0.64)]">{brand ?? 'Merk onbekend'}</p>

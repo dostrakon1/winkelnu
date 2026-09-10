@@ -18,6 +18,20 @@ describe('curated pre-affiliate catalog', () => {
     }
   })
 
+  it('requires useful sourced specifications and rights-safe curated visuals', async () => {
+    const repository = await createCuratedCatalogRepository()
+    const products = await repository.listProducts()
+
+    for (const product of products) {
+      expect(product.visualKind).toBeTruthy()
+      expect(product.imageUrl).toBeUndefined()
+      expect(product.specifications?.length ?? 0).toBeGreaterThanOrEqual(4)
+      expect(product.source?.label).toBeTruthy()
+      expect(product.source?.url.startsWith('https://')).toBe(true)
+      expect(product.source?.checkedAt).toBe('2026-09-10')
+    }
+  })
+
   it('publishes no merchant, price, availability or outbound offer data', async () => {
     const repository = await createCuratedCatalogRepository()
     const products = await repository.listProducts()

@@ -1,12 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import type { ProductVisualKind } from '@/domain/catalog/types'
+import { ProductIllustration } from './product-illustration'
 
 type ProductMediaProps = {
   src?: string | null
   alt: string
   variant?: 'card' | 'detail'
   className?: string
+  visualKind?: ProductVisualKind
 }
 
 function safeImageUrl(value?: string | null): string | null {
@@ -40,7 +43,7 @@ function ProductMediaFallback({ variant }: { variant: 'card' | 'detail' }) {
   )
 }
 
-export function ProductMedia({ src, alt, variant = 'card', className = '' }: ProductMediaProps) {
+export function ProductMedia({ src, alt, variant = 'card', className = '', visualKind }: ProductMediaProps) {
   const normalized = safeImageUrl(src)
   const [failedSrc, setFailedSrc] = useState<string | null>(null)
   const failed = Boolean(normalized && failedSrc === normalized)
@@ -49,7 +52,11 @@ export function ProductMedia({ src, alt, variant = 'card', className = '' }: Pro
   const classes = `relative overflow-hidden rounded-[var(--wn-radius-lg)] border border-[color:rgba(18,59,58,0.08)] bg-white ${sizeClass} ${className}`.trim()
 
   if (!normalized || failed) {
-    return <div className={classes}><ProductMediaFallback variant={variant} /></div>
+    return (
+      <div className={classes} role="img" aria-label={`${alt} — illustratieve productweergave`}>
+        {visualKind ? <ProductIllustration kind={visualKind} /> : <ProductMediaFallback variant={variant} />}
+      </div>
+    )
   }
 
   return (
