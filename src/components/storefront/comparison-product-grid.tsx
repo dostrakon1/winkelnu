@@ -67,19 +67,19 @@ export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
   return (
     <>
       {comparableGroups > 0 ? (
-        <div className="mb-8 rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] p-5 sm:p-6">
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <div className="mb-7 rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] px-5 py-4 sm:px-6 sm:py-5">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
             <div>
               <p className="wn-eyebrow">Producten vergelijken</p>
-              <h2 className="wn-heading mt-2 text-2xl sm:text-3xl">Zet vergelijkbare modellen direct naast elkaar.</h2>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--wn-text-muted)] sm:text-base">
-                In deze categorie zijn {comparableItems} producten van {comparableGroups === 1 ? 'één vergelijkbaar producttype' : `${comparableGroups} vergelijkbare producttypen`} beschikbaar. Kies hieronder minimaal twee modellen van hetzelfde type; daarna verschijnt de vergelijkknop onder in beeld.
+              <h2 className="wn-heading mt-2 text-2xl">Zet vergelijkbare modellen direct naast elkaar.</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--wn-text-muted)]">
+                In deze categorie zijn {comparableItems} producten van {comparableGroups === 1 ? 'één vergelijkbaar producttype' : `${comparableGroups} vergelijkbare producttypen`} beschikbaar. Kies minimaal twee modellen van hetzelfde type; daarna verschijnt de vergelijkknop onder in beeld.
               </p>
             </div>
-            <div className="grid gap-2 text-sm font-semibold text-[var(--wn-petrol-deep)] sm:grid-cols-3 lg:grid-cols-1">
-              <span className="rounded-full bg-white/80 px-4 py-2">1. Kies een model</span>
-              <span className="rounded-full bg-white/80 px-4 py-2">2. Kies hetzelfde type</span>
-              <span className="rounded-full bg-white/80 px-4 py-2">3. Vergelijk verschillen</span>
+            <div className="grid gap-2 text-xs font-semibold text-[var(--wn-petrol-deep)] sm:grid-cols-3 lg:grid-cols-1">
+              <span className="rounded-full bg-white/80 px-3 py-2">1. Kies een model</span>
+              <span className="rounded-full bg-white/80 px-3 py-2">2. Kies hetzelfde type</span>
+              <span className="rounded-full bg-white/80 px-3 py-2">3. Vergelijk verschillen</span>
             </div>
           </div>
         </div>
@@ -97,41 +97,44 @@ export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
           const limitReached = selectedSlugs.length >= MAX_COMPARISON_PRODUCTS && !selected
           const disabled = !selected && (!hasComparablePeer || wrongGroup || limitReached)
           const buttonLabel = selected
-            ? '✓ Geselecteerd'
+            ? '✓ Geselecteerd voor vergelijking'
             : !hasComparablePeer
-              ? 'Nog geen vergelijkbaar model'
+              ? 'Vergelijken nog niet beschikbaar'
               : wrongGroup
                 ? 'Kies hetzelfde producttype'
                 : limitReached
-                  ? 'Maximaal 4 producten'
-                  : 'Vergelijk dit product'
+                  ? 'Maximaal 4 geselecteerd'
+                  : '+ Toevoegen aan vergelijking'
+
+          const comparisonAction = (
+            <button
+              type="button"
+              aria-pressed={selected}
+              aria-label={`${buttonLabel}: ${item.title}`}
+              disabled={disabled}
+              onClick={() => toggle(item.slug)}
+              className={`min-h-11 w-full rounded-[var(--wn-radius-lg)] border px-4 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-petrol)] disabled:cursor-not-allowed ${selected ? 'border-[var(--wn-petrol)] bg-[var(--wn-petrol-soft)] text-[var(--wn-petrol-deep)]' : disabled ? 'border-[var(--wn-border)] bg-[var(--wn-cream)] text-[var(--wn-text-muted)] opacity-60' : 'border-[color:rgba(18,59,58,0.28)] bg-transparent text-[var(--wn-petrol)] hover:border-[var(--wn-petrol)] hover:bg-[var(--wn-petrol-soft)]'}`}
+            >
+              {buttonLabel}
+            </button>
+          )
 
           return (
-            <div key={item.id} className="flex min-w-0 flex-col gap-2">
-              <ProductCard
-                slug={item.slug}
-                title={item.title}
-                brand={item.brand}
-                description={item.description}
-                imageUrl={item.imageUrl}
-                visualKind={item.visualKind}
-                price={item.price}
-                merchantName={item.merchantName}
-                offerCount={item.offerCount}
-                availability={item.availability}
-                shippingKnown={item.shippingKnown}
-              />
-              <button
-                type="button"
-                aria-pressed={selected}
-                aria-label={`${buttonLabel}: ${item.title}`}
-                disabled={disabled}
-                onClick={() => toggle(item.slug)}
-                className={`min-h-12 rounded-[var(--wn-radius-lg)] border px-4 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-petrol)] disabled:cursor-not-allowed ${selected ? 'border-[var(--wn-petrol)] bg-[var(--wn-petrol-soft)] text-[var(--wn-petrol-deep)]' : disabled ? 'border-[var(--wn-border)] bg-white text-[var(--wn-text-muted)] opacity-55' : 'border-[var(--wn-petrol)] bg-[var(--wn-petrol)] text-white shadow-sm hover:bg-[var(--wn-petrol-deep)]'}`}
-              >
-                {buttonLabel}
-              </button>
-            </div>
+            <ProductCard
+              key={item.id}
+              slug={item.slug}
+              title={item.title}
+              brand={item.brand}
+              description={item.description}
+              imageUrl={item.imageUrl}
+              visualKind={item.visualKind}
+              price={item.price}
+              merchantName={item.merchantName}
+              offerCount={item.offerCount}
+              availability={item.availability}
+              shippingKnown={item.shippingKnown}
+              secondaryAction={comparisonAction}
+            />
           )
         })}
       </div>

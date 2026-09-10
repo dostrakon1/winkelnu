@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import type { ProductVisualKind } from '@/domain/catalog/types'
 import { ProductMedia } from './product-media'
@@ -16,6 +17,7 @@ type ProductCardProps = {
   offerCount: number
   availability?: string | null
   shippingKnown?: boolean
+  secondaryAction?: ReactNode
 }
 
 export function ProductCard({
@@ -30,6 +32,7 @@ export function ProductCard({
   offerCount,
   availability,
   shippingKnown = false,
+  secondaryAction,
 }: ProductCardProps) {
   const hasOffer = Boolean(price)
   const inStock = availability === 'in_stock'
@@ -69,6 +72,11 @@ export function ProductCard({
         <WinkelnuButton href={`/product/${slug}`} className="mt-4 w-full">
           {hasOffer ? 'Vergelijk aanbiedingen' : 'Bekijk product'}
         </WinkelnuButton>
+        {secondaryAction ? (
+          <div className="mt-3 border-t border-[color:rgba(18,59,58,0.08)] pt-3">
+            {secondaryAction}
+          </div>
+        ) : null}
       </div>
     </article>
   )
