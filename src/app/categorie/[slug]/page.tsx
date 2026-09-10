@@ -7,6 +7,7 @@ import { StorefrontEmptyState } from '@/components/storefront/storefront-empty-s
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
+import { WinkelnuHero } from '@/components/storefront/winkelnu-hero'
 import { getProductComparisonGroup } from '@/domain/catalog/comparison'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
@@ -62,24 +63,43 @@ export default async function CategoryPage({
   if (!discovery) notFound()
   if (requestedPage > 1 && discovery.items.length === 0) notFound()
 
+  const isElektronica = discovery.category.slug === 'elektronica'
+
   return (
     <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
       <WinkelnuHeader />
 
-      <section className="relative overflow-hidden border-b border-[color:rgba(18,59,58,0.10)] bg-[image:var(--wn-gradient-welcome)]">
-        <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)]" aria-hidden="true" />
-        <div className="wn-container relative py-12 sm:py-16">
-          <SectionHeader
-            eyebrow="Categorie"
-            title={discovery.category.name}
-            description="Ontdek producten in deze categorie. Waar minimaal twee modellen van hetzelfde producttype aanwezig zijn, kun je hun bekende specificaties direct naast elkaar vergelijken. Winkelprijzen, voorraad en aanbiedingen verschijnen alleen wanneer gecontroleerde winkeldata beschikbaar is."
-          />
+      {isElektronica ? (
+        <WinkelnuHero imageSrc="/images/heroes/hero-elektronica.webp">
+          <p className="wn-eyebrow">Categorie</p>
+          <h1 className="wn-heading mt-3 text-4xl sm:text-5xl">{discovery.category.name}</h1>
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--wn-text-muted)]">
+            Vind technologie die past bij hoe jij werkt, kijkt en luistert.
+          </p>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--wn-text-muted)]">
+            Ontdek producten in deze categorie en vergelijk bekende specificaties wanneer er minimaal twee modellen van hetzelfde producttype beschikbaar zijn. Winkelprijzen, voorraad en aanbiedingen verschijnen alleen wanneer gecontroleerde winkeldata beschikbaar is.
+          </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
             <WinkelnuButton href="/zoeken" variant="secondary" className="w-full sm:w-auto">Zoek binnen Winkelnu</WinkelnuButton>
             <WinkelnuButton href="/" variant="secondary" className="w-full sm:w-auto">Terug naar home</WinkelnuButton>
           </div>
-        </div>
-      </section>
+        </WinkelnuHero>
+      ) : (
+        <section className="relative overflow-hidden border-b border-[color:rgba(18,59,58,0.10)] bg-[image:var(--wn-gradient-welcome)]">
+          <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)]" aria-hidden="true" />
+          <div className="wn-container relative py-12 sm:py-16">
+            <SectionHeader
+              eyebrow="Categorie"
+              title={discovery.category.name}
+              description="Ontdek producten in deze categorie. Waar minimaal twee modellen van hetzelfde producttype aanwezig zijn, kun je hun bekende specificaties direct naast elkaar vergelijken. Winkelprijzen, voorraad en aanbiedingen verschijnen alleen wanneer gecontroleerde winkeldata beschikbaar is."
+            />
+            <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
+              <WinkelnuButton href="/zoeken" variant="secondary" className="w-full sm:w-auto">Zoek binnen Winkelnu</WinkelnuButton>
+              <WinkelnuButton href="/" variant="secondary" className="w-full sm:w-auto">Terug naar home</WinkelnuButton>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="wn-container wn-section">
         {discovery.items.length === 0 ? (
