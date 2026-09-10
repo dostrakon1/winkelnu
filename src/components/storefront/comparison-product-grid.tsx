@@ -75,9 +75,9 @@ export function ComparisonProductGrid({ items }: ComparisonProductGridProps) {
       </div>
 
       {selectedSlugs.length > 0 ? (
-        <div className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-3xl rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.14)] bg-white/95 p-3 shadow-[var(--wn-shadow-md)] backdrop-blur sm:inset-x-6 sm:bottom-6 sm:p-4" role="status" aria-live="polite">
+        <div className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-3xl rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.14)] bg-white/95 p-3 shadow-[var(--wn-shadow-md)] backdrop-blur sm:inset-x-6 sm:bottom-6 sm:p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+            <div aria-live="polite" aria-atomic="true">
               <p className="font-bold text-[var(--wn-ink)]">{selectedSlugs.length} van maximaal {MAX_COMPARISON_PRODUCTS} geselecteerd</p>
               <p className="mt-1 text-xs leading-5 text-[var(--wn-text-muted)]">
                 {selectedSlugs.length < MIN_COMPARISON_PRODUCTS
