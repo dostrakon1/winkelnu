@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ProductCard } from '@/components/storefront/product-card'
+import { ComparisonProductGrid } from '@/components/storefront/comparison-product-grid'
 import { SectionHeader } from '@/components/storefront/section-header'
 import { StorefrontEmptyState } from '@/components/storefront/storefront-empty-state'
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
@@ -39,7 +39,7 @@ export async function generateMetadata({
 
   return {
     title,
-    description: `Ontdek producten in ${category.name} en vergelijk winkelprijzen zodra gecontroleerde aanbiedingen beschikbaar zijn.`,
+    description: `Ontdek en vergelijk producten in ${category.name}. Winkelprijzen verschijnen zodra gecontroleerde aanbiedingen beschikbaar zijn.`,
     alternates: { canonical },
     robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true },
   }
@@ -71,7 +71,7 @@ export default async function CategoryPage({
           <SectionHeader
             eyebrow="Categorie"
             title={discovery.category.name}
-            description="Ontdek producten in deze categorie. Zodra betrouwbare winkeldata beschikbaar is, verschijnen prijzen, voorraad en aanbiedingen automatisch bij hetzelfde product."
+            description="Ontdek producten in deze categorie en selecteer er twee tot vier om productspecificaties direct naast elkaar te vergelijken. Winkelprijzen, voorraad en aanbiedingen verschijnen alleen wanneer gecontroleerde winkeldata beschikbaar is."
           />
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
             <WinkelnuButton href="/zoeken" variant="secondary" className="w-full sm:w-auto">Zoek binnen Winkelnu</WinkelnuButton>
@@ -90,24 +90,22 @@ export default async function CategoryPage({
             actionLabel="Bekijk alle producten"
           />
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
-            {discovery.items.map(({ product, bestOffer, offerCount }) => (
-              <ProductCard
-                key={product.id}
-                slug={product.slug}
-                title={product.title}
-                brand={product.brand}
-                description={product.description}
-                imageUrl={product.imageUrl}
-                visualKind={product.visualKind}
-                price={bestOffer ? formatMoney(bestOffer.totalAmount) : null}
-                merchantName={bestOffer?.merchant?.name}
-                offerCount={offerCount}
-                availability={bestOffer?.offer.availability}
-                shippingKnown={Boolean(bestOffer?.offer.shippingCost)}
-              />
-            ))}
-          </div>
+          <ComparisonProductGrid
+            items={discovery.items.map(({ product, bestOffer, offerCount }) => ({
+              id: product.id,
+              slug: product.slug,
+              title: product.title,
+              brand: product.brand,
+              description: product.description,
+              imageUrl: product.imageUrl,
+              visualKind: product.visualKind,
+              price: bestOffer ? formatMoney(bestOffer.totalAmount) : null,
+              merchantName: bestOffer?.merchant?.name,
+              offerCount,
+              availability: bestOffer?.offer.availability,
+              shippingKnown: Boolean(bestOffer?.offer.shippingCost),
+            }))}
+          />
         )}
 
         {(discovery.hasPreviousPage || discovery.hasNextPage) && (
