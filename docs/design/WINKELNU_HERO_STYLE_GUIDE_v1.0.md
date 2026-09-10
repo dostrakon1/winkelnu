@@ -107,13 +107,25 @@ Nieuwe categorieën volgen hetzelfde patroon, bijvoorbeeld:
 - `hero-gaming.webp`
 - `hero-baby-gezin.webp`
 
+Sectie-assets staan los van page-hero's in:
+
+`public/images/sections/`
+
+Vaste naam voor de goedgekeurde homepage Productvergelijker-achtergrond:
+
+`section-productvergelijker.webp`
+
+Optionele mobiele crop indien later nodig:
+
+`section-productvergelijker-mobile.webp`
+
 ## 8. Technische basis
 
 Herbruikbaar component:
 
 `src/components/storefront/winkelnu-hero.tsx`
 
-Hero-afbeeldingen worden met `next/image` geladen. De homepage-hero mag `priority` gebruiken; niet-kritieke hero's moeten dit alleen krijgen wanneer daar een concrete performance-redenen voor bestaan.
+Hero-afbeeldingen worden met `next/image` geladen. De homepage-hero mag `priority` gebruiken; niet-kritieke hero's moeten dit alleen krijgen wanneer daar concrete performance-redenen voor bestaan.
 
 Nieuwe pagina's moeten de bestaande hero-architectuur hergebruiken in plaats van per pagina een los achtergrond- en overlaysysteem te bouwen.
 
@@ -151,3 +163,39 @@ Een nieuwe hero wordt pas definitief wanneer minimaal desktop en mobiel visueel 
 - rust in de tekstzone;
 - balans tussen foto en gradient;
 - correcte performance en assetgrootte.
+
+## 12. Sectiebeeld — Productvergelijker
+
+Status: **beeldconcept goedgekeurd; asset nog te produceren en koppelen**.
+
+**Bestand:** `public/images/sections/section-productvergelijker.webp`  
+**Mobiele variant indien nodig:** `public/images/sections/section-productvergelijker-mobile.webp`
+
+**Rol:** subtiele lifestyle-achtergrond voor de homepage-sectie `Productvergelijker — Vergelijk modellen op hun bekende specificaties.`
+
+**Doel:** het beeld moet specifiek communiceren dat iemand met hulp van Winkelnu twee productopties rustig tegen elkaar afweegt. Het mag niet voelen als een generieke foto van iemand die alleen achter een laptop werkt.
+
+**Goedgekeurd voorkeursbeeld:** een lichte, stijlvolle woon- of eettafelsetting met warm natuurlijk daglicht. Rechts in beeld zit één persoon in ontspannen houding aan tafel, kijkend naar een open laptop. Op het scherm zijn subtiel twee vergelijkbare productopties of twee nette productkaarten naast elkaar zichtbaar, zonder letterlijk leesbare merknamen, prijzen of andere harde productclaims. Op tafel staan een kop koffie of thee, een notitieboekje en eventueel één klein productgerelateerd object, bijvoorbeeld een generieke hoofdtelefoon of neutrale verpakking. De achtergrond is huiselijk, rustig en licht, met natuurlijke materialen, planten of subtiele interieurdetails. Links blijft voldoende rustige ruimte voor de echte Winkelnu-sectietekst.
+
+**Beeldtaal:**
+
+- realistisch en menselijk;
+- warm, rustig en modern;
+- duidelijk een aankoop-/vergelijkmoment, geen werksituatie;
+- crème, zacht groen, petrol en lichte neutrale tinten;
+- geen stockfoto-pose of persoon die in de camera kijkt;
+- geen corporate kantoor;
+- geen herkenbare merken, logo's of retailers;
+- geen harde dashboard- of spreadsheetlook;
+- geen drukke winkelstraat;
+- geen tekst in het gegenereerde beeld die concurreert met de echte interface.
+
+**Compositie en integratie:**
+
+- belangrijkste actie rechts of rechts van het midden;
+- linkerzone rustig genoeg voor eyebrow, kop en uitleg;
+- als achtergrondlaag gebruiken onder een gecontroleerde mint/crème/petrol overlay;
+- sectietekst en CTA houden altijd hoger visueel contrast dan de foto;
+- de foto moet zichtbaar sfeer toevoegen, maar de bestaande Productvergelijker-callout blijft herkenbaar onderdeel van het Winkelnu-designsysteem.
+
+Het Productvergelijker-sectiebeeld is een aanvulling op het Hero Style System en vervangt het page-hero-systeem niet.
