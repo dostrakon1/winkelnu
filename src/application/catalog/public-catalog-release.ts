@@ -56,5 +56,5 @@ export function assertPublicCatalogEnabled(env?: PublicCatalogEnvironment): void
 }
 
 export function isPublicCatalogPath(pathname: string): boolean {
-  return /^\/(?:zoeken|categorie|product|uit)(?:\/|$)/.test(pathname)
+  return /^\/(?:zoeken|categorie|product|vergelijken|uit)(?:\/|$)/.test(pathname)
 }
