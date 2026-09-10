@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { selectRelatedProducts } from '@/application/catalog/related-products'
 import { ComparisonSignals } from '@/components/storefront/comparison-signals'
 import { OfferCard } from '@/components/storefront/offer-card'
+import { ProductCard } from '@/components/storefront/product-card'
 import { ProductFacts } from '@/components/storefront/product-facts'
 import { ProductMedia } from '@/components/storefront/product-media'
 import { WinkelnuBadge } from '@/components/storefront/winkelnu-badge'
@@ -10,8 +12,8 @@ import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 import { getProductGuidance } from '@/content/product-guidance'
-import { getProductComparisonGroup } from '@/domain/catalog/comparison'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
+import { buildProductStructuredData, serializeStructuredData } from '@/lib/seo/product-json-ld'
 
 function formatMoney(amount: string): string {
   return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(amount))
@@ -42,21 +44,26 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const categories = product.categoryId ? await catalog.listCategories() : []
   const category = product.categoryId ? categories.find((candidate) => candidate.id === product.categoryId) : undefined
   const guidance = getProductGuidance(product.visualKind)
-  const comparisonGroup = getProductComparisonGroup(product)
-  const comparisonCandidates = category && comparisonGroup
+  const categoryCandidates = category
     ? await catalog.listProducts({ categorySlug: category.slug, limit: 48, offset: 0 })
     : []
-  const comparisonPeer = comparisonCandidates.find(({ product: candidate }) => (
-    candidate.slug !== product.slug && getProductComparisonGroup(candidate) === comparisonGroup
-  ))?.product
+  const related = selectRelatedProducts(product, categoryCandidates, 3)
+  const showingComparableModels = related.comparable.length > 0
+  const relatedItems = showingComparableModels ? related.comparable : related.categoryAlternatives
+  const comparisonPeer = related.comparable[0]?.product
   const comparisonHref = comparisonPeer
     ? `/vergelijken?producten=${encodeURIComponent(`${product.slug},${comparisonPeer.slug}`)}`
     : null
   const bestOffer = offers[0]?.offer
   const bestKnownTotal = offers[0]?.totalAmount
+  const structuredData = buildProductStructuredData({ product, category })
 
   return (
     <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeStructuredData(structuredData) }}
+      />
       <WinkelnuHeader />
 
       <section className="wn-container py-7 sm:py-10 lg:py-12">
@@ -141,6 +148,52 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                       ) : null}
                     </div>
                   ) : null}
+                </div>
+              </section>
+            ) : null}
+
+            {category && relatedItems.length > 0 ? (
+              <section aria-labelledby="related-products-heading">
+                <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p className="wn-eyebrow">{showingComparableModels ? 'Verder vergelijken' : 'Verder ontdekken'}</p>
+                    <h2 id="related-products-heading" className="wn-heading mt-2 text-2xl sm:text-3xl">
+                      {showingComparableModels ? 'Vergelijkbare modellen' : `Meer uit ${category.name}`}
+                    </h2>
+                  </div>
+                  <p className="wn-body-muted max-w-lg text-sm leading-6">
+                    {showingComparableModels
+                      ? 'Deze modellen vallen binnen hetzelfde producttype en kunnen op hun bekende specificaties naast elkaar worden gezet. Dit is geen ranglijst.'
+                      : 'Andere producten uit dezelfde categorie om verder te oriënteren. Dit is geen ranglijst of persoonlijke aanbeveling.'}
+                  </p>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {relatedItems.map(({ product: relatedProduct, bestOffer: relatedBestOffer, offerCount }) => (
+                    <ProductCard
+                      key={relatedProduct.id}
+                      slug={relatedProduct.slug}
+                      title={relatedProduct.title}
+                      brand={relatedProduct.brand}
+                      description={relatedProduct.description}
+                      imageUrl={relatedProduct.imageUrl}
+                      visualKind={relatedProduct.visualKind}
+                      price={relatedBestOffer ? formatMoney(relatedBestOffer.totalAmount) : null}
+                      merchantName={relatedBestOffer?.merchant?.name}
+                      offerCount={offerCount}
+                      availability={relatedBestOffer?.offer.availability}
+                      shippingKnown={Boolean(relatedBestOffer?.offer.shippingCost)}
+                      secondaryAction={showingComparableModels ? (
+                        <WinkelnuButton
+                          href={`/vergelijken?producten=${encodeURIComponent(`${product.slug},${relatedProduct.slug}`)}`}
+                          variant="secondary"
+                          className="w-full"
+                        >
+                          Vergelijk met dit model
+                        </WinkelnuButton>
+                      ) : undefined}
+                    />
+                  ))}
                 </div>
               </section>
             ) : null}
