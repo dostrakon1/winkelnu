@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
   MIN_COMPARISON_PRODUCTS,
+  NOT_APPLICABLE_COMPARISON_VALUE,
   buildProductComparisonRows,
   parseComparisonProductSlugs,
   productsAreComparable,
@@ -98,7 +99,7 @@ export default async function ComparePage({
           <SectionHeader
             eyebrow="Productvergelijker"
             title={`Vergelijk ${items.length} producten naast elkaar.`}
-            description="We zetten alleen modellen van hetzelfde producttype naast elkaar en tonen uitsluitend bekende productspecificaties. Ontbrekende gegevens laten we leeg in plaats van ze in te vullen of te schatten."
+            description="We zetten alleen modellen van hetzelfde producttype naast elkaar en tonen uitsluitend bekende productspecificaties. Ontbrekende gegevens tonen we als Niet vermeld; eigenschappen die aantoonbaar niet op een producttype van toepassing zijn, markeren we apart."
           />
           <div className="mt-6 flex flex-wrap gap-3">
             {firstCategory ? (
@@ -154,11 +155,18 @@ export default async function ComparePage({
                 style={{ gridTemplateColumns }}
               >
                 <div className="p-4 text-sm font-bold text-[var(--wn-petrol-deep)] sm:p-5">{row.label}</div>
-                {row.values.map((value, index) => (
-                  <div key={`${row.label}:${products[index]?.id ?? index}`} className="border-l border-[var(--wn-border)] p-4 text-sm leading-6 text-[var(--wn-ink)] sm:p-5">
-                    {value ?? <span className="text-[var(--wn-text-muted)]">Niet vermeld</span>}
-                  </div>
-                ))}
+                {row.values.map((value, index) => {
+                  const notApplicable = value === NOT_APPLICABLE_COMPARISON_VALUE
+                  return (
+                    <div key={`${row.label}:${products[index]?.id ?? index}`} className="border-l border-[var(--wn-border)] p-4 text-sm leading-6 text-[var(--wn-ink)] sm:p-5">
+                      {value ? (
+                        <span className={notApplicable ? 'text-[var(--wn-text-muted)]' : undefined}>{value}</span>
+                      ) : (
+                        <span className="text-[var(--wn-text-muted)]">Niet vermeld</span>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             ))}
           </div>
