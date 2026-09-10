@@ -136,6 +136,7 @@ export default async function SearchPage({
                 brand={product.brand}
                 description={product.description}
                 imageUrl={product.imageUrl}
+                visualKind={product.visualKind}
                 price={bestOffer ? formatMoney(bestOffer.totalAmount) : null}
                 merchantName={bestOffer?.merchant?.name}
                 offerCount={offerCount}
