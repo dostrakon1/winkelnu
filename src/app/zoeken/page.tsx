@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { parseCatalogSearchQuery } from '@/application/catalog/search-query'
-import { ProductCard } from '@/components/storefront/product-card'
+import { ComparisonProductGrid } from '@/components/storefront/comparison-product-grid'
 import { SectionHeader } from '@/components/storefront/section-header'
 import { StorefrontEmptyState } from '@/components/storefront/storefront-empty-state'
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
+import { getProductComparisonGroup } from '@/domain/catalog/comparison'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 export const metadata: Metadata = {
@@ -113,7 +114,7 @@ export default async function SearchPage({
         <SectionHeader
           eyebrow={`Pagina ${result.page}`}
           title={query.term ? `Resultaten voor “${query.term}”` : 'Producten'}
-          description="Productinformatie is al beschikbaar. Winkelprijzen, voorraad en verzendkosten verschijnen alleen wanneer daarvoor gecontroleerde aanbiedingsdata is gekoppeld."
+          description="Productinformatie is al beschikbaar. Winkelprijzen, voorraad en verzendkosten verschijnen alleen wanneer daarvoor gecontroleerde aanbiedingsdata is gekoppeld. Vergelijkbare modellen kun je hieronder direct naast elkaar zetten."
         />
 
         {result.products.length === 0 ? (
@@ -127,23 +128,24 @@ export default async function SearchPage({
             />
           </div>
         ) : (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
-            {result.products.map(({ product, bestOffer, offerCount }) => (
-              <ProductCard
-                key={product.id}
-                slug={product.slug}
-                title={product.title}
-                brand={product.brand}
-                description={product.description}
-                imageUrl={product.imageUrl}
-                visualKind={product.visualKind}
-                price={bestOffer ? formatMoney(bestOffer.totalAmount) : null}
-                merchantName={bestOffer?.merchant?.name}
-                offerCount={offerCount}
-                availability={bestOffer?.offer.availability}
-                shippingKnown={Boolean(bestOffer?.offer.shippingCost)}
-              />
-            ))}
+          <div className="mt-8">
+            <ComparisonProductGrid
+              items={result.products.map(({ product, bestOffer, offerCount }) => ({
+                id: product.id,
+                slug: product.slug,
+                title: product.title,
+                brand: product.brand,
+                description: product.description,
+                imageUrl: product.imageUrl,
+                visualKind: product.visualKind,
+                comparisonGroup: getProductComparisonGroup(product),
+                price: bestOffer ? formatMoney(bestOffer.totalAmount) : null,
+                merchantName: bestOffer?.merchant?.name,
+                offerCount,
+                availability: bestOffer?.offer.availability,
+                shippingKnown: Boolean(bestOffer?.offer.shippingCost),
+              }))}
+            />
           </div>
         )}
 
