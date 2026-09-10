@@ -22,6 +22,7 @@ export const config = {
     '/zoeken/:path*',
     '/categorie/:path*',
     '/product/:path*',
+    '/vergelijken/:path*',
     '/uit/:path*',
   ],
 }
