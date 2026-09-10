@@ -34,16 +34,16 @@ export function selectRelatedProducts<T extends { product: Product }>(
   }
 
   const currentGroup = getProductComparisonGroup(current)
-  const comparable = currentGroup
-    ? uniquePeers
-        .filter(({ product }) => getProductComparisonGroup(product) === currentGroup)
-        .sort(byRelevanceToCurrent(current))
-        .slice(0, safeLimit)
+  const allComparable = currentGroup
+    ? uniquePeers.filter(({ product }) => getProductComparisonGroup(product) === currentGroup)
     : []
+  const comparable = allComparable
+    .sort(byRelevanceToCurrent(current))
+    .slice(0, safeLimit)
 
-  const comparableSlugs = new Set(comparable.map(({ product }) => product.slug))
+  const allComparableSlugs = new Set(allComparable.map(({ product }) => product.slug))
   const categoryAlternatives = uniquePeers
-    .filter(({ product }) => !comparableSlugs.has(product.slug))
+    .filter(({ product }) => !allComparableSlugs.has(product.slug))
     .sort((a, b) => a.product.title.localeCompare(b.product.title, 'nl-NL'))
     .slice(0, safeLimit)
 
