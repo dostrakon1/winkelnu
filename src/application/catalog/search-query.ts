@@ -1,8 +1,11 @@
+import { parseProductComparisonGroup, type ProductComparisonGroup } from '@/domain/catalog/comparison'
+
 export type CatalogSearchSort = 'relevance' | 'price_asc' | 'price_desc' | 'title_asc'
 
 export type CatalogSearchQuery = {
   term?: string
   categorySlug?: string
+  productType?: ProductComparisonGroup
   brand?: string
   minPrice?: number
   maxPrice?: number
@@ -55,6 +58,7 @@ export function parseCatalogSearchQuery(
   return {
     term: cleanText(first(params.q), 120),
     categorySlug: cleanText(first(params.categorie), 80)?.toLowerCase(),
+    productType: parseProductComparisonGroup(cleanText(first(params.type), 80)),
     brand: cleanText(first(params.merk), 80),
     minPrice,
     maxPrice,

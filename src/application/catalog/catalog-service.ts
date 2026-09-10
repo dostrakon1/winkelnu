@@ -1,5 +1,6 @@
 import type { CatalogReadRepository } from './ports'
 import type { CatalogSearchQuery } from './search-query'
+import { getProductComparisonGroup } from '@/domain/catalog/comparison'
 import { classifyOfferFreshness, type OfferFreshnessStatus } from '@/domain/catalog/offer-freshness'
 import type { Category, Merchant, Offer, Product } from '@/domain/catalog/types'
 
@@ -180,6 +181,7 @@ export class CatalogService {
       .map((item) => ({ item, score: searchScore(item.product, query.term) }))
       .filter(({ item, score }) => {
         if (score < 0) return false
+        if (query.productType && getProductComparisonGroup(item.product) !== query.productType) return false
         if (normalizedBrand && item.product.brand?.toLocaleLowerCase('nl-NL') !== normalizedBrand) return false
         if (!item.bestOffer) return !requiresOffer
 

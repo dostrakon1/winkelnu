@@ -26,6 +26,11 @@ export class ScalableCatalogService extends CatalogService {
   }
 
   override async searchProducts(query: CatalogSearchQuery): Promise<CatalogSearchResult> {
+    // Producttype is currently derived from the normalized storefront comparison group.
+    // Until that canonical type is persisted in the scalable read model, fail closed
+    // through the base filtering path instead of silently ignoring the filter.
+    if (query.productType) return super.searchProducts(query)
+
     const result = await this.readModel.searchRankedProducts({ query, now: this.clock() })
     return {
       query,
