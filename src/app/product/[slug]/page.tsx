@@ -9,6 +9,8 @@ import { WinkelnuBadge } from '@/components/storefront/winkelnu-badge'
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
+import { getProductGuidance } from '@/content/product-guidance'
+import { getProductComparisonGroup } from '@/domain/catalog/comparison'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 function formatMoney(amount: string): string {
@@ -39,6 +41,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const { product, offers } = item
   const categories = product.categoryId ? await catalog.listCategories() : []
   const category = product.categoryId ? categories.find((candidate) => candidate.id === product.categoryId) : undefined
+  const guidance = getProductGuidance(product.visualKind)
+  const comparisonGroup = getProductComparisonGroup(product)
+  const comparisonCandidates = category && comparisonGroup
+    ? await catalog.listProducts({ categorySlug: category.slug, limit: 48, offset: 0 })
+    : []
+  const comparisonPeer = comparisonCandidates.find(({ product: candidate }) => (
+    candidate.slug !== product.slug && getProductComparisonGroup(candidate) === comparisonGroup
+  ))?.product
+  const comparisonHref = comparisonPeer
+    ? `/vergelijken?producten=${encodeURIComponent(`${product.slug},${comparisonPeer.slug}`)}`
+    : null
   const bestOffer = offers[0]?.offer
   const bestKnownTotal = offers[0]?.totalAmount
 
@@ -97,6 +110,40 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               specifications={product.specifications}
               source={product.source}
             />
+
+            {guidance ? (
+              <section className="wn-surface overflow-hidden p-6 sm:p-7">
+                <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+                  <div>
+                    <p className="wn-eyebrow">Keuzehulp</p>
+                    <h2 className="wn-heading mt-2 text-2xl sm:text-3xl">{guidance.heading}</h2>
+                    <ul className="mt-5 grid gap-3 text-sm leading-6 text-[var(--wn-text-muted)] sm:grid-cols-3">
+                      {guidance.points.map((point, index) => (
+                        <li key={point} className="rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4">
+                          <span className="mb-2 block text-xs font-bold tabular-nums text-[var(--wn-petrol)]">0{index + 1}</span>
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {(guidance.guide || comparisonHref) ? (
+                    <div className="flex flex-col gap-3 sm:flex-row lg:w-48 lg:flex-col">
+                      {guidance.guide ? (
+                        <WinkelnuButton href={`/koopgidsen/${guidance.guide.slug}`} variant="secondary" className="w-full">
+                          Lees de koopgids
+                        </WinkelnuButton>
+                      ) : null}
+                      {comparisonHref ? (
+                        <WinkelnuButton href={comparisonHref} className="w-full">
+                          Vergelijk modellen
+                        </WinkelnuButton>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              </section>
+            ) : null}
 
             <section id="aanbiedingen" className="scroll-mt-24">
               <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
