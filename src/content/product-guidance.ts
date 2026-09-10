@@ -212,7 +212,7 @@ export const productGuidanceByVisualKind = {
 
 export function getProductGuidance(visualKind?: ProductVisualKind): (ProductGuidance & { guide?: ReturnType<typeof getBuyingGuide> }) | null {
   if (!visualKind) return null
-  const guidance = productGuidanceByVisualKind[visualKind]
+  const guidance: ProductGuidance = productGuidanceByVisualKind[visualKind]
   return {
     ...guidance,
     guide: guidance.guideSlug ? getBuyingGuide(guidance.guideSlug) : undefined,
