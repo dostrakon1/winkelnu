@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import { CategoryCard } from '@/components/storefront/category-card'
-import { buyingGuides, editorialCategories } from '@/content/koopgidsen-public'
 import { EditorialIntro, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
+import { buyingGuides, editorialCategories } from '@/content/editorial-catalog'
 
 export const metadata: Metadata = {
   title: 'Koopgidsen',
-  description: 'Praktische keuzehulpen voor elektronica, wonen, keuken, huis en tuin, sport, outdoor, speelgoed en hobby. Vergelijk eigenschappen voordat je kiest.',
+  description: 'Praktische keuzehulpen voor elektronica, wonen, keuken, persoonlijke verzorging, huis en tuin, sport, outdoor, speelgoed en hobby. Vergelijk eigenschappen voordat je kiest.',
   alternates: { canonical: '/koopgidsen' },
 }
 

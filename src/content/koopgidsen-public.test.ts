@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { getCategoryImage } from './category-images'
-import { buyingGuides, editorialCategories, guidesForCategory } from './koopgidsen-public'
+import { buyingGuides, editorialCategories, guidesForCategory } from './editorial-catalog'
 
-describe('public editorial launch set', () => {
-  it('publishes exactly six categories and eighteen guides', () => {
-    expect(editorialCategories).toHaveLength(6)
-    expect(buyingGuides).toHaveLength(18)
+describe('public editorial catalog', () => {
+  it('publishes seven categories and twenty-one guides', () => {
+    expect(editorialCategories).toHaveLength(7)
+    expect(buyingGuides).toHaveLength(21)
   })
 
   it('publishes three reviewed guides per category', () => {
@@ -19,10 +19,13 @@ describe('public editorial launch set', () => {
     expect(new Set(buyingGuides.map(({ slug }) => slug)).size).toBe(buyingGuides.length)
   })
 
-  it('links every guide to a published category with approved imagery', () => {
+  it('links every guide to a published category and keeps the new motif fallback explicit', () => {
     const categorySlugs = new Set<string>(editorialCategories.map(({ slug }) => slug))
     for (const guide of buyingGuides) expect(categorySlugs.has(guide.category), guide.slug).toBe(true)
-    for (const category of editorialCategories) expect(getCategoryImage(category.slug), category.slug).toBeDefined()
+
+    const imageBackedCategories = editorialCategories.filter((category) => getCategoryImage(category.slug))
+    expect(imageBackedCategories).toHaveLength(6)
+    expect(getCategoryImage('persoonlijke-verzorging')).toBeUndefined()
   })
 
   it('keeps every guide useful and source-backed', () => {
