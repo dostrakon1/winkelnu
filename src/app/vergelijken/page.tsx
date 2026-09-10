@@ -42,8 +42,8 @@ function EmptyComparison({
           eyebrow="Productvergelijker"
           title={title}
           description={description}
-          actionHref="/zoeken"
-          actionLabel="Bekijk producten"
+          actionHref="/categorie/wonen-huishouden"
+          actionLabel="Start met vergelijken"
         />
       </section>
       <WinkelnuFooter />
@@ -107,7 +107,7 @@ export default async function ComparePage({
                 Andere producten kiezen
               </WinkelnuButton>
             ) : (
-              <WinkelnuButton href="/zoeken" variant="secondary">Andere producten kiezen</WinkelnuButton>
+              <WinkelnuButton href="/categorie/wonen-huishouden" variant="secondary">Andere producten kiezen</WinkelnuButton>
             )}
           </div>
         </div>
