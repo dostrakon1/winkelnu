@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   MAX_COMPARISON_PRODUCTS,
+  NOT_APPLICABLE_COMPARISON_VALUE,
   buildProductComparisonRows,
   getProductComparisonGroup,
   parseComparisonProductSlugs,
@@ -91,6 +92,46 @@ describe('buildProductComparisonRows', () => {
       { label: 'Gewicht', values: ['1,2 kg', '1,4 kg'] },
       { label: 'Accuduur', values: ['10 uur', null] },
       { label: 'Scherm', values: [null, '14 inch'] },
+    ])
+  })
+
+  it('shows product types and distinguishes not applicable from unknown vacuum specs', () => {
+    const products: Product[] = [
+      {
+        id: 'dyson',
+        slug: 'dyson',
+        title: 'Dyson',
+        brand: 'Dyson',
+        visualKind: 'stick-vacuum',
+        specifications: [
+          { label: 'Gebruiksduur', value: 'tot 60 minuten' },
+          { label: 'Stofreservoir', value: '0,35 l' },
+          { label: 'Zuigkracht', value: 'tot 150 Air Watt' },
+        ],
+      },
+      {
+        id: 'miele',
+        slug: 'miele',
+        title: 'Miele',
+        brand: 'Miele',
+        visualKind: 'canister-vacuum',
+        specifications: [
+          { label: 'Stofzak', value: '4,5 l' },
+          { label: 'Actieradius', value: '12 m' },
+          { label: 'Vermogen', value: '890 W' },
+        ],
+      },
+    ]
+
+    expect(buildProductComparisonRows(products)).toEqual([
+      { label: 'Producttype', values: ['Steelstofzuiger', 'Sledestofzuiger'] },
+      { label: 'Merk', values: ['Dyson', 'Miele'] },
+      { label: 'Gebruiksduur', values: ['tot 60 minuten', NOT_APPLICABLE_COMPARISON_VALUE] },
+      { label: 'Stofreservoir', values: ['0,35 l', NOT_APPLICABLE_COMPARISON_VALUE] },
+      { label: 'Zuigkracht', values: ['tot 150 Air Watt', null] },
+      { label: 'Stofzak', values: [NOT_APPLICABLE_COMPARISON_VALUE, '4,5 l'] },
+      { label: 'Actieradius', values: [NOT_APPLICABLE_COMPARISON_VALUE, '12 m'] },
+      { label: 'Vermogen', values: [null, '890 W'] },
     ])
   })
 })
