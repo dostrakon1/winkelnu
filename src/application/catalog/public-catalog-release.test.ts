@@ -36,7 +36,7 @@ describe('public catalog release gate', () => {
   })
 
   it('covers public commerce routes without blocking editorial or operator routes', () => {
-    for (const path of ['/zoeken', '/zoeken/', '/categorie/test', '/product/test', '/uit/123']) expect(isPublicCatalogPath(path)).toBe(true)
+    for (const path of ['/zoeken', '/zoeken/', '/categorie/test', '/product/test', '/vergelijken', '/vergelijken/', '/uit/123']) expect(isPublicCatalogPath(path)).toBe(true)
     for (const path of ['/', '/koopgidsen', '/koopgidsen/categorie/elektronica', '/intern/operations', '/api/ops/dashboard', '/aanbieding-niet-beschikbaar', '/productinformatie']) expect(isPublicCatalogPath(path)).toBe(false)
   })
 })
