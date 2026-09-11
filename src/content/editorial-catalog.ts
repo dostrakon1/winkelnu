@@ -7,15 +7,21 @@ import {
   personalCareBuyingGuides,
   personalCareEditorialCategory,
 } from './persoonlijke-verzorging-guides'
+import {
+  babyKindBuyingGuides,
+  babyKindEditorialCategory,
+} from './baby-kind-guides'
 
 export const editorialCategories = [
   ...existingEditorialCategories,
   personalCareEditorialCategory,
+  babyKindEditorialCategory,
 ] as const
 
 export const buyingGuides: BuyingGuide[] = [
   ...existingBuyingGuides,
   ...personalCareBuyingGuides,
+  ...babyKindBuyingGuides,
 ]
 
 export function getBuyingGuide(slug: string): BuyingGuide | undefined {
