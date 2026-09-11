@@ -57,7 +57,7 @@ export const categoryImages = {
     position: 'center',
   },
   'auto-fiets': {
-    src: '/images/categories/auto-fiets-hero.webp',
+    src: '/images/categories/auto-fiets-definitief-hero.webp',
     alt: 'Moderne auto met open kofferbak en elektrische fietsen bij een warme, moderne garage',
     position: 'center',
   },
