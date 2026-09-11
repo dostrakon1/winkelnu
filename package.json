@@ -13,6 +13,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "image:prepare": "node scripts/prepare-image.mjs",
+    "check:images": "node scripts/verify-category-images.mjs",
     "check:migration-manifest": "node scripts/verify-preview-migration-manifest.mjs",
     "check:preview-evidence-template": "node scripts/verify-preview-evidence-template.mjs",
     "check:db-contract": "node scripts/verify-database-contract.mjs",
@@ -24,7 +26,7 @@
     "verify:domain-cutover": "node scripts/verify-domain-cutover.mjs",
     "verify:first-release-evidence": "node scripts/verify-first-production-release-evidence.mjs",
     "types:supabase": "node scripts/generate-supabase-types.mjs",
-    "check": "npm run check:migration-manifest && npm run check:preview-evidence-template && npm run check:db-contract && npm run lint && npm run typecheck && npm run test && npm run build"
+    "check": "npm run check:images && npm run check:migration-manifest && npm run check:preview-evidence-template && npm run check:db-contract && npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.5",
