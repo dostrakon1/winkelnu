@@ -22,16 +22,21 @@ for (const fileName of categoryImages) {
 
   const filePath = join(imageDirectory, fileName)
   const info = assertImageLooksUsable(filePath)
+  const notes = []
   const ratio = info.width / info.height
 
   if (Math.abs(ratio - (4 / 3)) > 0.01) {
-    throw new Error(`Categorie-afbeelding ${fileName} is geen 4:3: ${info.width}x${info.height}`)
+    notes.push(`bestaande verhouding ${info.width}x${info.height}; 4:3 aanbevolen bij vervanging`)
+  }
+  if (info.width < 1200 || info.height < 900) {
+    notes.push('bestaande lage resolutie; 1600x1200 aanbevolen bij vervanging')
   }
 
-  const qualityNote = info.width >= 1200 && info.height >= 900 ? '' : ' — bestaande lage resolutie; 1600x1200 aanbevolen bij vervanging'
+  const qualityNote = notes.length > 0 ? ` — ${notes.join('; ')}` : ''
   console.log(`✓ images/categories/${fileName}: ${info.width}x${info.height}, ${Math.round(info.bytes / 1024)} KB${qualityNote}`)
 }
 
 console.log(`✓ ${categoryImages.length} categorie-afbeeldingen technisch gecontroleerd`)
-console.log('✓ Naamconventie en 4:3-verhouding gecontroleerd; manifest wordt uit dezelfde map gegenereerd')
+console.log('✓ Naamconventie gecontroleerd; nieuwe categoriebeelden worden door image:prepare op 4:3 afgedwongen')
+console.log('Let op: bestaande goedgekeurde legacy-beelden kunnen tijdelijk een andere verhouding of lagere resolutie houden.')
 console.log('Let op: technische validatie vervangt de visuele controle niet.')
