@@ -23,7 +23,7 @@ describe('editorial category imagery', () => {
     }
     expect(editorialCategories.some((category) => category.slug === 'dieren')).toBe(true)
     expect(getCategoryImage('dieren')?.src).toBe('/images/categories/dieren-hero.webp')
-    expect(getCategoryImage('auto-fiets')?.src).toBe('/images/categories/auto-fiets-hero.webp')
+    expect(getCategoryImage('auto-fiets')?.src).toBe('/images/categories/auto-fiets-definitief-hero.webp')
     expect(getCategoryImage('bestaat-niet')).toBeUndefined()
     expect(getCategoryImage('toString')).toBeUndefined()
   })
