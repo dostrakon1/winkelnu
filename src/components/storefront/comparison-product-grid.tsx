@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
+import { currentSearchQuery, sendSearchFeedback } from '@/components/analytics/search-feedback-client'
 import type { ProductVisualKind } from '@/domain/catalog/types'
 import { MAX_COMPARISON_PRODUCTS, MIN_COMPARISON_PRODUCTS } from '@/domain/catalog/comparison'
 import { ProductCard } from './product-card'
@@ -98,7 +99,7 @@ export function ComparisonProductGrid({
       ) : null}
 
       <div className={gridClassName}>
-        {items.map((item) => {
+        {items.map((item, itemIndex) => {
           const selected = selectedSet.has(item.slug)
           const hasComparablePeer = Boolean(item.comparisonGroup && (groupCounts.get(item.comparisonGroup) ?? 0) >= MIN_COMPARISON_PRODUCTS)
           const wrongGroup = Boolean(selectedGroup && item.comparisonGroup !== selectedGroup)
@@ -128,21 +129,38 @@ export function ComparisonProductGrid({
           )
 
           return (
-            <ProductCard
+            <div
               key={item.id}
-              slug={item.slug}
-              title={item.title}
-              brand={item.brand}
-              description={item.description}
-              imageUrl={item.imageUrl}
-              visualKind={item.visualKind}
-              price={item.price}
-              merchantName={item.merchantName}
-              offerCount={item.offerCount}
-              availability={item.availability}
-              shippingKnown={item.shippingKnown}
-              secondaryAction={comparisonAction}
-            />
+              className="h-full"
+              onClickCapture={(event) => {
+                if (!(event.target instanceof Element)) return
+                if (!event.target.closest('a[href^="/product/"]')) return
+                const query = currentSearchQuery()
+                if (!query || window.location.pathname !== '/zoeken') return
+                sendSearchFeedback({
+                  eventType: 'product_clicked',
+                  query,
+                  targetKind: 'product',
+                  targetKey: item.slug,
+                  targetPosition: itemIndex + 1,
+                })
+              }}
+            >
+              <ProductCard
+                slug={item.slug}
+                title={item.title}
+                brand={item.brand}
+                description={item.description}
+                imageUrl={item.imageUrl}
+                visualKind={item.visualKind}
+                price={item.price}
+                merchantName={item.merchantName}
+                offerCount={item.offerCount}
+                availability={item.availability}
+                shippingKnown={item.shippingKnown}
+                secondaryAction={comparisonAction}
+              />
+            </div>
           )
         })}
       </div>
