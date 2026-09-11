@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect } from 'react'
+import { currentSearchQuery, sendSearchFeedback } from '@/components/analytics/search-feedback-client'
 import { WinkelnuMark } from './winkelnu-brand'
 import { WinkelnuButton } from './winkelnu-button'
 
@@ -19,6 +23,22 @@ export function StorefrontEmptyState({
   headingLevel = 'h2',
 }: StorefrontEmptyStateProps) {
   const Heading = headingLevel
+
+  useEffect(() => {
+    const isSearchZeroState = actionHref === '/zoeken' && actionLabel === 'Nieuwe zoekopdracht'
+    if (!isSearchZeroState) return
+    if (document.querySelector('[data-search-feedback-impression="1"]')) return
+
+    const query = currentSearchQuery()
+    if (!query) return
+
+    sendSearchFeedback({
+      eventType: 'search_performed',
+      query,
+      zeroResults: true,
+      bestMatchCount: 0,
+    })
+  }, [actionHref, actionLabel])
 
   return (
     <section className="wn-surface relative overflow-hidden p-7 sm:p-9">
