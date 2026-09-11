@@ -7,8 +7,8 @@ import { categoryImages, getCategoryImage } from './category-images'
 const images = Object.values(categoryImages)
 
 describe('editorial category imagery', () => {
-  it('has six unique, local image paths with meaningful alt text', () => {
-    expect(images).toHaveLength(6)
+  it('has seven unique, local image paths with meaningful alt text', () => {
+    expect(images).toHaveLength(7)
     expect(new Set(images.map((image) => image.src)).size).toBe(images.length)
     for (const image of images) {
       expect(image.src).toMatch(/^\/images\/categories\/[a-z0-9-]+-hero\.webp$/)
