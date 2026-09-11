@@ -36,7 +36,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
       <section className="wn-container wn-section" aria-labelledby="themas">
         <p className="wn-eyebrow">Inspiratie over categorieën heen</p>
         <h2 id="themas" className="wn-heading mt-3 text-3xl sm:text-4xl">Kies een thema</h2>
-        <p className="wn-body-muted mt-4 max-w-3xl">Deze thema's zijn redactionele verzamelingen. Producten houden altijd hun eigen vaste Winkelnu-categorie en kunnen daarnaast in één of meer collecties verschijnen.</p>
+        <p className="wn-body-muted mt-4 max-w-3xl">Deze thema&apos;s zijn redactionele verzamelingen. Producten houden altijd hun eigen vaste Winkelnu-categorie en kunnen daarnaast in één of meer collecties verschijnen.</p>
         <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {collection.sections.map((section) => (
             <article key={section.slug} id={section.slug} className="wn-surface flex h-full flex-col p-6 sm:p-7">
