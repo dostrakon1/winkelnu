@@ -3,9 +3,9 @@ import { getCategoryImage } from './category-images'
 import { buyingGuides, editorialCategories, guidesForCategory } from './editorial-catalog'
 
 describe('public editorial catalog', () => {
-  it('publishes nine categories and twenty-seven guides', () => {
-    expect(editorialCategories).toHaveLength(9)
-    expect(buyingGuides).toHaveLength(27)
+  it('publishes ten categories and thirty guides', () => {
+    expect(editorialCategories).toHaveLength(10)
+    expect(buyingGuides).toHaveLength(30)
   })
 
   it('publishes three reviewed guides per category', () => {
@@ -30,6 +30,7 @@ describe('public editorial catalog', () => {
     )
     expect(getCategoryImage('baby-kind')?.src).toBe('/images/categories/baby-kind-hero.webp')
     expect(getCategoryImage('dieren')?.src).toBe('/images/categories/dieren-hero.webp')
+    expect(getCategoryImage('auto-fiets')).toBeUndefined()
   })
 
   it('keeps every guide useful and source-backed', () => {

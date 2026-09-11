@@ -5,7 +5,7 @@ import { buyingGuides, editorialCategories } from '@/content/editorial-catalog'
 
 export const metadata: Metadata = {
   title: 'Koopgidsen',
-  description: 'Praktische keuzehulpen voor elektronica, wonen, keuken, persoonlijke verzorging, baby en kind, dieren, huis en tuin, sport, outdoor, speelgoed en hobby. Vergelijk eigenschappen voordat je kiest.',
+  description: 'Praktische keuzehulpen voor elektronica, wonen, keuken, persoonlijke verzorging, baby en kind, dieren, auto en fiets, huis en tuin, sport, outdoor, speelgoed en hobby. Vergelijk eigenschappen voordat je kiest.',
   alternates: { canonical: '/koopgidsen' },
 }
 
