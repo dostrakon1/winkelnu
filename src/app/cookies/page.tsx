@@ -20,8 +20,13 @@ export default function CookiesPage() {
         <p className="mt-3">Vercel Web Analytics wordt uitsluitend op het publieke domein winkelnu.nl geladen. Previewomgevingen en de routes <code>/intern</code>, <code>/api</code> en <code>/uit</code> zijn uitgesloten. Zoekparameters, filters en URL-fragmenten worden vóór verzending uit de gemeten pagina-URL verwijderd.</p>
       </section>
       <section>
+        <h2 className="text-xl font-bold">Zoekkompas verbeteren zonder bezoekerscookie</h2>
+        <p className="mt-3">Winkelnu gebruikt daarnaast een eigen first-party zoekleerlaag om te zien welke zoekvragen geen resultaat geven, welke interne suggesties worden gekozen en wanneer een zoekvraag direct wordt herformuleerd. Deze meting gebruikt geen cookie, localStorage, sessionStorage, persistent bezoekers-ID of cross-site identifier.</p>
+        <p className="mt-3">De zoekleerlaag staat los van Vercel Web Analytics. Zoektekst wordt vóór opslag genormaliseerd en waarschijnlijke directe identifiers zoals e-mailadressen, URL’s en langere telefoonnummers worden geredigeerd. Meer informatie staat in de privacyverklaring.</p>
+      </section>
+      <section>
         <h2 className="text-xl font-bold">Waarom geen marketing-cookiebanner?</h2>
-        <p className="mt-3">De huidige analysemethode plaatst volgens de gebruikte Vercel Web Analytics-configuratie geen cookies en wordt niet ingezet voor advertenties of cross-siteprofilering. Daarom tonen we voor deze configuratie geen marketing-cookiekeuze. Als de techniek of het doel verandert, beoordelen we opnieuw welke informatie en eventuele toestemming nodig zijn voordat zo’n wijziging openbaar wordt geactiveerd.</p>
+        <p className="mt-3">De huidige analysemethode plaatst volgens de gebruikte configuratie geen marketing- of trackingcookies en wordt niet ingezet voor advertenties of cross-siteprofilering. Daarom tonen we voor deze configuratie geen marketing-cookiekeuze. Als de techniek of het doel verandert, beoordelen we opnieuw welke informatie en eventuele toestemming nodig zijn voordat zo’n wijziging openbaar wordt geactiveerd.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Noodzakelijke techniek</h2>
@@ -35,7 +40,7 @@ export default function CookiesPage() {
         <h2 className="text-xl font-bold">Externe webwinkels</h2>
         <p className="mt-3">Wanneer je via Winkelnu naar een webwinkel gaat, verlaat je Winkelnu. Die externe partij kan eigen cookies en trackingtechnieken gebruiken volgens haar eigen cookie- en privacybeleid.</p>
       </section>
-      <p className="wn-body-muted text-sm">Laatst inhoudelijk gecontroleerd: 11 september 2026.</p>
+      <p className="wn-body-muted text-sm">Laatst inhoudelijk gecontroleerd: 12 september 2026.</p>
     </LegalPage>
   )
 }
