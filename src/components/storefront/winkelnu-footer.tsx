@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
-import { editorialCategories } from '@/content/koopgidsen-public'
+import { editorialCategories } from '@/content/editorial-catalog'
 import { operator } from '@/content/operator'
 import { WinkelnuBrand } from './winkelnu-brand'
 

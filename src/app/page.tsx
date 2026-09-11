@@ -7,7 +7,7 @@ import { EditorialNotice, GuideCard } from '@/components/storefront/editorial-sh
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 import { WinkelnuHero } from '@/components/storefront/winkelnu-hero'
-import { buyingGuides, editorialCategories } from '@/content/koopgidsen-public'
+import { buyingGuides, editorialCategories } from '@/content/editorial-catalog'
 import { getProductComparisonGroup } from '@/domain/catalog/comparison'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
@@ -147,7 +147,7 @@ export default async function HomePage() {
         </section>
 
         <section className="wn-container wn-section">
-          <div className="flex flex-wrap items-end justify-between gap-5"><div><p className="wn-eyebrow">Uitgelichte keuzehulpen</p><h2 className="wn-heading mt-3 text-3xl sm:text-4xl">Begin met een goede voorbereiding.</h2><p className="wn-body-muted mt-4 max-w-2xl">Eén praktische keuzehulp uit iedere hoofdcategorie. Op de koopgidsenpagina vind je alle achttien gidsen.</p></div><Link href="/koopgidsen" className="inline-flex min-h-12 items-center font-bold text-[var(--wn-petrol)] hover:underline">Alle 18 koopgidsen →</Link></div>
+          <div className="flex flex-wrap items-end justify-between gap-5"><div><p className="wn-eyebrow">Uitgelichte keuzehulpen</p><h2 className="wn-heading mt-3 text-3xl sm:text-4xl">Begin met een goede voorbereiding.</h2><p className="wn-body-muted mt-4 max-w-2xl">Een praktische selectie uit onze hoofdcategorieën. Op de koopgidsenpagina vind je alle {buyingGuides.length} gidsen.</p></div><Link href="/koopgidsen" className="inline-flex min-h-12 items-center font-bold text-[var(--wn-petrol)] hover:underline">Alle {buyingGuides.length} koopgidsen →</Link></div>
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{featuredGuides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}</div>
         </section>
 
