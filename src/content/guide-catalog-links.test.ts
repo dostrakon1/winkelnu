@@ -7,6 +7,7 @@ describe('editorial to catalog links', () => {
     expect(getCatalogCategorySlug('persoonlijke-verzorging')).toBe('persoonlijke-verzorging')
     expect(getCatalogCategorySlug('huis-tuin-klussen')).toBe('tuin-klussen')
     expect(getCatalogCategorySlug('speelgoed-hobby')).toBeNull()
+    expect(getCatalogCategorySlug('baby-kind')).toBeNull()
   })
 
   it('links source-backed guides only to known product type facets', () => {
@@ -19,5 +20,6 @@ describe('editorial to catalog links', () => {
       href: '/zoeken?type=electric-toothbrushes',
     })
     expect(getGuideCatalogTarget('monitor-kopen')).toBeNull()
+    expect(getGuideCatalogTarget('kinderwagen-kopen')).toBeNull()
   })
 })
