@@ -46,6 +46,8 @@ Gesorteerd op de bestaande deterministische opportunity score:
 
 Deze score is uitsluitend een werklijst voor menselijke analyse. Hij verandert geen ranking automatisch.
 
+V1 introduceert bewust nog geen labels als `kritiek`, `hoog` of `laag` op basis van willekeurige vaste grenzen. Zulke thresholds worden pas toegevoegd nadat echte Winkelnu-zoekdata voldoende basis geeft om ze te kalibreren.
+
 ### 0-resultaatvragen
 
 Laat zien waar Winkelnu mogelijk productdata, aliases, taxonomy, content of rankinglogica mist.
