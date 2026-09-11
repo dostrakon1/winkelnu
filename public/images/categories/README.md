@@ -1,6 +1,6 @@
 # Winkelnu categorie-afbeeldingen
 
-Deze map bevat de negen door de eigenaar goedgekeurde redactionele categorie-afbeeldingen.
+Deze map bevat de tien door de eigenaar goedgekeurde redactionele categorie-afbeeldingen.
 
 Gebruik exact deze bestandsnamen:
 
@@ -13,10 +13,11 @@ Gebruik exact deze bestandsnamen:
 - `speelgoed-hobby-hero.webp`
 - `baby-kind-hero.webp`
 - `dieren-hero.webp`
+- `auto-fiets-hero.webp`
 
-De code is gekoppeld via `src/content/category-images.ts`. Alle negen gepubliceerde redactionele categorieën hebben daarmee een eigenaar-goedgekeurd beeld; de Winkelnu Surface Motif blijft alleen beschikbaar als technische fallback voor toekomstige categorieën waarvoor nog geen passend beeld is goedgekeurd.
+De code is gekoppeld via `src/content/category-images.ts`. Alle tien gepubliceerde redactionele categorieën hebben daarmee een eigenaar-goedgekeurd beeld; de Winkelnu Surface Motif blijft alleen beschikbaar als technische fallback voor toekomstige categorieën waarvoor nog geen passend beeld is goedgekeurd.
 
-Voor `persoonlijke-verzorging-hero.webp` gebruiken we de goedgekeurde warme badkamerscène met elektrische tandenborstel en scheerapparaat. Voor `huis-tuin-klussen-hero.webp` gebruiken we de goedgekeurde zonnige tuinscène met grasmaaier en trimmer, niet de eerdere afbeelding met witte achtergrond. Voor `baby-kind-hero.webp` gebruiken we de goedgekeurde warme babykamerscène met beige kinderwagen. Voor `dieren-hero.webp` gebruiken we de goedgekeurde warme huiskamerscène met golden retriever in een hondenmand en kat op een krabpaal.
+Voor `persoonlijke-verzorging-hero.webp` gebruiken we de goedgekeurde warme badkamerscène met elektrische tandenborstel en scheerapparaat. Voor `huis-tuin-klussen-hero.webp` gebruiken we de goedgekeurde zonnige tuinscène met grasmaaier en trimmer, niet de eerdere afbeelding met witte achtergrond. Voor `baby-kind-hero.webp` gebruiken we de goedgekeurde warme babykamerscène met beige kinderwagen. Voor `dieren-hero.webp` gebruiken we de goedgekeurde warme huiskamerscène met golden retriever in een hondenmand en kat op een krabpaal. Voor `auto-fiets-hero.webp` gebruiken we de goedgekeurde golden-hour scène met auto, open kofferbak, elektrische fietsen en moderne garage.
 
 ## Nieuwe of vervangende afbeelding
 

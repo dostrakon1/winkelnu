@@ -7,8 +7,8 @@ import { categoryImages, getCategoryImage } from './category-images'
 const images = Object.values(categoryImages)
 
 describe('editorial category imagery', () => {
-  it('has nine unique, owner-approved local image paths with meaningful alt text', () => {
-    expect(images).toHaveLength(9)
+  it('has ten unique, owner-approved local image paths with meaningful alt text', () => {
+    expect(images).toHaveLength(10)
     expect(new Set(images.map((image) => image.src)).size).toBe(images.length)
     for (const image of images) {
       expect(image.src).toMatch(/^\/images\/categories\/[a-z0-9-]+-hero\.webp$/)
@@ -23,6 +23,7 @@ describe('editorial category imagery', () => {
     }
     expect(editorialCategories.some((category) => category.slug === 'dieren')).toBe(true)
     expect(getCategoryImage('dieren')?.src).toBe('/images/categories/dieren-hero.webp')
+    expect(getCategoryImage('auto-fiets')?.src).toBe('/images/categories/auto-fiets-hero.webp')
     expect(getCategoryImage('bestaat-niet')).toBeUndefined()
     expect(getCategoryImage('toString')).toBeUndefined()
   })
