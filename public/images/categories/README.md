@@ -1,6 +1,6 @@
 # Winkelnu categorie-afbeeldingen
 
-Deze map bevat de acht door de eigenaar goedgekeurde redactionele categorie-afbeeldingen.
+Deze map bevat de negen door de eigenaar goedgekeurde redactionele categorie-afbeeldingen.
 
 Gebruik exact deze bestandsnamen:
 
@@ -12,10 +12,11 @@ Gebruik exact deze bestandsnamen:
 - `sport-outdoor-hero.webp`
 - `speelgoed-hobby-hero.webp`
 - `baby-kind-hero.webp`
+- `dieren-hero.webp`
 
-De code is gekoppeld via `src/content/category-images.ts`. Gepubliceerde rubrieken zonder een eigenaar-goedgekeurd beeld gebruiken tijdelijk de Winkelnu Surface Motif als technische fallback. De rubriek `Dieren` is op 11 september 2026 gepubliceerd met deze fallback totdat het definitieve categoriebeeld is goedgekeurd en toegevoegd als `dieren-hero.webp`.
+De code is gekoppeld via `src/content/category-images.ts`. Alle negen gepubliceerde redactionele categorieën hebben daarmee een eigenaar-goedgekeurd beeld; de Winkelnu Surface Motif blijft alleen beschikbaar als technische fallback voor toekomstige categorieën waarvoor nog geen passend beeld is goedgekeurd.
 
-Voor `persoonlijke-verzorging-hero.webp` gebruiken we de goedgekeurde warme badkamerscène met elektrische tandenborstel en scheerapparaat. Voor `huis-tuin-klussen-hero.webp` gebruiken we de goedgekeurde zonnige tuinscène met grasmaaier en trimmer, niet de eerdere afbeelding met witte achtergrond. Voor `baby-kind-hero.webp` gebruiken we de goedgekeurde warme babykamerscène met beige kinderwagen.
+Voor `persoonlijke-verzorging-hero.webp` gebruiken we de goedgekeurde warme badkamerscène met elektrische tandenborstel en scheerapparaat. Voor `huis-tuin-klussen-hero.webp` gebruiken we de goedgekeurde zonnige tuinscène met grasmaaier en trimmer, niet de eerdere afbeelding met witte achtergrond. Voor `baby-kind-hero.webp` gebruiken we de goedgekeurde warme babykamerscène met beige kinderwagen. Voor `dieren-hero.webp` gebruiken we de goedgekeurde warme huiskamerscène met golden retriever in een hondenmand en kat op een krabpaal.
 
 ## Nieuwe of vervangende afbeelding
 
