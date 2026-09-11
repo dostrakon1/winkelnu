@@ -18,7 +18,7 @@
     "check:images": "node scripts/generate-category-image-manifest.mjs && node scripts/verify-category-images.mjs",
     "check:migration-manifest": "node scripts/verify-preview-migration-manifest.mjs",
     "check:preview-evidence-template": "node scripts/verify-preview-evidence-template.mjs",
-    "check:db-contract": "node scripts/verify-database-contract.mjs",
+    "check:db-contract": "node scripts/verify-database-contract.mjs && node scripts/verify-search-feedback-contract.mjs",
     "verify:activation-env": "node scripts/verify-activation-environment.mjs",
     "verify:supabase": "node scripts/verify-supabase-connection.mjs",
     "verify:production-readiness": "node scripts/verify-production-readiness.mjs",
