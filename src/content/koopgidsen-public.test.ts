@@ -24,12 +24,12 @@ describe('public editorial catalog', () => {
     for (const guide of buyingGuides) expect(categorySlugs.has(guide.category), guide.slug).toBe(true)
 
     const imageBackedCategories = editorialCategories.filter((category) => getCategoryImage(category.slug))
-    expect(imageBackedCategories).toHaveLength(8)
+    expect(imageBackedCategories).toHaveLength(9)
     expect(getCategoryImage('persoonlijke-verzorging')?.src).toBe(
       '/images/categories/persoonlijke-verzorging-hero.webp',
     )
     expect(getCategoryImage('baby-kind')?.src).toBe('/images/categories/baby-kind-hero.webp')
-    expect(getCategoryImage('dieren')).toBeUndefined()
+    expect(getCategoryImage('dieren')?.src).toBe('/images/categories/dieren-hero.webp')
   })
 
   it('keeps every guide useful and source-backed', () => {
