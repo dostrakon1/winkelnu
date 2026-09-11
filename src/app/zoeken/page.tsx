@@ -5,10 +5,12 @@ import { parseCatalogSearchQuery, type CatalogSearchQuery } from '@/application/
 import { analyzePredictiveSearch } from '@/application/search/predictive-search-core'
 import { buildPredictiveSearchIndex } from '@/application/search/predictive-search-index'
 import { suggestedSearches } from '@/application/search/search-intelligence'
+import { buildUniversalSearchRanking } from '@/application/search/universal-search-ranking'
 import { ComparisonProductGrid } from '@/components/storefront/comparison-product-grid'
 import { PredictiveSearchBox } from '@/components/storefront/predictive-search-box'
 import { SectionHeader } from '@/components/storefront/section-header'
 import { StorefrontEmptyState } from '@/components/storefront/storefront-empty-state'
+import { UniversalSearchResults } from '@/components/storefront/universal-search-results'
 import { WinkelnuButton } from '@/components/storefront/winkelnu-button'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
@@ -18,7 +20,7 @@ import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-
 
 export const metadata: Metadata = {
   title: 'Zoeken met Winkelnu Zoekkompas',
-  description: 'Zoek slim door producten, categorieën, subcategorieën en koopgidsen op Winkelnu.',
+  description: 'Zoek slim door producten, categorieën, subcategorieën, koopgidsen en collecties op Winkelnu.',
   alternates: { canonical: '/zoeken' },
   robots: { index: false, follow: true },
 }
@@ -88,7 +90,7 @@ export default async function SearchPage({
   const raw = await searchParams
   const query = parseCatalogSearchQuery(raw)
   const predictiveIndex = buildPredictiveSearchIndex()
-  const prediction = analyzePredictiveSearch(query.term, predictiveIndex, 6)
+  const prediction = analyzePredictiveSearch(query.term, predictiveIndex, 8)
   const structuredIntent = hasStructuredSearchIntent(query)
   const searchIntent = Boolean(query.term) || structuredIntent
   const effectiveProductTerm = prediction.productTerm ?? (prediction.navigationOnly ? undefined : query.term)
@@ -109,7 +111,6 @@ export default async function SearchPage({
     .sort((a, b) => a.name.localeCompare(b.name, 'nl-NL'))
   const childCount = categories.length - rootCategories.length
   const facets = buildCatalogSearchFacets(facetItems)
-  const compassMatches = prediction.suggestions
   const selectedCategory = query.categorySlug
     ? categories.find((category) => category.slug === query.categorySlug)
     : undefined
@@ -141,6 +142,14 @@ export default async function SearchPage({
         || (prediction.productTerm && prediction.productTerm !== prediction.normalizedTerm)),
   )
 
+  const universalRanking = query.term && query.page === 1
+    ? buildUniversalSearchRanking({
+        analysis: prediction,
+        products: result?.products ?? [],
+        limit: 7,
+      })
+    : null
+
   return (
     <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
       <WinkelnuHeader />
@@ -154,7 +163,7 @@ export default async function SearchPage({
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/65">Winkelnu Zoekkompas</p>
             <h1 className="mt-4 text-4xl font-black tracking-[-0.04em] sm:text-6xl lg:text-7xl">Waar ben je naar op zoek?</h1>
             <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/72 sm:text-lg">
-              Eén zoekveld voor producten, categorieën en keuzehulp. Winkelnu herkent steeds beter wat je bedoelt — ook bij een typo of een vraag als “laptop voor studie”.
+              Eén zoekveld voor producten, categorieën en keuzehulp. Winkelnu probeert eerst te begrijpen wat je bedoelt en rangschikt daarna alles wat je echt verder kan helpen.
             </p>
           </div>
 
@@ -174,7 +183,7 @@ export default async function SearchPage({
           </div>
 
           <p className="mt-7 text-center text-xs leading-6 text-white/48 sm:text-sm">
-            De live voorspellingen draaien lokaal op {rootCategories.length} hoofdwerelden en {childCount} subcategorieën — zonder AI-model of database-call per toetsaanslag.
+            Live voorspellingen draaien lokaal op {rootCategories.length} hoofdwerelden en {childCount} subcategorieën — zonder AI-model of database-call per toetsaanslag.
           </p>
         </div>
       </section>
@@ -202,42 +211,8 @@ export default async function SearchPage({
         </section>
       ) : null}
 
-      {query.term && compassMatches.length > 0 ? (
-        <section className="border-b border-[var(--wn-border)] bg-white/55">
-          <div className="wn-container py-9 sm:py-12">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="wn-eyebrow">Zoekkompas denkt mee</p>
-                <h2 className="wn-heading mt-2 text-2xl sm:text-3xl">Dit zijn waarschijnlijk de slimste routes.</h2>
-                <p className="wn-body-muted mt-2 max-w-2xl text-sm leading-6">Winkelnu combineert je woorden, typo-correctie en herkenbare context met de eigen categorieën, collecties en keuzehulpen.</p>
-              </div>
-              <span className="rounded-full bg-[var(--wn-petrol-soft)] px-3 py-2 text-xs font-bold text-[var(--wn-petrol)]">{compassMatches.length} slimme routes</span>
-            </div>
-
-            <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {compassMatches.map((match) => (
-                <Link
-                  key={`${match.kind}:${match.href}`}
-                  href={match.href}
-                  className="group rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-5 shadow-[var(--wn-shadow-xs)] transition hover:-translate-y-0.5 hover:border-[color:rgba(18,59,58,0.28)] hover:shadow-[var(--wn-shadow-md)]"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-[0.68rem] font-bold uppercase tracking-[0.13em] text-[var(--wn-petrol)]">{match.eyebrow}</p>
-                        {match.reason === 'fuzzy' ? <span className="text-[0.65rem] font-semibold text-[var(--wn-text-muted)]">typo herkend</span> : null}
-                        {match.reason === 'intent' ? <span className="text-[0.65rem] font-semibold text-[var(--wn-text-muted)]">past bij je vraag</span> : null}
-                      </div>
-                      <h3 className="mt-2 text-lg font-black tracking-[-0.02em] text-[var(--wn-ink)]">{match.title}</h3>
-                    </div>
-                    <span className="text-lg text-[var(--wn-petrol)] transition group-hover:translate-x-1" aria-hidden="true">→</span>
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-[var(--wn-text-muted)]">{match.description}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
+      {universalRanking && universalRanking.items.length > 0 ? (
+        <UniversalSearchResults ranking={universalRanking} />
       ) : null}
 
       <section className="wn-container py-8 sm:py-10">
@@ -389,19 +364,19 @@ export default async function SearchPage({
       ) : (
         <section className="wn-container pb-16 sm:pb-20">
           <SectionHeader
-            eyebrow={`Pagina ${result?.page ?? 1} · ${result?.products.length ?? 0} getoond`}
-            title={query.term ? `Resultaten voor “${query.term}”` : selectedCategory ? selectedCategory.name : 'Zoekresultaten'}
+            eyebrow={`Pagina ${result?.page ?? 1} · ${result?.products.length ?? 0} producten`}
+            title={query.term ? `Alle productresultaten voor “${query.term}”` : selectedCategory ? selectedCategory.name : 'Productresultaten'}
             description={effectiveProductTerm && query.term && effectiveProductTerm !== prediction.normalizedTerm
-              ? `Voor de productcatalogus zoekt Winkelnu gericht op “${effectiveProductTerm}”, terwijl de oorspronkelijke vraag en context hierboven zichtbaar blijven.`
-              : 'Hieronder staan de concrete productresultaten. Gebruik Zoekkompas hierboven als je liever eerst wilt begrijpen welke categorie, subcategorie of keuzehulp het beste bij je vraag past.'}
+              ? `Voor de productcatalogus zoekt Winkelnu gericht op “${effectiveProductTerm}”. De beste gemengde matches staan hierboven; hieronder kun je alle concrete producten bekijken en vergelijken.`
+              : 'De beste gemengde matches staan hierboven. Hieronder vind je de concrete productcatalogus, zodat je modellen rustig kunt bekijken en vergelijken.'}
           />
 
           {!result || result.products.length === 0 ? (
             <div className="mt-8">
               <StorefrontEmptyState
-                eyebrow={compassMatches.length > 0 ? 'Geen exact product, wel slimme routes' : 'Geen resultaten'}
-                title={compassMatches.length > 0 ? 'We vinden nog geen exact product, maar Zoekkompas begrijpt wel waar je heen wilt.' : 'We vinden nog geen product met deze combinatie.'}
-                description={compassMatches.length > 0 ? 'Bekijk één van de slimme routes hierboven of maak je zoekterm iets breder.' : 'Probeer een kortere zoekterm, kies een bredere categorie of wis enkele filters.'}
+                eyebrow={prediction.suggestions.length > 0 ? 'Geen exact product, wel slimme routes' : 'Geen resultaten'}
+                title={prediction.suggestions.length > 0 ? 'We vinden nog geen exact product, maar Zoekkompas begrijpt wel waar je heen wilt.' : 'We vinden nog geen product met deze combinatie.'}
+                description={prediction.suggestions.length > 0 ? 'Bekijk één van de beste matches hierboven of maak je zoekterm iets breder.' : 'Probeer een kortere zoekterm, kies een bredere categorie of wis enkele filters.'}
                 actionHref="/zoeken"
                 actionLabel="Nieuwe zoekopdracht"
               />
