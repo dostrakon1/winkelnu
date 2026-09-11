@@ -30,7 +30,7 @@ describe('public editorial catalog', () => {
     )
     expect(getCategoryImage('baby-kind')?.src).toBe('/images/categories/baby-kind-hero.webp')
     expect(getCategoryImage('dieren')?.src).toBe('/images/categories/dieren-hero.webp')
-    expect(getCategoryImage('auto-fiets')?.src).toBe('/images/categories/auto-fiets-hero.webp')
+    expect(getCategoryImage('auto-fiets')?.src).toBe('/images/categories/auto-fiets-definitief-hero.webp')
   })
 
   it('keeps every guide useful and source-backed', () => {
