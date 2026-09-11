@@ -41,7 +41,7 @@ Nieuwe of vervangende categoriebeelden:
 - geen kunstmatige upscaling van een kleine bron;
 - compositie geschikt voor `object-fit: cover`.
 
-Bestaande goedgekeurde beelden met een lagere resolutie blijven technisch toegestaan. Vervang ze alleen wanneer een betere originele bron beschikbaar is.
+Bestaande goedgekeurde beelden met een lagere resolutie of andere verhouding blijven technisch toegestaan. Vervang of snijd ze alleen opnieuw wanneer een betere originele bron beschikbaar is; verander bestaand goedgekeurd beeldmateriaal niet automatisch om alleen aan een nieuwe standaard te voldoen.
 
 ## Snel gebruik
 
@@ -80,7 +80,7 @@ Wanneer ImageMagick beschikbaar is:
 - WebP kwaliteit 84;
 - WebP compressiemethode 6;
 - technische WebP-validatie;
-- voor categoriebeelden: 4:3 controleren;
+- voor nieuwe categoriebeelden: 4:3 afdwingen;
 - waarschuwing geven wanneer een nieuwe master kleiner is dan 1200×900.
 
 Ook een aangeleverde WebP wordt opnieuw geoptimaliseerd wanneer ImageMagick aanwezig is. Zonder ImageMagick kan een bestaande WebP nog steeds worden overgenomen, maar dan zonder hercompressie.
@@ -100,8 +100,11 @@ sudo apt install imagemagick
 - vaste naamconventie;
 - geldige WebP-header;
 - leesbare afmetingen;
-- minimale technische kwaliteit;
-- 4:3-verhouding.
+- minimale technische kwaliteit.
+
+De controle meldt ook welke bestaande beelden nog afwijken van de nieuwe voorkeursstandaard van 4:3 en 1600×1200. Zulke legacy-afwijkingen zijn een waarschuwing, geen automatische crop of blokkade. Nieuwe categoriebeelden die via `image:prepare` binnenkomen worden wel op 4:3 afgedwongen.
+
+De GitHub Quality-workflow voert `check:images` vóór lint, typecheck, tests en build uit.
 
 ## Verplichte visuele controle
 
