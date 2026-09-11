@@ -1,6 +1,7 @@
 import type { CatalogReadRepository } from './ports'
 import type { CatalogSearchQuery } from './search-query'
 import { getProductComparisonGroup } from '@/domain/catalog/comparison'
+import { classifyOfferAvailability } from '@/domain/catalog/offer-availability'
 import { classifyOfferFreshness, type OfferFreshnessStatus } from '@/domain/catalog/offer-freshness'
 import type { Category, Merchant, Offer, Product } from '@/domain/catalog/types'
 
@@ -77,7 +78,7 @@ export class CatalogService {
   private rankOffers(offers: Offer[], merchantById: Map<string, Merchant>): RankedOffer[] {
     const now = this.now()
     return offers
-      .filter((offer) => offer.isActive)
+      .filter((offer) => offer.isActive && classifyOfferAvailability(offer.availability) !== 'unavailable')
       .map((offer) => ({
         offer,
         merchant: merchantById.get(offer.merchantId),
@@ -85,7 +86,12 @@ export class CatalogService {
         freshness: classifyOfferFreshness(offer, now),
       }))
       .filter((item) => item.freshness !== 'expired')
-      .sort((a, b) => cents(a.totalAmount) - cents(b.totalAmount))
+      .sort((a, b) => {
+        const aShippingKnown = Boolean(a.offer.shippingCost)
+        const bShippingKnown = Boolean(b.offer.shippingCost)
+        if (aShippingKnown !== bShippingKnown) return aShippingKnown ? -1 : 1
+        return cents(a.totalAmount) - cents(b.totalAmount)
+      })
   }
 
   async listProducts(input?: {
@@ -188,7 +194,7 @@ export class CatalogService {
         const total = cents(item.bestOffer.totalAmount)
         if (query.minPrice != null && total < Math.round(query.minPrice * 100)) return false
         if (query.maxPrice != null && total > Math.round(query.maxPrice * 100)) return false
-        if (query.inStockOnly && item.bestOffer.offer.availability !== 'in_stock') return false
+        if (query.inStockOnly && classifyOfferAvailability(item.bestOffer.offer.availability) !== 'available') return false
         return true
       })
 
