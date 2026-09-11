@@ -11,17 +11,23 @@ import {
   babyKindBuyingGuides,
   babyKindEditorialCategory,
 } from './baby-kind-guides'
+import {
+  dierenBuyingGuides,
+  dierenEditorialCategory,
+} from './dieren-guides'
 
 export const editorialCategories = [
   ...existingEditorialCategories,
   personalCareEditorialCategory,
   babyKindEditorialCategory,
+  dierenEditorialCategory,
 ] as const
 
 export const buyingGuides: BuyingGuide[] = [
   ...existingBuyingGuides,
   ...personalCareBuyingGuides,
   ...babyKindBuyingGuides,
+  ...dierenBuyingGuides,
 ]
 
 export function getBuyingGuide(slug: string): BuyingGuide | undefined {
