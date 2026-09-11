@@ -8,6 +8,9 @@ import { speelgoedHobbyCategory } from './speelgoed-hobby'
 import { babyKindCategory } from './baby-kind'
 import { dierenCategory } from './dieren'
 import { autoFietsCategory } from './auto-fiets'
+import { modeAccessoiresCategory } from './mode-accessoires'
+import { kantoorStudieCategory } from './kantoor-studie'
+import { reizenBagageCategory } from './reizen-bagage'
 
 export const categories = [
   elektronicaCategory,
@@ -20,6 +23,9 @@ export const categories = [
   babyKindCategory,
   dierenCategory,
   autoFietsCategory,
+  modeAccessoiresCategory,
+  kantoorStudieCategory,
+  reizenBagageCategory,
 ] as const
 
 export type CategorySlug = (typeof categories)[number]['slug']

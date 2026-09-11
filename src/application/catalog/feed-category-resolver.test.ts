@@ -21,6 +21,9 @@ describe('feed category resolver', () => {
     ['Baby > Car Seats', 'baby-kind', 'veilig-in-de-auto'],
     ['Pet Supplies > Dog Beds', 'dieren', 'hond'],
     ['Automotive > Car Chargers', 'auto-fiets', 'laden-elektronica'],
+    ['Fashion > Shoes', 'mode-accessoires', 'schoenen'],
+    ['Office Supplies > Printers & Accessories', 'kantoor-studie', 'printers-accessoires'],
+    ['Travel & Luggage > Suitcases', 'reizen-bagage', 'koffers'],
   ])('maps %s to %s/%s', (sourceCategory, categorySlug, subcategorySlug) => {
     expect(resolveFeedCategory(sourceCategory)).toMatchObject({ categorySlug, subcategorySlug })
   })
@@ -39,6 +42,11 @@ describe('feed category resolver', () => {
       matchedBy: 'exact-alias',
     })
     expect(resolveFeedCategory('Consumer Electronics')?.subcategorySlug).toBeUndefined()
+  })
+
+  it('does not treat editorial collections as feed categories', () => {
+    expect(resolveFeedCategory('Cadeaus & feest')).toBeUndefined()
+    expect(resolveFeedCategory('Gifts')).toBeUndefined()
   })
 
   it('does not guess unknown categories', () => {
