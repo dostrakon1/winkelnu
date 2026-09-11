@@ -19,16 +19,16 @@ describe('public editorial catalog', () => {
     expect(new Set(buyingGuides.map(({ slug }) => slug)).size).toBe(buyingGuides.length)
   })
 
-  it('links every guide to a published category and keeps approved imagery explicit', () => {
+  it('links every guide to a published category and keeps every category image-backed', () => {
     const categorySlugs = new Set<string>(editorialCategories.map(({ slug }) => slug))
     for (const guide of buyingGuides) expect(categorySlugs.has(guide.category), guide.slug).toBe(true)
 
     const imageBackedCategories = editorialCategories.filter((category) => getCategoryImage(category.slug))
-    expect(imageBackedCategories).toHaveLength(7)
+    expect(imageBackedCategories).toHaveLength(8)
     expect(getCategoryImage('persoonlijke-verzorging')?.src).toBe(
       '/images/categories/persoonlijke-verzorging-hero.webp',
     )
-    expect(getCategoryImage('baby-kind')).toBeUndefined()
+    expect(getCategoryImage('baby-kind')?.src).toBe('/images/categories/baby-kind-hero.webp')
   })
 
   it('keeps every guide useful and source-backed', () => {
