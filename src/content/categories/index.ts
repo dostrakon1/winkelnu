@@ -23,7 +23,19 @@ export const categories = [
 ] as const
 
 export type CategorySlug = (typeof categories)[number]['slug']
+export type SubcategorySlug = (typeof categories)[number]['subcategories'][number]['slug']
+
+export const subcategories = categories.flatMap((category) =>
+  category.subcategories.map((subcategory) => ({
+    ...subcategory,
+    categorySlug: category.slug,
+  })),
+)
 
 export function getCategoryContent(slug: string) {
   return categories.find((category) => category.slug === slug)
+}
+
+export function getSubcategoryContent(categorySlug: string, subcategorySlug: string) {
+  return getCategoryContent(categorySlug)?.subcategories.find((subcategory) => subcategory.slug === subcategorySlug)
 }

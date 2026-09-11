@@ -5,6 +5,7 @@ export const elektronicaCategory = {
   title: 'Elektronica',
   description: 'Maak een bewuste keuze voor apparaten die passen bij je werk, studie en dagelijks gebruik.',
   intro: 'Een lange specificatielijst zegt niet automatisch welk apparaat het beste bij je past. Begin bij wat je ermee doet, bepaal welke eigenschappen belangrijk zijn en vergelijk daarna pas modellen en prijzen.',
+  feedAliases: ['elektronica', 'electronics', 'consumer electronics'],
   topics: [
     'Prestaties voor jouw gebruik',
     'Comfort en dagelijks gemak',
@@ -12,11 +13,36 @@ export const elektronicaCategory = {
     'Onderhoud en levensduur',
   ],
   subcategories: [
-    { title: 'Laptops & computers', description: 'Voor werk, studie, creatie en dagelijks gebruik.' },
-    { title: 'Beeld & monitoren', description: 'Schermen, monitoren en accessoires voor thuis en werk.' },
-    { title: 'Audio', description: 'Hoofdtelefoons, speakers en andere luisterapparatuur.' },
-    { title: 'Smart home', description: 'Slimme apparaten die comfort en bediening in huis combineren.' },
-    { title: 'Mobiel & accessoires', description: 'Telefoons, opladen, bescherming en handige uitbreidingen.' },
+    {
+      slug: 'laptops-computers',
+      title: 'Laptops & computers',
+      description: 'Voor werk, studie, creatie en dagelijks gebruik.',
+      feedAliases: ['laptops', 'notebooks', 'laptops notebooks', 'computers', 'computers laptops', 'computer hardware'],
+    },
+    {
+      slug: 'beeld-monitoren',
+      title: 'Beeld & monitoren',
+      description: 'Schermen, monitoren en accessoires voor thuis en werk.',
+      feedAliases: ['monitoren', 'monitors', 'computer monitors', 'beeldschermen', 'displays'],
+    },
+    {
+      slug: 'audio',
+      title: 'Audio',
+      description: 'Hoofdtelefoons, speakers en andere luisterapparatuur.',
+      feedAliases: ['audio', 'hoofdtelefoons', 'headphones', 'speakers', 'headphones speakers'],
+    },
+    {
+      slug: 'smart-home',
+      title: 'Smart home',
+      description: 'Slimme apparaten die comfort en bediening in huis combineren.',
+      feedAliases: ['smart home', 'smart-home', 'domotica', 'home automation', 'smart devices'],
+    },
+    {
+      slug: 'mobiel-accessoires',
+      title: 'Mobiel & accessoires',
+      description: 'Telefoons, opladen, bescherming en handige uitbreidingen.',
+      feedAliases: ['mobiel accessoires', 'smartphones', 'mobile phones', 'telefoons', 'phone accessories', 'mobile accessories'],
+    },
   ],
   buyingTips: [
     { title: 'Begin bij je gebruik', description: 'Noteer eerst wat je dagelijks met het apparaat wilt doen. Dat voorkomt dat je betaalt voor prestaties of functies die je nauwelijks gebruikt.' },
