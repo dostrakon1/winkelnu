@@ -20,6 +20,7 @@ const expected = [
   '0016_explicit_data_api_service_role_grants.sql',
   '0017_external_key_unique_constraints.sql',
   '0018_offer_ranking_hardening.sql',
+  '0019_security_hardening_and_fk_indexes.sql',
 ]
 
 const actual = (await readdir(resolve('supabase/migrations')))
