@@ -1,18 +1,19 @@
 # Winkelnu categorie-afbeeldingen
 
-Deze map is bewust alvast aangemaakt voor de zes door de eigenaar goedgekeurde hoofdcategorie-afbeeldingen.
+Deze map bevat de zeven door de eigenaar goedgekeurde redactionele categorie-afbeeldingen.
 
-Upload hier exact deze zes bestanden, zonder de bestandsnamen te wijzigen:
+Gebruik exact deze bestandsnamen:
 
 - `elektronica-hero.webp`
 - `wonen-huishouden-hero.webp`
 - `keuken-koffie-hero.webp`
+- `persoonlijke-verzorging-hero.webp`
 - `huis-tuin-klussen-hero.webp`
 - `sport-outdoor-hero.webp`
 - `speelgoed-hobby-hero.webp`
 
-De code is al gekoppeld via `src/content/category-images.ts`. De eerste drie afbeeldingen worden direct gebruikt op de bestaande gepubliceerde categorieën. De overige drie staan alvast geregistreerd voor de geplande categorieën Huis, tuin & klussen, Sport & outdoor en Speelgoed & hobby, zodat daarvoor later geen nieuwe afbeeldingsstructuur nodig is.
+De code is gekoppeld via `src/content/category-images.ts`. Alle zeven gepubliceerde redactionele categorieën hebben daarmee een eigenaar-goedgekeurd beeld; de Winkelnu Surface Motif blijft alleen beschikbaar als technische fallback voor toekomstige categorieën waarvoor nog geen passend beeld is goedgekeurd.
 
-Belangrijk: voor `huis-tuin-klussen-hero.webp` gebruiken we de goedgekeurde zonnige tuinscène met grasmaaier en trimmer, niet de eerdere afbeelding met witte achtergrond.
+Voor `persoonlijke-verzorging-hero.webp` gebruiken we de goedgekeurde warme badkamerscène met elektrische tandenborstel en scheerapparaat. Voor `huis-tuin-klussen-hero.webp` gebruiken we de goedgekeurde zonnige tuinscène met grasmaaier en trimmer, niet de eerdere afbeelding met witte achtergrond.
 
-Na het uploaden horen alle bestanden echte WebP-bestanden te zijn. De bestaande test controleert zowel de exacte paden als het WebP-bestandsformaat.
+Alle bestanden horen echte WebP-bestanden te zijn. De bestaande test controleert de gekoppelde categoriebeelden en paden.

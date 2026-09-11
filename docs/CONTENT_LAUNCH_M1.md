@@ -1,6 +1,6 @@
 # M1 — Public Content Launch
 
-Status: public foundation live; M1.9 editorial expansion in review.
+Status: public foundation live; editorial expansion live; affiliate-network reapproval submitted.
 
 ## Purpose
 
@@ -18,7 +18,7 @@ The seven public editorial categories are:
 6. Sport & outdoor
 7. Speelgoed & hobby
 
-Each category contains three complete choice guides before it is treated as part of the public launch set. Six original category photographs are owner-approved and stored under `public/images/categories/`. Persoonlijke verzorging deliberately uses the documented Winkelnu Surface Motif as a visual fallback until a separate owner-approved editorial photograph is added; no unrelated stock image is substituted.
+Each category contains three complete choice guides before it is treated as part of the public launch set. Seven original category photographs are owner-approved and stored under `public/images/categories/`. Every public editorial category therefore uses an owner-approved image; the documented Winkelnu Surface Motif remains available only as a technical fallback for future categories without approved imagery.
 
 ## Boundaries
 
@@ -47,9 +47,9 @@ Turning on real merchant data is a separate production release decision. It is n
 
 ## Release gates
 
-1. Review the complete editorial copy, sources, navigation, visual fallback and accessibility on an isolated preview build.
+1. Review the complete editorial copy, sources, navigation, approved imagery and accessibility on an isolated preview build.
 2. Run lint, typecheck, tests and production build. Record the exact commit and results. Do not claim success from source review alone.
-3. Confirm that all twenty-one guides and seven editorial categories resolve, invalid slugs return 404, the six approved category photographs load, the Persoonlijke verzorging Surface Motif fallback renders, and sitemap entries are correct.
+3. Confirm that all twenty-one guides and seven editorial categories resolve, invalid slugs return 404, all seven approved category photographs load, and sitemap entries are correct.
 4. Verify that guide-to-catalog links resolve to real category slugs or supported product-type facets and never imply unavailable prices or offers.
 5. Verify that curated product pages remain free of fabricated prices, merchants and outbound affiliate links. Verify separately that real approved data works only behind the explicit production release gate.
 6. Resolve remaining legal operator publication details, production processors, storage/cookies and visitor-data retention from the existing verified inventory.
