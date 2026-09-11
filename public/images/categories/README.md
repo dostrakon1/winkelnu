@@ -30,7 +30,7 @@ Voor nieuwe of vervangende categoriebeelden:
 - geen zichtbare merken of watermerken tenzij inhoudelijk bewust gekozen;
 - behoud een nette compositie die ook bij `object-fit: cover` werkt.
 
-Kleinere bestaande, al goedgekeurde beelden blijven toegestaan totdat ze bewust vanuit een betere bron worden vervangen. Niet kunstmatig opschalen.
+Bestaande, al goedgekeurde beelden met een lagere resolutie of andere verhouding blijven toegestaan totdat ze bewust vanuit een betere originele bron worden vervangen. Niet kunstmatig opschalen of automatisch afsnijden.
 
 ## Nieuwe of vervangende afbeelding
 
@@ -45,7 +45,7 @@ De output wordt automatisch:
 
 `public/images/categories/baby-kind-hero.webp`
 
-`image:prepare` optimaliseert via ImageMagick wanneer beschikbaar. Ook een aangeleverde WebP wordt dan opnieuw gestript en geoptimaliseerd. De controle valideert vervolgens de bestandsnaam, WebP, minimale technische kwaliteit en 4:3-verhouding.
+`image:prepare` optimaliseert via ImageMagick wanneer beschikbaar. Ook een aangeleverde WebP wordt dan opnieuw gestript en geoptimaliseerd. Voor nieuwe categoriebeelden dwingt `image:prepare` 4:3 af. `check:images` controleert vervolgens de bestandsnaam, WebP en minimale technische kwaliteit en rapporteert legacy-afwijkingen zonder bestaande goedgekeurde beelden automatisch te wijzigen.
 
 Open het gegenereerde beeld altijd visueel vóór commit/push. Technische controles kunnen niet beoordelen of de gekozen scène inhoudelijk de juiste is.
 
