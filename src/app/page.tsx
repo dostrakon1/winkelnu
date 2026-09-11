@@ -31,7 +31,7 @@ export default async function HomePage() {
   const catalogEnabled = isPublicCatalogEnabled()
   const catalog = catalogEnabled ? await createStorefrontCatalogService() : null
   const [catalogProducts, catalogCategories] = catalog
-    ? await Promise.all([catalog.listProducts({ limit: 8 }), catalog.listCategories()])
+    ? await Promise.all([catalog.listProducts({ limit: 8 }), catalog.listRootCategories()])
     : [[], []]
   const featuredGuides = buyingGuides.filter((guide) => featuredGuideSlugs.has(guide.slug))
 
