@@ -18,7 +18,7 @@ for (let index = 2; index < process.argv.length; index += 2) {
 const inputArg = args.get('input')
 const type = args.get('type') ?? 'category'
 const name = args.get('name')
-const quality = Number(args.get('quality') ?? 82)
+const quality = Number(args.get('quality') ?? 84)
 const maxWidth = Number(args.get('max-width') ?? 1600)
 
 if (!inputArg || !name) {
@@ -44,15 +44,16 @@ if (!existsSync(input) || !statSync(input).isFile()) {
 
 const output = resolveOutput(type, name)
 mkdirSync(dirname(output), { recursive: true })
-
-const extension = extname(input).toLowerCase()
-if (extension === '.webp') {
-  copyFileSync(input, output)
-} else {
-  convertToWebp(input, output, quality, maxWidth)
-}
+optimizeToWebp(input, output, quality, maxWidth)
 
 const info = assertImageLooksUsable(output)
+if (type === 'category') {
+  assertFourByThree(info)
+  if (info.width < 1200 || info.height < 900) {
+    console.warn(`⚠ Categoriebeeld is ${info.width}x${info.height}. Voor een nieuwe master is 1600x1200 aanbevolen; bestaande kleinere goedgekeurde beelden blijven toegestaan.`)
+  }
+}
+
 console.log(`✓ Afbeelding voorbereid: ${output}`)
 console.log(`  bron: ${basename(input)}`)
 console.log(`  WebP: ${info.width}x${info.height}, ${Math.round(info.bytes / 1024)} KB, ${info.codec}`)
@@ -64,22 +65,41 @@ function resolveOutput(imageType, slug) {
   return join(process.cwd(), 'public', 'images', 'sections', `${slug}.webp`)
 }
 
-function convertToWebp(inputPath, outputPath, webpQuality, width) {
-  if (commandExists('magick')) {
-    run('magick', [inputPath, '-auto-orient', '-resize', `${width}x${width}>`, '-strip', '-quality', String(webpQuality), outputPath])
+function optimizeToWebp(inputPath, outputPath, webpQuality, width) {
+  const command = commandExists('magick') ? 'magick' : commandExists('convert') ? 'convert' : null
+
+  if (command) {
+    run(command, [
+      inputPath,
+      '-auto-orient',
+      '-resize', `${width}x${width}>`,
+      '-strip',
+      '-quality', String(webpQuality),
+      '-define', 'webp:method=6',
+      outputPath,
+    ])
     return
   }
 
-  if (commandExists('convert')) {
-    run('convert', [inputPath, '-auto-orient', '-resize', `${width}x${width}>`, '-strip', '-quality', String(webpQuality), outputPath])
+  if (extname(inputPath).toLowerCase() === '.webp') {
+    if (resolve(inputPath) !== resolve(outputPath)) copyFileSync(inputPath, outputPath)
+    console.warn('⚠ ImageMagick niet gevonden; bestaande WebP is zonder hercompressie overgenomen.')
     return
   }
 
   fail([
     'PNG/JPG-conversie vereist ImageMagick.',
     'Op Pop!_OS/Ubuntu installeer je dit eenmalig met: sudo apt install imagemagick',
-    'Een WebP-bestand kan zonder ImageMagick direct worden verwerkt.',
+    'Een WebP-bestand kan zonder ImageMagick direct worden overgenomen, maar wordt dan niet opnieuw geoptimaliseerd.',
   ].join('\n'))
+}
+
+function assertFourByThree(info) {
+  const targetRatio = 4 / 3
+  const actualRatio = info.width / info.height
+  if (Math.abs(actualRatio - targetRatio) > 0.01) {
+    fail(`Categoriebeeld moet 4:3 zijn; ontvangen ${info.width}x${info.height}. Snijd de bron eerst inhoudelijk goed bij voordat je hem publiceert.`)
+  }
 }
 
 function commandExists(command) {
