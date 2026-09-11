@@ -22,9 +22,13 @@ describe('feed category resolver', () => {
     ['Pet Supplies > Dog Beds', 'dieren', 'hond'],
     ['Automotive > Car Chargers', 'auto-fiets', 'laden-elektronica'],
   ])('maps %s to %s/%s', (sourceCategory, categorySlug, subcategorySlug) => {
-    expect(resolveFeedCategory(sourceCategory)).toMatchObject({
-      categorySlug,
-      subcategorySlug,
+    expect(resolveFeedCategory(sourceCategory)).toMatchObject({ categorySlug, subcategorySlug })
+  })
+
+  it('uses the most specific path segment when the full path is not an alias', () => {
+    expect(resolveFeedCategory('Electronics > Laptops')).toMatchObject({
+      categorySlug: 'elektronica',
+      subcategorySlug: 'laptops-computers',
       matchedBy: 'path-segment',
     })
   })
