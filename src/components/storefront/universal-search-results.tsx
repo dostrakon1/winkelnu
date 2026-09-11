@@ -1,5 +1,9 @@
+'use client'
+
 import Link from 'next/link'
-import type { UniversalSearchRanking } from '@/application/search/universal-search-ranking'
+import { useEffect } from 'react'
+import type { UniversalSearchItem, UniversalSearchRanking } from '@/application/search/universal-search-ranking'
+import { currentSearchQuery, sendSearchFeedback } from '@/components/analytics/search-feedback-client'
 import { ProductMedia } from './product-media'
 
 function formatMoney(amount: string): string {
@@ -11,10 +15,46 @@ function rankLabel(position: number): string {
 }
 
 export function UniversalSearchResults({ ranking }: { ranking: UniversalSearchRanking }) {
+  useEffect(() => {
+    const query = currentSearchQuery()
+    if (!query) return
+
+    sendSearchFeedback({
+      eventType: 'search_performed',
+      query,
+      zeroResults: ranking.productCount === 0,
+      bestMatchCount: ranking.items.length,
+    })
+  }, [ranking.items.length, ranking.productCount])
+
   if (ranking.items.length === 0) return null
 
+  function trackEntry(entry: UniversalSearchItem, index: number) {
+    const query = currentSearchQuery()
+    if (!query) return
+
+    if (entry.type === 'product') {
+      sendSearchFeedback({
+        eventType: 'product_clicked',
+        query,
+        targetKind: 'product',
+        targetKey: entry.item.product.slug,
+        targetPosition: index + 1,
+      })
+      return
+    }
+
+    sendSearchFeedback({
+      eventType: 'best_match_clicked',
+      query,
+      targetKind: entry.kind,
+      targetKey: entry.href,
+      targetPosition: index + 1,
+    })
+  }
+
   return (
-    <section className="border-b border-[var(--wn-border)] bg-white/70">
+    <section data-search-feedback-impression="1" className="border-b border-[var(--wn-border)] bg-white/70">
       <div className="wn-container py-10 sm:py-14">
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div>
@@ -37,7 +77,7 @@ export function UniversalSearchResults({ ranking }: { ranking: UniversalSearchRa
               return (
                 <article key={`product:${product.id}`} className="group grid gap-4 rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-4 shadow-[var(--wn-shadow-xs)] transition hover:border-[color:rgba(18,59,58,0.26)] hover:shadow-[var(--wn-shadow-md)] sm:grid-cols-[3rem_7rem_minmax(0,1fr)_auto] sm:items-center sm:p-5">
                   <div className="hidden text-center text-sm font-black text-[color:rgba(18,59,58,0.38)] sm:block">{rankLabel(index)}</div>
-                  <Link href={`/product/${product.slug}`} className="overflow-hidden rounded-[var(--wn-radius-lg)] bg-[var(--wn-cream)]">
+                  <Link href={`/product/${product.slug}`} onClick={() => trackEntry(entry, index)} className="overflow-hidden rounded-[var(--wn-radius-lg)] bg-[var(--wn-cream)]">
                     <ProductMedia src={product.imageUrl} alt={product.title} visualKind={product.visualKind} />
                   </Link>
                   <div className="min-w-0">
@@ -46,7 +86,7 @@ export function UniversalSearchResults({ ranking }: { ranking: UniversalSearchRa
                       <span className="text-xs font-semibold text-[var(--wn-text-muted)]">{entry.reason}</span>
                     </div>
                     <h3 className="mt-1 text-lg font-black tracking-[-0.02em] text-[var(--wn-ink)] sm:text-xl">
-                      <Link href={`/product/${product.slug}`} className="hover:underline">{product.title}</Link>
+                      <Link href={`/product/${product.slug}`} onClick={() => trackEntry(entry, index)} className="hover:underline">{product.title}</Link>
                     </h3>
                     <p className="mt-1 text-sm text-[var(--wn-text-muted)]">
                       {product.brand ?? 'Merk onbekend'}
@@ -58,7 +98,7 @@ export function UniversalSearchResults({ ranking }: { ranking: UniversalSearchRa
                       <p className="text-xs font-semibold text-[var(--wn-text-muted)]">{bestOffer ? 'Beste bekende prijs' : 'Prijs volgt'}</p>
                       <p className="mt-1 text-lg font-black text-[var(--wn-ink)]">{bestOffer ? formatMoney(bestOffer.totalAmount) : '—'}</p>
                     </div>
-                    <Link href={`/product/${product.slug}`} className="mt-0 inline-flex min-h-10 items-center font-bold text-[var(--wn-petrol)] hover:underline sm:mt-2">Bekijk →</Link>
+                    <Link href={`/product/${product.slug}`} onClick={() => trackEntry(entry, index)} className="mt-0 inline-flex min-h-10 items-center font-bold text-[var(--wn-petrol)] hover:underline sm:mt-2">Bekijk →</Link>
                   </div>
                 </article>
               )
@@ -68,6 +108,7 @@ export function UniversalSearchResults({ ranking }: { ranking: UniversalSearchRa
               <Link
                 key={`route:${entry.href}`}
                 href={entry.href}
+                onClick={() => trackEntry(entry, index)}
                 className="group grid gap-3 rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-5 shadow-[var(--wn-shadow-xs)] transition hover:-translate-y-0.5 hover:border-[color:rgba(18,59,58,0.26)] hover:shadow-[var(--wn-shadow-md)] sm:grid-cols-[3rem_minmax(0,1fr)_auto] sm:items-center"
               >
                 <div className="hidden text-center text-sm font-black text-[color:rgba(18,59,58,0.38)] sm:block">{rankLabel(index)}</div>
