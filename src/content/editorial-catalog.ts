@@ -30,7 +30,7 @@ export function guidesForCategory(slug: string): BuyingGuide[] {
 
   if (!category || category.featuredGuideSlugs.length === 0) return guides
 
-  const priority = new Map(category.featuredGuideSlugs.map((guideSlug, index) => [guideSlug, index]))
+  const priority = new Map<string, number>(category.featuredGuideSlugs.map((guideSlug, index) => [guideSlug, index]))
   return [...guides].sort(
     (a, b) => (priority.get(a.slug) ?? Number.MAX_SAFE_INTEGER) - (priority.get(b.slug) ?? Number.MAX_SAFE_INTEGER),
   )
