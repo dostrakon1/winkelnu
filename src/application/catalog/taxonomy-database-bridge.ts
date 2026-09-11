@@ -1,4 +1,5 @@
-import { resolveFeedCategory, type FeedCategoryIdResolver } from './feed-category-resolver'
+import type { FeedCategoryIdResolver } from './import-feed'
+import { resolveFeedCategory } from './feed-category-resolver'
 import { categories } from '@/content/categories'
 
 export const TAXONOMY_CATEGORY_EXTERNAL_KEY_PREFIX = 'category:'
