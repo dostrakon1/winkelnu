@@ -1,32 +1,12 @@
 import type { BuyingGuide } from './koopgidsen'
-import {
-  buyingGuides as existingBuyingGuides,
-  editorialCategories as existingEditorialCategories,
-} from './koopgidsen-public'
-import {
-  personalCareBuyingGuides,
-  personalCareEditorialCategory,
-} from './persoonlijke-verzorging-guides'
-import {
-  babyKindBuyingGuides,
-  babyKindEditorialCategory,
-} from './baby-kind-guides'
-import {
-  dierenBuyingGuides,
-  dierenEditorialCategory,
-} from './dieren-guides'
-import {
-  autoFietsBuyingGuides,
-  autoFietsEditorialCategory,
-} from './auto-fiets-guides'
+import { buyingGuides as existingBuyingGuides } from './koopgidsen-public'
+import { personalCareBuyingGuides } from './persoonlijke-verzorging-guides'
+import { babyKindBuyingGuides } from './baby-kind-guides'
+import { dierenBuyingGuides } from './dieren-guides'
+import { autoFietsBuyingGuides } from './auto-fiets-guides'
+import { categories, getCategoryContent } from './categories'
 
-export const editorialCategories = [
-  ...existingEditorialCategories,
-  personalCareEditorialCategory,
-  babyKindEditorialCategory,
-  dierenEditorialCategory,
-  autoFietsEditorialCategory,
-] as const
+export const editorialCategories = categories
 
 export const buyingGuides: BuyingGuide[] = [
   ...existingBuyingGuides,
@@ -41,9 +21,17 @@ export function getBuyingGuide(slug: string): BuyingGuide | undefined {
 }
 
 export function getEditorialCategory(slug: string) {
-  return editorialCategories.find((category) => category.slug === slug)
+  return getCategoryContent(slug)
 }
 
 export function guidesForCategory(slug: string): BuyingGuide[] {
-  return buyingGuides.filter((guide) => guide.category === slug)
+  const category = getCategoryContent(slug)
+  const guides = buyingGuides.filter((guide) => guide.category === slug)
+
+  if (!category || category.featuredGuideSlugs.length === 0) return guides
+
+  const priority = new Map<string, number>(category.featuredGuideSlugs.map((guideSlug, index) => [guideSlug, index]))
+  return [...guides].sort(
+    (a, b) => (priority.get(a.slug) ?? Number.MAX_SAFE_INTEGER) - (priority.get(b.slug) ?? Number.MAX_SAFE_INTEGER),
+  )
 }
