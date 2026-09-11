@@ -35,7 +35,9 @@ export function CategoryCard({ category }: { category: EditorialCategory }) {
       </Link>
       <div className="flex flex-1 flex-col px-6 pb-5 sm:px-7">
         <p className="wn-body-muted mt-3 flex-1 text-sm leading-7">{category.description}</p>
-        <p className="mt-5 text-xs font-medium text-[var(--wn-text-muted)]">{count} {count === 1 ? 'koopgids' : 'koopgidsen'}</p>
+        <p className="mt-5 text-xs font-medium text-[var(--wn-text-muted)]">
+          {count > 0 ? `${count} ${count === 1 ? 'koopgids' : 'koopgidsen'}` : 'Nieuwe rubriek'}
+        </p>
         <Link href={href} className="mt-3 inline-flex min-h-12 items-center self-start rounded-sm font-bold text-[var(--wn-petrol)] hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)]">Ontdek deze rubriek →</Link>
       </div>
     </article>

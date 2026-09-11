@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: category.title,
     description: category.description,
     alternates: { canonical: `/koopgidsen/categorie/${slug}` },
-    openGraph: { title: category.title, description: category.description, ...(image ? { images: [{ url: image.src, alt: image.alt, width: 1200, height: 1200 }] } : {}) },
+    openGraph: { title: category.title, description: category.description, ...(image ? { images: [{ url: image.src, alt: image.alt, width: 1200, height: 900 }] } : {}) },
   }
 }
 
@@ -70,7 +70,14 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
         <h2 className="wn-heading text-3xl">Waar let je op?</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{category.topics.map((topic, index) => <div key={topic} className="wn-surface p-5"><span className="text-xs font-bold text-[var(--wn-petrol)]">0{index + 1}</span><h3 className="mt-2 font-semibold">{topic}</h3></div>)}</div>
         <h2 className="wn-heading mt-14 text-3xl">Keuzehulpen in deze rubriek</h2>
-        <div className="mt-8 grid gap-5 md:grid-cols-2">{guides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}</div>
+        {guides.length > 0 ? (
+          <div className="mt-8 grid gap-5 md:grid-cols-2">{guides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}</div>
+        ) : (
+          <div className="wn-surface mt-8 max-w-3xl p-6 sm:p-7">
+            <p className="font-semibold text-[var(--wn-petrol-deep)]">De eerste keuzehulpen voor deze rubriek zijn in voorbereiding.</p>
+            <p className="wn-body-muted mt-2 text-sm leading-7">De rubriek staat alvast klaar zodat we de komende product- en koopinformatie netjes op één vaste plek kunnen uitbreiden.</p>
+          </div>
+        )}
       </section>
     </EditorialShell>
   )

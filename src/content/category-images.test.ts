@@ -1,14 +1,14 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { editorialCategories } from './koopgidsen'
+import { editorialCategories } from './editorial-catalog'
 import { categoryImages, getCategoryImage } from './category-images'
 
 const images = Object.values(categoryImages)
 
 describe('editorial category imagery', () => {
-  it('has seven unique, local image paths with meaningful alt text', () => {
-    expect(images).toHaveLength(7)
+  it('has eight unique, local image paths with meaningful alt text', () => {
+    expect(images).toHaveLength(8)
     expect(new Set(images.map((image) => image.src)).size).toBe(images.length)
     for (const image of images) {
       expect(image.src).toMatch(/^\/images\/categories\/[a-z0-9-]+-hero\.webp$/)
