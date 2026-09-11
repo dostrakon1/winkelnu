@@ -4,12 +4,20 @@ import { editorialCategories, guidesForCategory } from '@/content/editorial-cata
 import { getCategoryImage } from '@/content/category-images'
 import { WinkelnuSurfaceMotif } from '@/components/storefront/winkelnu-surface-motif'
 
-type EditorialCategory = (typeof editorialCategories)[number]
+type EditorialBrowseEntry = (typeof editorialCategories)[number]
 
-export function CategoryCard({ category }: { category: EditorialCategory }) {
-  const image = getCategoryImage(category.slug, category.title)
-  const count = guidesForCategory(category.slug).length
-  const href = `/koopgidsen/categorie/${category.slug}`
+export function CategoryCard({ category }: { category: EditorialBrowseEntry }) {
+  const isCollection = 'sections' in category
+  const image = isCollection ? undefined : getCategoryImage(category.slug, category.title)
+  const count = isCollection ? category.sections.length : guidesForCategory(category.slug).length
+  const href = isCollection ? `/collecties/${category.slug}` : `/koopgidsen/categorie/${category.slug}`
+  const eyebrow = isCollection ? 'Collectie' : 'Keuzehulp'
+  const countLabel = isCollection
+    ? `${count} inspiratiethema's`
+    : count > 0
+      ? `${count} ${count === 1 ? 'koopgids' : 'koopgidsen'}`
+      : 'Nieuwe rubriek'
+  const cta = isCollection ? 'Ontdek deze collectie →' : 'Ontdek deze rubriek →'
 
   return (
     <article className="wn-surface wn-card-interactive flex h-full flex-col overflow-hidden">
@@ -29,16 +37,14 @@ export function CategoryCard({ category }: { category: EditorialCategory }) {
           <WinkelnuSurfaceMotif className="aspect-[4/3] transition-transform duration-300 group-hover:scale-[1.015] motion-reduce:transform-none" />
         )}
         <div className="px-6 pt-6 sm:px-7">
-          <p className="wn-eyebrow">Keuzehulp</p>
+          <p className="wn-eyebrow">{eyebrow}</p>
           <h3 className="mt-3 text-2xl font-bold tracking-tight group-hover:text-[var(--wn-petrol)]">{category.title}</h3>
         </div>
       </Link>
       <div className="flex flex-1 flex-col px-6 pb-5 sm:px-7">
         <p className="wn-body-muted mt-3 flex-1 text-sm leading-7">{category.description}</p>
-        <p className="mt-5 text-xs font-medium text-[var(--wn-text-muted)]">
-          {count > 0 ? `${count} ${count === 1 ? 'koopgids' : 'koopgidsen'}` : 'Nieuwe rubriek'}
-        </p>
-        <Link href={href} className="mt-3 inline-flex min-h-12 items-center self-start rounded-sm font-bold text-[var(--wn-petrol)] hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)]">Ontdek deze rubriek →</Link>
+        <p className="mt-5 text-xs font-medium text-[var(--wn-text-muted)]">{countLabel}</p>
+        <Link href={href} className="mt-3 inline-flex min-h-12 items-center self-start rounded-sm font-bold text-[var(--wn-petrol)] hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)]">{cta}</Link>
       </div>
     </article>
   )

@@ -5,8 +5,9 @@ import { babyKindBuyingGuides } from './baby-kind-guides'
 import { dierenBuyingGuides } from './dieren-guides'
 import { autoFietsBuyingGuides } from './auto-fiets-guides'
 import { categories, getCategoryContent } from './categories'
+import { editorialCollections } from './collections'
 
-export const editorialCategories = categories
+export const editorialCategories = [...categories, ...editorialCollections] as const
 
 export const buyingGuides: BuyingGuide[] = [
   ...existingBuyingGuides,
