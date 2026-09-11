@@ -3,9 +3,9 @@ import { getCategoryImage } from './category-images'
 import { buyingGuides, editorialCategories, guidesForCategory } from './editorial-catalog'
 
 describe('public editorial catalog', () => {
-  it('publishes eight categories and twenty-four guides', () => {
-    expect(editorialCategories).toHaveLength(8)
-    expect(buyingGuides).toHaveLength(24)
+  it('publishes nine categories and twenty-seven guides', () => {
+    expect(editorialCategories).toHaveLength(9)
+    expect(buyingGuides).toHaveLength(27)
   })
 
   it('publishes three reviewed guides per category', () => {
@@ -19,7 +19,7 @@ describe('public editorial catalog', () => {
     expect(new Set(buyingGuides.map(({ slug }) => slug)).size).toBe(buyingGuides.length)
   })
 
-  it('links every guide to a published category and keeps every category image-backed', () => {
+  it('links every guide to a published category and keeps approved imagery explicit', () => {
     const categorySlugs = new Set<string>(editorialCategories.map(({ slug }) => slug))
     for (const guide of buyingGuides) expect(categorySlugs.has(guide.category), guide.slug).toBe(true)
 
@@ -29,6 +29,7 @@ describe('public editorial catalog', () => {
       '/images/categories/persoonlijke-verzorging-hero.webp',
     )
     expect(getCategoryImage('baby-kind')?.src).toBe('/images/categories/baby-kind-hero.webp')
+    expect(getCategoryImage('dieren')).toBeUndefined()
   })
 
   it('keeps every guide useful and source-backed', () => {
