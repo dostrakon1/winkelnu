@@ -99,9 +99,11 @@ export default async function ComparePage({
   const gridTemplateColumns = `minmax(9rem, 0.75fr) repeat(${items.length}, minmax(12rem, 1fr))`
 
   const knownPrices = items.map(({ offers }) => offers[0] ? Number(offers[0].totalAmount) : null)
-  const completePrices = knownPrices.every((price): price is number => price !== null && Number.isFinite(price))
-  const priceBestIndexes = completePrices && new Set(knownPrices).size > 1
-    ? knownPrices.flatMap((price, index) => price === Math.min(...knownPrices) ? [index] : [])
+  const numericPrices = knownPrices.filter((price): price is number => price !== null && Number.isFinite(price))
+  const completePrices = numericPrices.length === knownPrices.length
+  const minimumKnownPrice = numericPrices.length > 0 ? Math.min(...numericPrices) : null
+  const priceBestIndexes = completePrices && minimumKnownPrice !== null && new Set(numericPrices).size > 1
+    ? knownPrices.flatMap((price, index) => price === minimumKnownPrice ? [index] : [])
     : []
   const productHighlights = intelligence.productHighlights.map((highlights, index) => [
     ...(priceBestIndexes.includes(index) ? ['Laagste bekende totaalprijs'] : []),
