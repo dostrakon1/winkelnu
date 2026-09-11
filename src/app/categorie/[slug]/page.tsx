@@ -62,6 +62,8 @@ export default async function CategoryPage({
   if (!discovery) notFound()
   if (requestedPage > 1 && discovery.items.length === 0) notFound()
 
+  const isSubcategory = Boolean(discovery.parentCategory)
+
   return (
     <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
       <WinkelnuHeader />
@@ -69,13 +71,42 @@ export default async function CategoryPage({
       <section className="relative overflow-hidden border-b border-[color:rgba(18,59,58,0.10)] bg-[image:var(--wn-gradient-welcome)]">
         <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)]" aria-hidden="true" />
         <div className="wn-container relative py-12 sm:py-16">
+          {discovery.parentCategory ? (
+            <Link
+              href={`/categorie/${discovery.parentCategory.slug}`}
+              className="mb-5 inline-flex min-h-10 items-center text-sm font-semibold text-[var(--wn-petrol)] hover:underline"
+            >
+              ← {discovery.parentCategory.name}
+            </Link>
+          ) : null}
+
           <SectionHeader
-            eyebrow="Categorie"
+            eyebrow={isSubcategory ? 'Subcategorie' : 'Categorie'}
             title={discovery.category.name}
-            description="Ontdek producten in deze categorie. Waar minimaal twee modellen van hetzelfde producttype aanwezig zijn, kun je hun bekende specificaties direct naast elkaar vergelijken. Winkelprijzen, voorraad en aanbiedingen verschijnen alleen wanneer gecontroleerde winkeldata beschikbaar is."
+            description={isSubcategory
+              ? `Bekijk producten binnen ${discovery.category.name}. Deze selectie hoort bij ${discovery.parentCategory?.name} en toont alleen producten uit deze subcategorie.`
+              : 'Ontdek producten uit deze hoofdcategorie en de onderliggende subcategorieën. Waar minimaal twee modellen van hetzelfde producttype aanwezig zijn, kun je hun bekende specificaties direct naast elkaar vergelijken.'}
           />
+
+          {discovery.subcategories.length > 0 ? (
+            <nav className="mt-7" aria-label={`Subcategorieën van ${discovery.category.name}`}>
+              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--wn-text-muted)]">Bekijk subcategorieën</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {discovery.subcategories.map((subcategory) => (
+                  <Link
+                    key={subcategory.id}
+                    href={`/categorie/${subcategory.slug}`}
+                    className="inline-flex min-h-10 items-center rounded-full border border-[color:rgba(18,59,58,0.14)] bg-white/80 px-4 text-sm font-semibold text-[var(--wn-petrol-deep)] transition hover:border-[var(--wn-petrol)] hover:bg-white"
+                  >
+                    {subcategory.name}
+                  </Link>
+                ))}
+              </div>
+            </nav>
+          ) : null}
+
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
-            <WinkelnuButton href="/zoeken" variant="secondary" className="w-full sm:w-auto">Zoek binnen Winkelnu</WinkelnuButton>
+            <WinkelnuButton href={`/zoeken?categorie=${discovery.category.slug}`} variant="secondary" className="w-full sm:w-auto">Zoek binnen deze categorie</WinkelnuButton>
             <WinkelnuButton href="/" variant="secondary" className="w-full sm:w-auto">Terug naar home</WinkelnuButton>
           </div>
         </div>
@@ -86,9 +117,11 @@ export default async function CategoryPage({
           <StorefrontEmptyState
             eyebrow="Categorie nog leeg"
             title="Hier staan op dit moment nog geen producten."
-            description="De Winkelnu-catalogus wordt stapsgewijs uitgebreid. Bekijk ondertussen de andere productcategorieën."
-            actionHref="/zoeken"
-            actionLabel="Bekijk alle producten"
+            description={isSubcategory
+              ? 'Deze subcategorie is al ingericht, maar bevat nog geen gekoppelde producten. Bekijk de hoofdcategorie voor andere productgroepen.'
+              : 'De Winkelnu-catalogus wordt stapsgewijs uitgebreid. De subcategorieën hierboven zijn alvast ingericht voor toekomstige productfeeds.'}
+            actionHref={discovery.parentCategory ? `/categorie/${discovery.parentCategory.slug}` : '/zoeken'}
+            actionLabel={discovery.parentCategory ? `Bekijk ${discovery.parentCategory.name}` : 'Bekijk alle producten'}
           />
         ) : (
           <ComparisonProductGrid

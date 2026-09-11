@@ -12,10 +12,13 @@ const expectedSlugs = [
   'baby-kind',
   'dieren',
   'auto-fiets',
+  'mode-accessoires',
+  'kantoor-studie',
+  'reizen-bagage',
 ]
 
 describe('category content layer', () => {
-  it('keeps one canonical definition for all ten categories', () => {
+  it('keeps one canonical definition for all thirteen product categories', () => {
     expect(categories.map(({ slug }) => slug)).toEqual(expectedSlugs)
     expect(new Set(categories.map(({ slug }) => slug)).size).toBe(categories.length)
   })
@@ -33,8 +36,8 @@ describe('category content layer', () => {
     }
   })
 
-  it('keeps fifty stable and globally unique subcategory slugs', () => {
-    expect(subcategories).toHaveLength(50)
+  it('keeps sixty-five stable and globally unique subcategory slugs', () => {
+    expect(subcategories).toHaveLength(65)
     expect(new Set(subcategories.map(({ slug }) => slug)).size).toBe(subcategories.length)
 
     for (const subcategory of subcategories) {
@@ -46,6 +49,8 @@ describe('category content layer', () => {
   it('resolves category and subcategory content without duplicating page data', () => {
     expect(getCategoryContent('baby-kind')?.title).toBe('Baby & kind')
     expect(getSubcategoryContent('baby-kind', 'veilig-in-de-auto')?.title).toBe('Veilig in de auto')
+    expect(getCategoryContent('mode-accessoires')?.title).toBe('Mode & accessoires')
+    expect(getSubcategoryContent('reizen-bagage', 'koffers')?.title).toBe('Koffers')
     expect(getSubcategoryContent('baby-kind', 'bestaat-niet')).toBeUndefined()
     expect(getCategoryContent('bestaat-niet')).toBeUndefined()
   })

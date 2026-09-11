@@ -29,8 +29,15 @@ export class InMemoryCatalogRepository implements CatalogReadRepository, Catalog
     let products = [...this.products.values()]
 
     if (input?.categorySlug) {
-      const category = [...this.categories.values()].find((item) => item.slug === input.categorySlug)
-      products = category ? products.filter((product) => product.categoryId === category.id) : []
+      const categories = [...this.categories.values()]
+      const category = categories.find((item) => item.slug === input.categorySlug)
+      if (!category) products = []
+      else {
+        const categoryIds = category.parentId
+          ? new Set([category.id])
+          : new Set([category.id, ...categories.filter((item) => item.parentId === category.id).map((item) => item.id)])
+        products = products.filter((product) => product.categoryId && categoryIds.has(product.categoryId))
+      }
     }
 
     const offset = input?.offset ?? 0

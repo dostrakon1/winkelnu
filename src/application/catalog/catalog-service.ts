@@ -25,6 +25,8 @@ export type CatalogProductDetail = {
 
 export type CatalogCategoryDiscovery = {
   category: Category
+  parentCategory?: Category
+  subcategories: Category[]
   items: CatalogProductListItem[]
   page: number
   pageSize: number
@@ -134,6 +136,11 @@ export class CatalogService {
     return this.repository.listCategories()
   }
 
+  async listRootCategories(): Promise<Category[]> {
+    const categories = await this.repository.listCategories()
+    return categories.filter((category) => !category.parentId)
+  }
+
   async getCategory(slug: string): Promise<Category | null> {
     const categories = await this.repository.listCategories()
     return categories.find((category) => category.slug === slug) ?? null
@@ -144,8 +151,16 @@ export class CatalogService {
     page?: number
     pageSize?: number
   }): Promise<CatalogCategoryDiscovery | null> {
-    const category = await this.getCategory(input.categorySlug)
+    const categories = await this.repository.listCategories()
+    const category = categories.find((item) => item.slug === input.categorySlug)
     if (!category) return null
+
+    const parentCategory = category.parentId
+      ? categories.find((item) => item.id === category.parentId)
+      : undefined
+    const subcategories = categories
+      .filter((item) => item.parentId === category.id)
+      .sort((a, b) => a.name.localeCompare(b.name, 'nl-NL'))
 
     const page = Math.max(1, Math.floor(input.page ?? 1))
     const pageSize = Math.min(48, Math.max(1, Math.floor(input.pageSize ?? 24)))
@@ -159,6 +174,8 @@ export class CatalogService {
 
     return {
       category,
+      parentCategory,
+      subcategories,
       items: products
         .slice(0, pageSize)
         .sort((a, b) => Number(Boolean(b.bestOffer)) - Number(Boolean(a.bestOffer)) || cents(a.bestOffer?.totalAmount ?? '9999999.99') - cents(b.bestOffer?.totalAmount ?? '9999999.99')),
