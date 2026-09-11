@@ -7,7 +7,7 @@ import { WinkelnuSurfaceMotif } from '@/components/storefront/winkelnu-surface-m
 type EditorialCategory = (typeof editorialCategories)[number]
 
 export function CategoryCard({ category }: { category: EditorialCategory }) {
-  const image = getCategoryImage(category.slug)
+  const image = getCategoryImage(category.slug, category.title)
   const count = guidesForCategory(category.slug).length
   const href = `/koopgidsen/categorie/${category.slug}`
 
