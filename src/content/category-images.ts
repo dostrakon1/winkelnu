@@ -8,7 +8,7 @@ export type CategoryImage = {
  * Owner-approved editorial imagery. This registry is separate from the commerce
  * taxonomy and does not publish categories or products by itself.
  *
- * The nine corresponding WebP files belong in public/images/categories/.
+ * The ten corresponding WebP files belong in public/images/categories/.
  */
 export const categoryImages = {
   elektronica: {
@@ -54,6 +54,11 @@ export const categoryImages = {
   dieren: {
     src: '/images/categories/dieren-hero.webp',
     alt: 'Golden retriever in een hondenmand en kat op een krabpaal in een lichte, warme woonkamer',
+    position: 'center',
+  },
+  'auto-fiets': {
+    src: '/images/categories/auto-fiets-hero.webp',
+    alt: 'Moderne auto met open kofferbak en elektrische fietsen bij een warme, moderne garage',
     position: 'center',
   },
 } as const satisfies Record<string, CategoryImage>
