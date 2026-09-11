@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 import { signOutOperator } from '@/app/intern/login/actions'
 import { pauseFeed, resumeFeed, retryFeed } from '@/app/intern/operations/recovery-actions'
@@ -67,19 +68,27 @@ export default async function InternalOperationsPage({ searchParams }: { searchP
   const feedTimelines = buildFeedOperationalTimelines(model, fullActionHistory, importRuns, qualitySummaries, qualitySignals)
 
   return (
-    <InternalOperationsDashboard
-      dashboard={dashboard}
-      qualitySignalSummary={qualitySignalSummary}
-      actionHistory={actionHistory}
-      fullActionHistory={fullActionHistory}
-      feedTimelines={feedTimelines}
-      historyFilters={filters}
-      operatorEmail={operator.email}
-      operatorRole={operator.role}
-      signOutAction={signOutOperator}
-      retryFeedAction={retryFeed}
-      pauseFeedAction={pauseFeed}
-      resumeFeedAction={resumeFeed}
-    />
+    <>
+      <div className="bg-slate-950 pt-6 text-slate-100">
+        <nav className="mx-auto flex max-w-7xl flex-wrap gap-2 px-5 text-sm font-semibold sm:px-8 lg:px-10" aria-label="Interne operations navigatie">
+          <Link href="/intern/operations" aria-current="page" className="rounded-lg border border-cyan-800 bg-cyan-950/35 px-3 py-2 text-cyan-200">Partner operations</Link>
+          <Link href="/intern/operations/search" className="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 hover:border-slate-500 hover:text-white">Search learning</Link>
+        </nav>
+      </div>
+      <InternalOperationsDashboard
+        dashboard={dashboard}
+        qualitySignalSummary={qualitySignalSummary}
+        actionHistory={actionHistory}
+        fullActionHistory={fullActionHistory}
+        feedTimelines={feedTimelines}
+        historyFilters={filters}
+        operatorEmail={operator.email}
+        operatorRole={operator.role}
+        signOutAction={signOutOperator}
+        retryFeedAction={retryFeed}
+        pauseFeedAction={pauseFeed}
+        resumeFeedAction={resumeFeed}
+      />
+    </>
   )
 }
