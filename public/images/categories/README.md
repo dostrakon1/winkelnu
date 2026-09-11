@@ -17,4 +17,15 @@ De code is gekoppeld via `src/content/category-images.ts`. Alle acht gepubliceer
 
 Voor `persoonlijke-verzorging-hero.webp` gebruiken we de goedgekeurde warme badkamerscène met elektrische tandenborstel en scheerapparaat. Voor `huis-tuin-klussen-hero.webp` gebruiken we de goedgekeurde zonnige tuinscène met grasmaaier en trimmer, niet de eerdere afbeelding met witte achtergrond. Voor `baby-kind-hero.webp` gebruiken we de goedgekeurde warme babykamerscène met beige kinderwagen.
 
-Alle bestanden horen echte WebP-bestanden te zijn. De bestaande test controleert de gekoppelde categoriebeelden en paden.
+## Nieuwe of vervangende afbeelding
+
+Gebruik voortaan de vaste image pipeline:
+
+```bash
+npm run image:prepare -- --input ~/Downloads/bron.png --type category --name baby-kind
+npm run check:images
+```
+
+Open de gegenereerde WebP altijd visueel vóór commit/push en controleer na deploy ook de productie-URL met een cache-buster. Technische validatie alleen kan een inhoudelijk verkeerde of volledig witte afbeelding niet uitsluiten.
+
+Zie `docs/IMAGE-PIPELINE.md` voor de volledige procedure.
