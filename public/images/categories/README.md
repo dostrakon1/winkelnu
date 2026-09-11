@@ -13,7 +13,7 @@ Gebruik exact deze bestandsnamen:
 - `speelgoed-hobby-hero.webp`
 - `baby-kind-hero.webp`
 
-De code is gekoppeld via `src/content/category-images.ts`. Alle acht gepubliceerde redactionele categorieën hebben daarmee een eigenaar-goedgekeurd beeld; de Winkelnu Surface Motif blijft alleen beschikbaar als technische fallback voor toekomstige categorieën waarvoor nog geen passend beeld is goedgekeurd.
+De code is gekoppeld via `src/content/category-images.ts`. Gepubliceerde rubrieken zonder een eigenaar-goedgekeurd beeld gebruiken tijdelijk de Winkelnu Surface Motif als technische fallback. De rubriek `Dieren` is op 11 september 2026 gepubliceerd met deze fallback totdat het definitieve categoriebeeld is goedgekeurd en toegevoegd als `dieren-hero.webp`.
 
 Voor `persoonlijke-verzorging-hero.webp` gebruiken we de goedgekeurde warme badkamerscène met elektrische tandenborstel en scheerapparaat. Voor `huis-tuin-klussen-hero.webp` gebruiken we de goedgekeurde zonnige tuinscène met grasmaaier en trimmer, niet de eerdere afbeelding met witte achtergrond. Voor `baby-kind-hero.webp` gebruiken we de goedgekeurde warme babykamerscène met beige kinderwagen.
 
