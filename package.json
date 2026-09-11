@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/generate-category-image-manifest.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -14,7 +15,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "image:prepare": "node scripts/prepare-image.mjs",
-    "check:images": "node scripts/verify-category-images.mjs",
+    "check:images": "node scripts/generate-category-image-manifest.mjs && node scripts/verify-category-images.mjs",
     "check:migration-manifest": "node scripts/verify-preview-migration-manifest.mjs",
     "check:preview-evidence-template": "node scripts/verify-preview-evidence-template.mjs",
     "check:db-contract": "node scripts/verify-database-contract.mjs",
