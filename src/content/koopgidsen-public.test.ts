@@ -3,13 +3,15 @@ import { getCategoryImage } from './category-images'
 import { buyingGuides, editorialCategories, guidesForCategory } from './editorial-catalog'
 
 describe('public editorial catalog', () => {
-  it('publishes ten categories and thirty guides', () => {
-    expect(editorialCategories).toHaveLength(10)
+  it('publishes fourteen browse entries and thirty reviewed guides', () => {
+    expect(editorialCategories).toHaveLength(14)
     expect(buyingGuides).toHaveLength(30)
   })
 
-  it('publishes three reviewed guides per category', () => {
-    for (const category of editorialCategories) {
+  it('keeps the ten mature guide-backed categories at three reviewed guides each', () => {
+    const guideBackedCategories = editorialCategories.filter((category) => guidesForCategory(category.slug).length > 0)
+    expect(guideBackedCategories).toHaveLength(10)
+    for (const category of guideBackedCategories) {
       expect(guidesForCategory(category.slug), category.slug).toHaveLength(3)
     }
   })
@@ -19,7 +21,7 @@ describe('public editorial catalog', () => {
     expect(new Set(buyingGuides.map(({ slug }) => slug)).size).toBe(buyingGuides.length)
   })
 
-  it('links every guide to a published category and keeps approved imagery explicit', () => {
+  it('links every guide to a published browse entry and keeps approved imagery explicit', () => {
     const categorySlugs = new Set<string>(editorialCategories.map(({ slug }) => slug))
     for (const guide of buyingGuides) expect(categorySlugs.has(guide.category), guide.slug).toBe(true)
 

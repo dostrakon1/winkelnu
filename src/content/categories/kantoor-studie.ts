@@ -11,7 +11,7 @@ export const kantoorStudieCategory = {
     { slug: 'schrijven-papier', title: 'Schrijven & papier', description: 'Pennen, notitieboeken, papier en andere basisbenodigdheden voor werk en studie.', feedAliases: ['schrijven papier', 'writing paper', 'stationery', 'paper products'] },
     { slug: 'bureau-organisatie', title: 'Bureau & organisatie', description: 'Opbergers, bureaumateriaal en hulpmiddelen om werk overzichtelijk te houden.', feedAliases: ['bureau organisatie', 'desk organization', 'desk organisers', 'office organization'] },
     { slug: 'school-studie', title: 'School & studie', description: 'Praktische benodigdheden voor lessen, huiswerk, planning en leren.', feedAliases: ['school studie', 'school study supplies', 'student supplies', 'back to school'] },
-    { slug: 'printers-accessoires', title: 'Printers & accessoires', description: 'Printers, papier, inkt en accessoires waarbij gebruikskosten en compatibiliteit belangrijk zijn.', feedAliases: ['printers accessoires', 'printers accessories', 'printer supplies', 'printing supplies'] },
+    { slug: 'printers-accessoires', title: 'Printers & accessoires', description: 'Printers, papier, inkt en accessoires waarbij gebruikskosten en compatibiliteit belangrijk zijn.', feedAliases: ['printers accessoires', 'printers & accessories', 'printers accessories', 'printer supplies', 'printing supplies'] },
     { slug: 'ergonomisch-werken', title: 'Ergonomisch werken', description: 'Hulpmiddelen voor een comfortabele en praktische werk- of studiehouding.', feedAliases: ['ergonomisch werken', 'ergonomic office', 'ergonomic workspace', 'office ergonomics'] },
   ],
   buyingTips: [
