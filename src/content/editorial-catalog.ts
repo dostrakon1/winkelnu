@@ -15,12 +15,17 @@ import {
   dierenBuyingGuides,
   dierenEditorialCategory,
 } from './dieren-guides'
+import {
+  autoFietsBuyingGuides,
+  autoFietsEditorialCategory,
+} from './auto-fiets-guides'
 
 export const editorialCategories = [
   ...existingEditorialCategories,
   personalCareEditorialCategory,
   babyKindEditorialCategory,
   dierenEditorialCategory,
+  autoFietsEditorialCategory,
 ] as const
 
 export const buyingGuides: BuyingGuide[] = [
@@ -28,6 +33,7 @@ export const buyingGuides: BuyingGuide[] = [
   ...personalCareBuyingGuides,
   ...babyKindBuyingGuides,
   ...dierenBuyingGuides,
+  ...autoFietsBuyingGuides,
 ]
 
 export function getBuyingGuide(slug: string): BuyingGuide | undefined {
