@@ -27,7 +27,7 @@ export default function PrivacyPage() {
       <section>
         <h2 className="text-xl font-bold">Zoekverbeteringssignalen</h2>
         <p className="mt-3">Om Zoekkompas te verbeteren registreert Winkelnu beperkte first-party signalen over het functioneren van de zoekmachine. Daarbij kunnen we een genormaliseerde zoekvraag, herkende zoekintentie, eventuele typefoutcorrectie, een 0-resultaatsignaal, een directe herformulering en de gekozen interne zoekroute of productpositie vastleggen.</p>
-        <p className="mt-3">Deze zoekleerlaag gebruikt geen bezoekers-ID, cookie-ID, lokaal browserprofiel, raw IP-adres, user-agent fingerprint of cross-site identifier. Waarschijnlijke e-mailadressen, URL’s en langere telefoonnummers worden vóór opslag geredigeerd. De ruwe zoekevents worden maximaal 90 dagen bewaard; verbeteroverzichten worden op queryniveau samengesteld en veranderen de zoekranking niet automatisch.</p>
+        <p className="mt-3">Deze zoekleerlaag gebruikt geen bezoekers-ID, cookie-ID, lokaal browserprofiel, raw IP-adres, user-agent fingerprint of cross-site identifier. Waarschijnlijke e-mailadressen, URL’s en langere telefoonnummers worden vóór opslag geredigeerd. Voor ruwe zoekevents hanteert Winkelnu een bewaartermijn van 90 dagen; oudere events worden bij nieuwe feedbackverwerking automatisch opgeschoond en de verbeteroverzichten kijken uitsluitend naar de laatste 90 dagen. Rankings worden hierdoor niet automatisch gewijzigd.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Geaggregeerde gebruiksstatistieken</h2>
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2 className="text-xl font-bold">Bewaren</h2>
-        <p className="mt-3">We bewaren gegevens niet langer dan nodig is voor het doel waarvoor ze worden verwerkt, rekening houdend met beveiliging, operationele controle en wettelijke verplichtingen. Search-feedbackevents hebben binnen Winkelnu een maximale bewaartermijn van 90 dagen en worden tijdens nieuwe feedbackverwerking automatisch opgeschoond. Als de verwerking of technische configuratie verandert, beoordelen we ook opnieuw welke bewaartermijnen daarbij passend zijn.</p>
+        <p className="mt-3">We bewaren gegevens niet langer dan nodig is voor het doel waarvoor ze worden verwerkt, rekening houdend met beveiliging, operationele controle en wettelijke verplichtingen. Voor search-feedbackevents geldt een 90-dagenretentiegrens in de zoekleerlaag; bij nieuwe feedbackverwerking worden oudere events opgeschoond en de querysamenvatting gebruikt uitsluitend de laatste 90 dagen. Als de verwerking of technische configuratie verandert, beoordelen we ook opnieuw welke bewaartermijnen daarbij passend zijn.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Jouw privacyrechten</h2>
