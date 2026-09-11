@@ -1,72 +1,66 @@
+import { categoryImageSlugs } from '@/generated/category-image-manifest'
+
 export type CategoryImage = {
   src: string
   alt: string
   position: string
 }
 
+type CategoryImageOverride = Partial<Pick<CategoryImage, 'alt' | 'position'>>
+
 /**
- * Owner-approved editorial imagery. This registry is separate from the commerce
- * taxonomy and does not publish categories or products by itself.
+ * Category images follow one fixed convention:
+ * public/images/categories/<category-slug>-hero.webp
  *
- * The ten corresponding WebP files belong in public/images/categories/.
+ * The generated manifest is refreshed automatically before each build, so a
+ * correctly named file becomes available everywhere without adding another
+ * path mapping. Keep overrides limited to editorial metadata or exceptional
+ * crops; never repeat the file path here.
  */
-export const categoryImages = {
+const categoryImageOverrides: Record<string, CategoryImageOverride> = {
   elektronica: {
-    src: '/images/categories/elektronica-hero.webp',
     alt: 'Laptop en koptelefoon op een lichte, moderne werkplek',
-    position: 'center',
   },
   'wonen-huishouden': {
-    src: '/images/categories/wonen-huishouden-hero.webp',
     alt: 'Moderne wasruimte met wasmachine, steelstofzuiger en robotstofzuiger',
-    position: 'center',
   },
   'keuken-koffie': {
-    src: '/images/categories/keuken-koffie-hero.webp',
     alt: 'Espressomachine en airfryer in een lichte keuken',
-    position: 'center',
   },
   'persoonlijke-verzorging': {
-    src: '/images/categories/persoonlijke-verzorging-hero.webp',
     alt: 'Elektrische tandenborstel en scheerapparaat in een lichte, moderne badkamer',
-    position: 'center',
   },
   'huis-tuin-klussen': {
-    src: '/images/categories/huis-tuin-klussen-hero.webp',
     alt: 'Grasmaaier en grastrimmer op een terras in een zonnige tuin',
-    position: 'center',
   },
   'sport-outdoor': {
-    src: '/images/categories/sport-outdoor-hero.webp',
     alt: 'Wandelschoenen en rugzak naast een tent in een berglandschap',
-    position: 'center',
   },
   'speelgoed-hobby': {
-    src: '/images/categories/speelgoed-hobby-hero.webp',
     alt: 'Kleurrijk speelgoed, bouwblokken en bordspellen in een speelkamer',
-    position: 'center',
   },
   'baby-kind': {
-    src: '/images/categories/baby-kind-hero.webp',
     alt: 'Beige kinderwagen in een lichte, warme babykamer met houten ledikant en speelgoed',
-    position: 'center',
   },
   dieren: {
-    src: '/images/categories/dieren-hero.webp',
     alt: 'Golden retriever in een hondenmand en kat op een krabpaal in een lichte, warme woonkamer',
-    position: 'center',
   },
   'auto-fiets': {
-    src: '/images/categories/auto-fiets-hero.webp',
     alt: 'Moderne auto met open kofferbak en elektrische fietsen bij een warme, moderne garage',
-    position: 'center',
   },
-} as const satisfies Record<string, CategoryImage>
+}
 
-export type CategoryImageSlug = keyof typeof categoryImages
+const availableCategoryImages = new Set<string>(categoryImageSlugs)
 
-export function getCategoryImage(slug: string): CategoryImage | undefined {
-  return Object.prototype.hasOwnProperty.call(categoryImages, slug)
-    ? categoryImages[slug as CategoryImageSlug]
-    : undefined
+export function getCategoryImage(slug: string, label?: string): CategoryImage | undefined {
+  if (!availableCategoryImages.has(slug)) return undefined
+
+  const override = categoryImageOverrides[slug]
+  const displayLabel = label?.trim() || slug.split('-').join(' ')
+
+  return {
+    src: `/images/categories/${slug}-hero.webp`,
+    alt: override?.alt ?? `Sfeerbeeld voor ${displayLabel}`,
+    position: override?.position ?? 'center',
+  }
 }

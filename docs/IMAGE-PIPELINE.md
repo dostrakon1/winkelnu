@@ -1,22 +1,64 @@
-# Winkelnu Image Pipeline v1
+# Winkelnu Image Architecture v1
 
-Doel: een nieuwe afbeelding voortaan in één vaste, controleerbare flow verwerken zodat een verkeerd formaat, beschadigd bestand of verkeerde bestandsnaam niet pas op productie wordt ontdekt.
+Doel: categorie-afbeeldingen één keer correct plaatsen en ze daarna automatisch op alle relevante Winkelnu-oppervlakken gebruiken, zonder losse padregistraties of tijdelijke cache-busterbestanden.
+
+## Kernregel
+
+Voor categoriebeelden is `public/images/categories/` de enige bron.
+
+Bestandsnaam:
+
+`<categorie-slug>-hero.webp`
+
+Voorbeeld:
+
+`dieren` → `public/images/categories/dieren-hero.webp`
+
+Vóór iedere build scant `scripts/generate-category-image-manifest.mjs` deze map en genereert `src/generated/category-image-manifest.ts`. `src/content/category-images.ts` leidt het uiteindelijke pad daarna uitsluitend uit de categorie-slug af.
+
+Daardoor hoeft bij een nieuwe categorie-afbeelding geen pad meer in TypeScript te worden toegevoegd. Alleen uitzonderingen, zoals een afwijkende `object-position` of bewust specifiekere alt-tekst, horen nog in de override-laag.
+
+## Waar hetzelfde categoriebeeld wordt gebruikt
+
+De centrale resolver kan hetzelfde masterbeeld leveren aan:
+
+- categoriekaarten;
+- categoriepagina hero;
+- OpenGraph/social metadata;
+- toekomstige componenten die `getCategoryImage()` gebruiken.
+
+Ontbreekt een correct genoemd bestand in het gegenereerde manifest, dan geeft de resolver `undefined` terug en kan de bestaande Winkelnu Surface Motif als fallback worden gebruikt.
+
+## Aanbevolen master
+
+Nieuwe of vervangende categoriebeelden:
+
+- WebP;
+- 4:3;
+- bij voorkeur 1600×1200 px;
+- standaard WebP-kwaliteit 84;
+- metadata gestript;
+- geen kunstmatige upscaling van een kleine bron;
+- compositie geschikt voor `object-fit: cover`.
+
+Bestaande goedgekeurde beelden met een lagere resolutie of andere verhouding blijven technisch toegestaan. Vervang of snijd ze alleen opnieuw wanneer een betere originele bron beschikbaar is; verander bestaand goedgekeurd beeldmateriaal niet automatisch om alleen aan een nieuwe standaard te voldoen.
 
 ## Snel gebruik
 
-Voor een categorie-afbeelding:
+Categoriebeeld:
 
 ```bash
 npm run image:prepare -- --input ~/Downloads/baby.png --type category --name baby-kind
+npm run check:images
 ```
 
-Voor een algemene hero:
+Algemene hero:
 
 ```bash
 npm run image:prepare -- --input ~/Downloads/hero.jpg --type hero --name voorjaar
 ```
 
-Voor een sectiebeeld:
+Sectiebeeld:
 
 ```bash
 npm run image:prepare -- --input ~/Downloads/foto.webp --type section --name keuzehulp
@@ -28,39 +70,63 @@ De output wordt automatisch op de vaste plek gezet:
 - `hero` → `public/images/heroes/<naam>-hero.webp`
 - `section` → `public/images/sections/<naam>.webp`
 
-## Wat het script controleert
+## Wat `image:prepare` doet
 
-- veilige bestandsnaam;
-- echte WebP-header (`RIFF` + `WEBP`);
-- leesbare WebP-afmetingen;
-- minimale resolutie van 500×300;
-- minimum bestandsgrootte van 5 KB;
-- vaste map- en naamconventie.
+Wanneer ImageMagick beschikbaar is:
 
-PNG/JPG wordt via ImageMagick naar WebP geconverteerd, standaard met kwaliteit 82 en maximaal 1600 px. Op Pop!_OS/Ubuntu is ImageMagick eenmalig te installeren met:
+- auto-orientation;
+- maximale breedte 1600 px zonder kunstmatig vergroten;
+- metadata strippen;
+- WebP kwaliteit 84;
+- WebP compressiemethode 6;
+- technische WebP-validatie;
+- voor nieuwe categoriebeelden: 4:3 afdwingen;
+- waarschuwing geven wanneer een nieuwe master kleiner is dan 1200×900.
+
+Ook een aangeleverde WebP wordt opnieuw geoptimaliseerd wanneer ImageMagick aanwezig is. Zonder ImageMagick kan een bestaande WebP nog steeds worden overgenomen, maar dan zonder hercompressie.
+
+Op Pop!_OS/Ubuntu:
 
 ```bash
 sudo apt install imagemagick
 ```
 
-Een aangeleverde WebP heeft geen ImageMagick nodig.
+## Automatische build-koppeling
+
+`npm run build` heeft een `prebuild`-stap die het categoriebeeldmanifest opnieuw genereert. Daardoor is de mapinhoud tijdens iedere Vercel-build leidend.
+
+`npm run check:images` genereert hetzelfde manifest opnieuw en controleert daarna alle WebP-bestanden in de categoriemap op:
+
+- vaste naamconventie;
+- geldige WebP-header;
+- leesbare afmetingen;
+- minimale technische kwaliteit.
+
+De controle meldt ook welke bestaande beelden nog afwijken van de nieuwe voorkeursstandaard van 4:3 en 1600×1200. Zulke legacy-afwijkingen zijn een waarschuwing, geen automatische crop of blokkade. Nieuwe categoriebeelden die via `image:prepare` binnenkomen worden wel op 4:3 afgedwongen.
+
+De GitHub Quality-workflow voert `check:images` vóór lint, typecheck, tests en build uit.
 
 ## Verplichte visuele controle
 
-Technische validatie kan niet beoordelen of een afbeelding inhoudelijk klopt of bijvoorbeeld volledig wit is. Daarom geldt voor iedere vervanging deze volgorde:
+Technische validatie kan niet beoordelen of een afbeelding inhoudelijk klopt. Volg bij vervanging daarom:
 
-1. bronbestand openen en visueel controleren;
+1. originele bron openen en visueel controleren;
 2. `image:prepare` uitvoeren;
-3. gegenereerde WebP lokaal openen en visueel controleren;
-4. `npm run check:images` uitvoeren voor categoriebeelden;
+3. gegenereerde WebP openen;
+4. `npm run check:images` uitvoeren;
 5. commit/push;
-6. na deploy de productie-URL openen met een cache-buster, bijvoorbeeld `?v=<commit-sha>`;
-7. pas daarna de wijziging als afgerond beschouwen.
+6. preview controleren;
+7. productie controleren.
 
-## Categorie-register
+Gebruik geen tijdelijke bestandsnamen zoals `*-definitief-hero.webp` om browsercache te omzeilen. De canonieke slug-bestandsnaam blijft altijd leidend.
 
-De centrale koppeling tussen categorie en bestand staat in `src/content/category-images.ts`. Voeg een categoriebeeld daar toe of wijzig het pad daar als de bestandsnaam verandert. Vermijd losse hardcoded paden in pagina's en componenten.
+## Praktisch resultaat
 
-## ChatGPT/GitHub-regel
+Voor een normale categorie is de workflow voortaan:
 
-Wanneer een afbeelding via ChatGPT wordt geplaatst, moet dezelfde flow worden gevolgd: eerst lokaal converteren en visueel controleren, daarna binair naar GitHub uploaden, daarna productie opnieuw downloaden/openen ter verificatie. Een succesvolle Git-commit alleen is niet voldoende bewijs dat het zichtbare beeld goed staat.
+1. kies de categorie-slug;
+2. voer één bronafbeelding door `image:prepare`;
+3. commit het gegenereerde `<slug>-hero.webp`;
+4. deploy.
+
+Er is geen extra TypeScript-padregistratie nodig.

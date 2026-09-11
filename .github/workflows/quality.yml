@@ -33,6 +33,9 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: Verify category images
+        run: npm run check:images
+
       - name: Verify migration manifest
         run: npm run check:migration-manifest
 

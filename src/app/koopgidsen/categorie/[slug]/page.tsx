@@ -18,12 +18,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const category = getEditorialCategory(slug)
   if (!category) return { title: 'Rubriek niet gevonden', robots: { index: false } }
-  const image = getCategoryImage(slug)
+  const image = getCategoryImage(slug, category.title)
   return {
     title: category.title,
     description: category.description,
     alternates: { canonical: `/koopgidsen/categorie/${slug}` },
-    openGraph: { title: category.title, description: category.description, ...(image ? { images: [{ url: image.src, alt: image.alt, width: 1200, height: 900 }] } : {}) },
+    openGraph: { title: category.title, description: category.description, ...(image ? { images: [{ url: image.src, alt: image.alt }] } : {}) },
   }
 }
 
@@ -32,7 +32,7 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
   const category = getEditorialCategory(slug)
   if (!category) notFound()
   const guides = guidesForCategory(slug)
-  const image = getCategoryImage(slug)
+  const image = getCategoryImage(slug, category.title)
   const catalogCategorySlug = getCatalogCategorySlug(slug)
   const catalogHref = isPublicCatalogEnabled() && catalogCategorySlug ? `/categorie/${catalogCategorySlug}` : null
   const structuredData = buildEditorialCategoryStructuredData({ category, guides })
