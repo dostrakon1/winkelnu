@@ -41,6 +41,17 @@ export type DaisyconStandardProductRecord = {
   updated_at?: string
 }
 
+function normalizeEuroAmount(value: string | number | undefined): string {
+  const raw = String(value ?? '').trim()
+  if (!raw) return ''
+
+  const decimal = raw.replace(',', '.')
+  if (!/^\d+(?:\.\d{1,2})?$/.test(decimal)) return raw
+
+  const numeric = Number(decimal)
+  return Number.isFinite(numeric) ? numeric.toFixed(2) : raw
+}
+
 export function mapDaisyconStandardProductRecord(
   record: unknown,
   context: { sourceKey: string; importedAt: string },
@@ -50,8 +61,8 @@ export function mapDaisyconStandardProductRecord(
   const merchantProductId = String(value.id ?? '').trim()
   const title = value.name?.trim() ?? ''
   const gtin = value.gtin?.trim() || value.ean?.trim()
-  const amount = String(value.price ?? '').trim()
-  const shipping = value.shipping == null ? undefined : String(value.shipping).trim()
+  const amount = normalizeEuroAmount(value.price)
+  const shipping = value.shipping == null ? undefined : normalizeEuroAmount(value.shipping)
   const productUrl = value.product_url?.trim() ?? ''
   const affiliateUrl = value.deeplink?.trim() ?? ''
 
@@ -66,7 +77,7 @@ export function mapDaisyconStandardProductRecord(
     sourceCategory: value.category?.trim(),
     imageUrls: value.image ? [value.image] : [],
     price: { amount, currency: 'EUR' },
-    shippingCost: shipping ? { amount: shipping, currency: 'EUR' } : undefined,
+    shippingCost: shipping === undefined ? undefined : { amount: shipping, currency: 'EUR' },
     availability: value.availability?.trim(),
     productUrl,
     affiliateUrl,

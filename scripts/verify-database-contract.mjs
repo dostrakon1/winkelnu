@@ -19,6 +19,7 @@ const migrationPaths = [
   'supabase/migrations/0015_operator_action_retention_policy.sql',
   'supabase/migrations/0016_explicit_data_api_service_role_grants.sql',
   'supabase/migrations/0017_external_key_unique_constraints.sql',
+  'supabase/migrations/0018_offer_ranking_hardening.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')

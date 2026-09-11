@@ -32,7 +32,7 @@ const details = new Map<string, ProductWithOffers>([
     offers: [{
       id: 'offer:2', productId: 'product:2', merchantId: merchant.id, merchantProductId: '2',
       price: { amount: '70.00', currency: 'EUR' }, shippingCost: { amount: '0.00', currency: 'EUR' },
-      availability: 'out_of_stock', productUrl: 'https://example.invalid/2', affiliateUrl: 'https://example.invalid/a2',
+      availability: 'in_stock', productUrl: 'https://example.invalid/2', affiliateUrl: 'https://example.invalid/a2',
       importedAt: '2026-09-03T00:00:00.000Z', lastSeenAt: '2026-09-03T00:00:00.000Z', isActive: true,
     }],
   }],
