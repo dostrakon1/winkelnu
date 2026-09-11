@@ -1,6 +1,8 @@
 export type CategorySubcategory = {
+  slug: string
   title: string
   description: string
+  feedAliases: readonly string[]
 }
 
 export type CategoryBuyingTip = {
@@ -18,6 +20,7 @@ export type CategoryContent = {
   title: string
   description: string
   intro: string
+  feedAliases: readonly string[]
   topics: readonly string[]
   subcategories: readonly CategorySubcategory[]
   buyingTips: readonly CategoryBuyingTip[]

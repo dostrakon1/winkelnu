@@ -11,6 +11,14 @@ function slugify(value: string): string {
 }
 function safeIdPart(value: string): string { return value.toLowerCase().replace(/[^a-z0-9:_-]+/g, '-') }
 
+export type FeedCategoryIdResolverInput = {
+  sourceKey: string
+  sourceCategory: string
+  title: string
+}
+
+export type FeedCategoryIdResolver = (input: FeedCategoryIdResolverInput) => string | undefined
+
 export type ImportFeedResult = {
   importRun: ImportRun
   imported: number
@@ -26,6 +34,7 @@ export async function importFeed(input: {
   repository: CatalogWriteRepository
   merchant: Merchant
   categoryIdBySourceCategory?: Record<string, string>
+  categoryIdResolver?: FeedCategoryIdResolver
   now?: () => string
   deactivateMissingOffers?: boolean
   correlationId?: string
@@ -81,8 +90,11 @@ export async function importFeed(input: {
           await input.repository.addMatchReview(review)
         }
 
+        const categoryId = candidate.sourceCategory
+          ? input.categoryIdBySourceCategory?.[candidate.sourceCategory] ?? input.categoryIdResolver?.({ sourceKey: candidate.sourceKey, sourceCategory: candidate.sourceCategory, title: candidate.title })
+          : undefined
         const productId = canonicalProductId
-        const product: Product = { id: productId, slug: `${slugify(candidate.title)}-${candidate.merchantProductId.toLowerCase()}`, title: candidate.title, description: candidate.description, brand: candidate.brand, gtin: candidate.gtin, mpn: candidate.mpn, imageUrl: candidate.imageUrls[0], categoryId: candidate.sourceCategory ? input.categoryIdBySourceCategory?.[candidate.sourceCategory] : undefined }
+        const product: Product = { id: productId, slug: `${slugify(candidate.title)}-${candidate.merchantProductId.toLowerCase()}`, title: candidate.title, description: candidate.description, brand: candidate.brand, gtin: candidate.gtin, mpn: candidate.mpn, imageUrl: candidate.imageUrls[0], categoryId }
         const offer: Offer = { id: `offer:${input.merchant.id}:${candidate.merchantProductId}`, productId, merchantId: input.merchant.id, merchantProductId: candidate.merchantProductId, price: candidate.price, shippingCost: candidate.shippingCost, availability: candidate.availability, productUrl: candidate.productUrl, affiliateUrl: candidate.affiliateUrl, sourceUpdatedAt: candidate.sourceUpdatedAt, importedAt: candidate.importedAt, lastSeenAt: startedAt, isActive: true }
         await input.repository.upsertProduct(product); await input.repository.upsertOffer(offer); imported += 1
       }
