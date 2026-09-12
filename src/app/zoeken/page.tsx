@@ -4,6 +4,7 @@ import { buildCatalogSearchFacets } from '@/application/catalog/search-facets'
 import { parseCatalogSearchQuery, type CatalogSearchQuery } from '@/application/catalog/search-query'
 import { analyzePredictiveSearch } from '@/application/search/predictive-search-core'
 import { buildPredictiveSearchIndex } from '@/application/search/predictive-search-index'
+import { extractPreferenceConstraints } from '@/application/search/preference-constraint-extraction'
 import { suggestedSearches } from '@/application/search/search-intelligence'
 import { buildUniversalSearchRanking } from '@/application/search/universal-search-ranking'
 import { ComparisonProductGrid } from '@/components/storefront/comparison-product-grid'
@@ -91,6 +92,7 @@ export default async function SearchPage({
   const query = parseCatalogSearchQuery(raw)
   const predictiveIndex = buildPredictiveSearchIndex()
   const prediction = analyzePredictiveSearch(query.term, predictiveIndex, 8)
+  const preferences = extractPreferenceConstraints(query.term)
   const structuredIntent = hasStructuredSearchIntent(query)
   const searchIntent = Boolean(query.term) || structuredIntent
   const effectiveProductTerm = prediction.productTerm ?? (prediction.navigationOnly ? undefined : query.term)
@@ -139,6 +141,7 @@ export default async function SearchPage({
     query.term
       && (prediction.correctedTerm
         || prediction.intents.length > 0
+        || preferences.length > 0
         || (prediction.productTerm && prediction.productTerm !== prediction.normalizedTerm)),
   )
 
@@ -202,6 +205,11 @@ export default async function SearchPage({
                 product → {prediction.productTerm}
               </span>
             ) : null}
+            {preferences.map((preference) => (
+              <span key={preference.id} className="rounded-full border border-[color:rgba(18,59,58,0.10)] bg-white px-3 py-2 font-semibold text-[var(--wn-petrol-deep)] shadow-[var(--wn-shadow-xs)]">
+                {preference.kind === 'preference' ? 'voorkeur' : 'criterium'} → {preference.label}
+              </span>
+            ))}
             {prediction.intents.map((intent) => (
               <span key={intent.key} className="rounded-full border border-[color:rgba(18,59,58,0.10)] bg-white/70 px-3 py-2 font-semibold text-[var(--wn-text-muted)]">
                 {intent.label}
@@ -384,6 +392,7 @@ export default async function SearchPage({
           ) : (
             <div className="mt-8">
               <ComparisonProductGrid
+                comparisonQuery={query.term}
                 items={result.products.map(({ product, bestOffer, offerCount }) => ({
                   id: product.id,
                   slug: product.slug,
