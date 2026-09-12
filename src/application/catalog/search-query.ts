@@ -4,6 +4,8 @@ export type CatalogSearchSort = 'relevance' | 'price_asc' | 'price_desc' | 'titl
 
 export type CatalogSearchQuery = {
   term?: string
+  /** Internal original natural-language query. Not a separate URL contract. */
+  contextTerm?: string
   categorySlug?: string
   productType?: ProductComparisonGroup
   brand?: string
