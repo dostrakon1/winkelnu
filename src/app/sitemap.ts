@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
+import { resolveSiteOrigin } from '@/config/sites'
 import { buyingGuides, editorialCategories } from '@/content/editorial-catalog'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
@@ -7,7 +8,7 @@ import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-
 export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://winkelnu.nl').replace(/\/$/, '')
+  const baseUrl = resolveSiteOrigin(process.env.NEXT_PUBLIC_SITE_URL)
   const informationRoutes = ['/over-winkelnu', '/affiliate-en-vergelijking', '/privacy', '/cookies', '/disclaimer']
   const editorialRoutes = [
     '/koopgidsen',

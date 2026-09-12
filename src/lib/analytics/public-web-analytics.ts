@@ -1,10 +1,11 @@
+import { activeSite, isProductionHostForSite } from '@/config/sites'
+
 export type PublicWebAnalyticsEvent = {
   url: string
   [key: string]: unknown
 }
 
 const BLOCKED_PREFIXES = ['/intern', '/api', '/uit'] as const
-const PRODUCTION_HOSTS = new Set(['winkelnu.nl', 'www.winkelnu.nl'])
 
 export function isPublicAnalyticsPath(pathname: string | null | undefined): boolean {
   if (!pathname || !pathname.startsWith('/')) return false
@@ -15,7 +16,7 @@ export function isPublicAnalyticsPath(pathname: string | null | undefined): bool
 }
 
 export function isProductionAnalyticsHost(hostname: string): boolean {
-  return PRODUCTION_HOSTS.has(hostname.toLowerCase())
+  return isProductionHostForSite(hostname, activeSite)
 }
 
 export function getPublicAnalyticsRoute(pathname: string): string {
