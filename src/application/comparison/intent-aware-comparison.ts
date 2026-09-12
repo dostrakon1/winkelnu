@@ -1,4 +1,13 @@
-import type { PredictiveSearchAnalysis, SearchIntentKey } from '@/application/search/predictive-search-core'
+import {
+  normalizeSearchText,
+  type PredictiveSearchAnalysis,
+  type SearchIntentKey,
+} from '@/application/search/predictive-search-core'
+import {
+  evaluatePreferenceConstraintValue,
+  extractPreferenceConstraints,
+  type ExtractedPreferenceConstraint,
+} from '@/application/search/preference-constraint-extraction'
 import type { ProductComparisonGroup } from '@/domain/catalog/comparison'
 import type { SmartComparisonResult } from '@/domain/catalog/comparison-intelligence'
 
@@ -9,7 +18,16 @@ export type IntentAwareComparisonContext = {
   budgetMax?: number
   recognizedIntentLabels: string[]
   appliedIntentLabels: string[]
+  preferenceConstraints: ExtractedPreferenceConstraint[]
+  appliedPreferenceLabels: string[]
+  unappliedPreferenceLabels: string[]
   priorityMetricKeys: string[]
+}
+
+export type ProductConstraintSummary = {
+  matches: string[]
+  misses: string[]
+  unknown: string[]
 }
 
 const PRIORITIES: Partial<
@@ -35,11 +53,50 @@ const PRIORITIES: Partial<
   },
 }
 
+const FALLBACK_ROW_LABELS: Record<string, readonly string[]> = {
+  noise: ['geluid', 'geluidsniveau', 'geluidsproductie', 'noise', 'noise level', 'decibel'],
+  dimensions: ['afmetingen', 'formaat', 'dimensions'],
+  'noise-cancelling': ['ruisonderdrukking', 'noise cancelling', 'noise canceling', 'anc'],
+}
+
+function resolvePreferenceMetricKey(
+  constraint: ExtractedPreferenceConstraint,
+  comparison?: Pick<SmartComparisonResult, 'rows'>,
+): string | undefined {
+  if (!comparison) return constraint.metricKey
+  if (comparison.rows.some((row) => row.key === constraint.metricKey)) return constraint.metricKey
+
+  const aliases = FALLBACK_ROW_LABELS[constraint.metricKey] ?? []
+  if (aliases.length === 0) return undefined
+  const aliasSet = aliases.map(normalizeSearchText)
+  const row = comparison.rows.find((candidate) => {
+    const label = normalizeSearchText(candidate.label)
+    return aliasSet.some((alias) => label === alias || label.includes(alias) || alias.includes(label))
+  })
+  return row?.key
+}
+
 export function buildIntentAwareComparisonContext(
   analysis: PredictiveSearchAnalysis,
-  group: ProductComparisonGroup,
+  groupOrComparison: ProductComparisonGroup | Pick<SmartComparisonResult, 'group' | 'rows'>,
 ): IntentAwareComparisonContext {
+  const group = typeof groupOrComparison === 'string' ? groupOrComparison : groupOrComparison.group
+  const comparison = typeof groupOrComparison === 'string' ? undefined : groupOrComparison
+  const explicitPreferences = extractPreferenceConstraints(analysis.originalTerm)
   const priorityMetricKeys: string[] = []
+  const appliedPreferenceLabels: string[] = []
+  const unappliedPreferenceLabels: string[] = []
+
+  for (const preference of explicitPreferences) {
+    const resolvedKey = resolvePreferenceMetricKey(preference, comparison)
+    if (!resolvedKey) {
+      unappliedPreferenceLabels.push(preference.label)
+      continue
+    }
+    appliedPreferenceLabels.push(preference.label)
+    if (!priorityMetricKeys.includes(resolvedKey)) priorityMetricKeys.push(resolvedKey)
+  }
+
   const appliedIntentLabels: string[] = []
   const groupPriorities = PRIORITIES[group] ?? {}
 
@@ -59,6 +116,9 @@ export function buildIntentAwareComparisonContext(
     budgetMax: analysis.budgetMax,
     recognizedIntentLabels: analysis.intents.map((intent) => intent.label),
     appliedIntentLabels,
+    preferenceConstraints: explicitPreferences,
+    appliedPreferenceLabels,
+    unappliedPreferenceLabels,
     priorityMetricKeys,
   }
 }
@@ -112,4 +172,31 @@ export function applyIntentAwareComparisonContext(
     keyDifferences,
     productHighlights: contextualHighlights,
   }
+}
+
+export function evaluateComparisonConstraints(
+  comparison: SmartComparisonResult,
+  context: IntentAwareComparisonContext,
+): ProductConstraintSummary[] {
+  const productCount = comparison.rows[0]?.values.length ?? 0
+  const summaries = Array.from({ length: productCount }, () => ({
+    matches: [] as string[],
+    misses: [] as string[],
+    unknown: [] as string[],
+  }))
+
+  for (const constraint of context.preferenceConstraints) {
+    if (constraint.kind === 'preference') continue
+    const resolvedKey = resolvePreferenceMetricKey(constraint, comparison)
+    const row = resolvedKey ? comparison.rows.find((candidate) => candidate.key === resolvedKey) : undefined
+
+    for (let index = 0; index < productCount; index += 1) {
+      const evaluation = evaluatePreferenceConstraintValue(constraint, row?.values[index])
+      if (evaluation === 'match') summaries[index].matches.push(constraint.label)
+      else if (evaluation === 'miss') summaries[index].misses.push(constraint.label)
+      else summaries[index].unknown.push(constraint.label)
+    }
+  }
+
+  return summaries
 }
