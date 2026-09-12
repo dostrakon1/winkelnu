@@ -1,5 +1,3 @@
-import { normalizeSearchText } from './predictive-search-core'
-
 export type PreferenceConstraintKind = 'preference' | 'minimum' | 'maximum' | 'exact' | 'required'
 export type PreferenceConstraintDirection = 'higher' | 'lower' | 'present'
 export type PreferenceConstraintUnit = 'kg' | 'hours' | 'gb' | 'count' | 'liters' | 'db'
@@ -27,6 +25,36 @@ const DUTCH_NUMBERS: Record<string, number> = {
   zes: 6,
 }
 
+const STRIP_WORDS_BY_SIGNAL: Record<string, readonly string[]> = {
+  lightweight: ['licht', 'lichte', 'lichtgewicht', 'niet', 'zwaar'],
+  'long-battery': ['lange', 'goede', 'lang', 'accuduur', 'batterijduur', 'meegaan', 'meegaat'],
+  compact: ['compact', 'klein', 'kleine', 'formaat', 'weinig', 'ruimte', 'aanrecht'],
+  quiet: ['stil', 'stille', 'geruisloos', 'weinig', 'geluid', 'laag', 'geluidsniveau'],
+  'noise-cancelling': ['noise', 'cancelling', 'canceling', 'ruisonderdrukking', 'anc'],
+  'large-capacity': ['grote', 'veel', 'ruime', 'capaciteit', 'inhoud'],
+  'many-functions': ['veel', 'functies', 'programma', 'programmas'],
+  'more-memory': ['veel', 'geheugen', 'ram'],
+  'more-storage': ['veel', 'grote', 'opslag'],
+  'max-weight': ['maximaal', 'max', 'onder', 'tot', 'lichter', 'dan', 'kg', 'kilogram', 'g', 'gram'],
+  'min-battery-life': ['minimaal', 'minstens', 'ten', 'minste', 'meer', 'langer', 'dan', 'uur', 'uren', 'h', 'accu', 'accuduur', 'batterij', 'batterijduur'],
+  'min-memory': ['minimaal', 'minstens', 'ten', 'minste', 'gb', 'tb', 'ram', 'werkgeheugen', 'geheugen'],
+  'min-storage': ['minimaal', 'minstens', 'ten', 'minste', 'gb', 'tb', 'opslag', 'ssd'],
+  'min-zones': ['minimaal', 'minstens', 'ten', 'minste', 'lade', 'lades', 'zone', 'zones'],
+  'exact-zones': ['lade', 'lades', 'zone', 'zones'],
+  'min-capacity': ['minimaal', 'minstens', 'ten', 'minste', 'l', 'liter', 'liters', 'inhoud', 'capaciteit'],
+  'max-noise': ['maximaal', 'max', 'onder', 'tot', 'db', 'decibel', 'geluid', 'geluidsniveau'],
+}
+
+function normalizePreferenceText(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('nl-NL')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 function decimal(value: string): number | undefined {
   const parsed = Number(value.replace(',', '.'))
   return Number.isFinite(parsed) ? parsed : undefined
@@ -42,14 +70,14 @@ function pushUnique(target: ExtractedPreferenceConstraint[], signal: ExtractedPr
 }
 
 function hasAny(normalized: string, phrases: readonly string[]): boolean {
-  return phrases.some((phrase) => ` ${normalized} `.includes(` ${normalizeSearchText(phrase)} `))
+  return phrases.some((phrase) => ` ${normalized} `.includes(` ${normalizePreferenceText(phrase)} `))
 }
 
 export function extractPreferenceConstraints(term?: string): ExtractedPreferenceConstraint[] {
   const original = term?.trim()
   if (!original) return []
 
-  const normalized = normalizeSearchText(original)
+  const normalized = normalizePreferenceText(original)
   const lower = original.toLocaleLowerCase('nl-NL').replace(/\s+/g, ' ')
   const signals: ExtractedPreferenceConstraint[] = []
 
@@ -249,9 +277,34 @@ export function extractPreferenceConstraints(term?: string): ExtractedPreference
   return signals.filter((signal) => signal.kind !== 'preference' || !constrainedMetrics.has(signal.metricKey))
 }
 
+export function stripPreferenceConstraintContext(term: string, originalTerm?: string): string {
+  const signals = extractPreferenceConstraints(originalTerm ?? term)
+  if (signals.length === 0) return term
+
+  const wordsToStrip = new Set<string>()
+  for (const signal of signals) {
+    for (const word of STRIP_WORDS_BY_SIGNAL[signal.id] ?? []) wordsToStrip.add(word)
+  }
+
+  const stripNumericTokens = signals.some((signal) => Boolean(signal.threshold))
+  return normalizePreferenceText(term)
+    .split(' ')
+    .filter((token) => {
+      if (wordsToStrip.has(token)) return false
+      if (stripNumericTokens && /^\d+(?:[.,]\d+)?$/.test(token)) return false
+      if (signals.some((signal) => signal.metricKey === 'zones') && DUTCH_NUMBERS[token] != null) return false
+      return true
+    })
+    .join(' ')
+}
+
 function firstNumericValue(value: string): number | undefined {
-  const match = value.replace(/\./g, '').match(/\d+(?:[.,]\d+)?/)
-  return match ? decimal(match[0]) : undefined
+  const match = value.match(/\d+(?:[.,]\d+)?/)
+  if (!match) return undefined
+  const token = match[0]
+  if (token.includes(',')) return decimal(token)
+  if (/^\d{1,3}\.\d{3}$/.test(token)) return decimal(token.replace('.', ''))
+  return decimal(token)
 }
 
 function parseComparableValue(value: string, unit: PreferenceConstraintUnit): number | undefined {
@@ -274,7 +327,7 @@ function parseComparableValue(value: string, unit: PreferenceConstraintUnit): nu
       if (/\bgb\b/.test(normalized)) return number
       return undefined
     case 'count':
-      return number
+      return numberToken(normalized.split(' ')[0]) ?? number
     case 'liters':
       if (/\bml\b/.test(normalized)) return number / 1000
       if (/\b(?:l|liter|liters)\b/.test(normalized)) return number
@@ -291,7 +344,7 @@ export function evaluatePreferenceConstraintValue(
   if (!value) return 'unknown'
 
   if (constraint.kind === 'required' && constraint.direction === 'present') {
-    const normalized = normalizeSearchText(value)
+    const normalized = normalizePreferenceText(value)
     if (!normalized) return 'unknown'
     if (/(^| )(nee|geen|zonder|no|false|niet)( |$)/.test(normalized)) return 'miss'
     return 'match'
