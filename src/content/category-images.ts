@@ -48,6 +48,18 @@ const categoryImageOverrides: Record<string, CategoryImageOverride> = {
   'auto-fiets': {
     alt: 'Moderne auto met open kofferbak en elektrische fietsen bij een warme, moderne garage',
   },
+  'mode-accessoires': {
+    alt: 'Lichte garderoberuimte met kleding, schoenen, tas en accessoires in warme neutrale tinten',
+  },
+  'kantoor-studie': {
+    alt: 'Lichte thuiswerkplek met laptop, bureauverlichting, boeken en schrijfwaren',
+  },
+  'reizen-bagage': {
+    alt: 'Reiskoffer, weekendtas, camera en reisaccessoires in een zonnige vakantiesfeer',
+  },
+  'cadeaus-feest': {
+    alt: 'Feestelijke tafel met ingepakte cadeaus, taart, bloemen en gouden decoratie',
+  },
 }
 
 const availableCategoryImages = new Set<string>(categoryImageSlugs)
