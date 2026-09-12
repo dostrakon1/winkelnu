@@ -191,8 +191,8 @@ export class SupabaseCatalogRepository implements CatalogReadRepository, Catalog
       mpn: product.mpn ?? null,
       primary_gtin: product.gtin ?? null,
       primary_image_url: product.imageUrl ?? null,
-      specifications: product.specifications ?? [],
-      visual_kind: product.visualKind ?? null,
+      ...(product.specifications ? { specifications: product.specifications } : {}),
+      ...(product.visualKind ? { visual_kind: product.visualKind } : {}),
       status: 'published',
       updated_at: new Date().toISOString(),
     }, { onConflict: 'external_key' })
