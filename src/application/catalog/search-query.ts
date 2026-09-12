@@ -57,8 +57,11 @@ export function parseCatalogSearchQuery(
     ;[minPrice, maxPrice] = [maxPrice, minPrice]
   }
 
+  const term = cleanText(first(params.q), 120)
+
   return {
-    term: cleanText(first(params.q), 120),
+    term,
+    contextTerm: term,
     categorySlug: cleanText(first(params.categorie), 80)?.toLowerCase(),
     productType: parseProductComparisonGroup(cleanText(first(params.type), 80)),
     brand: cleanText(first(params.merk), 80),
