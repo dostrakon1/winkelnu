@@ -19,6 +19,7 @@ export function SeasonalCollectionPage({
   const image = getCategoryImage(campaign.imageSlug, campaign.imageLabel)
   const blueprint = getSeasonalPageBlueprint(collection.slug)
   const catalogEnabled = isPublicCatalogEnabled()
+  const plannerId = `${collection.slug}-plan`
 
   return (
     <EditorialShell>
@@ -60,7 +61,7 @@ export function SeasonalCollectionPage({
               </div>
 
               <a
-                href={blueprint?.heroCtaHref ?? '#inspiratie'}
+                href={blueprint ? `#${plannerId}` : '#inspiratie'}
                 className="mt-8 inline-flex min-h-12 items-center self-start rounded-full px-5 font-bold text-[var(--wn-petrol-deep)] shadow-[0_10px_24px_rgba(0,0,0,0.14)] transition hover:-translate-y-0.5 motion-reduce:transform-none"
                 style={{ backgroundColor: campaign.accentSoft }}
               >
@@ -90,7 +91,7 @@ export function SeasonalCollectionPage({
       </section>
 
       {blueprint ? (
-        <section id="halloween-plan" className="wn-container wn-section scroll-mt-28" aria-labelledby="seasonal-plan-title">
+        <section id={plannerId} className="wn-container wn-section scroll-mt-28" aria-labelledby="seasonal-plan-title">
           <div className="max-w-3xl">
             <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: campaign.accent }}>
               {blueprint.planner.eyebrow}
@@ -188,7 +189,7 @@ export function SeasonalCollectionPage({
 
               <div className="mt-9 grid gap-4 lg:grid-cols-3">
                 {blueprint.budget.tiers.map((tier) => (
-                  <article key={tier.label} className="relative overflow-hidden rounded-[1.45rem] border border-white/70 bg-white/76 p-6 shadow-[var(--wn-shadow-xs)] backdrop-blur-sm">
+                  <article key={tier.label} className="relative overflow-hidden rounded-[1.45rem] border border-white/70 bg-white/[0.76] p-6 shadow-[var(--wn-shadow-xs)] backdrop-blur-sm">
                     <span className="inline-flex rounded-full px-3 py-1.5 text-xs font-extrabold text-[var(--wn-petrol-deep)]" style={{ backgroundColor: campaign.accentSoft }}>
                       {tier.label}
                     </span>
