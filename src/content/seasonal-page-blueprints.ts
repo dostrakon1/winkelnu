@@ -153,8 +153,109 @@ const halloweenBlueprint = {
   },
 } as const satisfies SeasonalPageBlueprint
 
+const sinterklaasBlueprint = {
+  heroCtaLabel: 'Plan je pakjesavond ↓',
+  planner: {
+    eyebrow: '✦ Begin bij het cadeaumoment',
+    title: 'Voor wie zoek je een Sinterklaascadeau?',
+    description:
+      'Kies eerst het soort cadeaumoment. Zo voorkom je eindeloos scrollen en kom je sneller uit bij ideeën die passen bij de ontvanger, het budget en pakjesavond.',
+    routes: [
+      {
+        label: 'Schoencadeaus',
+        title: 'Klein cadeau, goed gekozen',
+        description: 'Ontdek compacte cadeau-ideeën die passen bij een schoenmoment zonder dat het meteen een groot cadeau hoeft te zijn.',
+        href: '#schoencadeaus',
+      },
+      {
+        label: 'Voor kinderen',
+        title: 'Spelen, leren en ontdekken',
+        description: 'Kies op leeftijd, interesse en het soort moment in plaats van alleen op wat op dat moment populair is.',
+        href: '#voor-kinderen',
+      },
+      {
+        label: 'Voor hem & haar',
+        title: 'Iets persoonlijks voor volwassenen',
+        description: 'Denk vanuit hobby, verzorging, wonen, mode of elektronica om sneller bij een passend cadeau uit te komen.',
+        href: '#voor-hem-haar',
+      },
+      {
+        label: 'Pakjesavond',
+        title: 'Een mix voor de hele avond',
+        description: 'Combineer verschillende prijspunten en interesses zodat de cadeaus samen ook als avond goed in balans voelen.',
+        href: '#pakjesavond',
+      },
+    ],
+  },
+  budget: {
+    eyebrow: '✦ Kies je cadeaubudget',
+    title: 'Maak het budget onderdeel van je cadeaukeuze.',
+    description:
+      'Door vooraf een bedrag per cadeau of persoon te kiezen, vergelijk je gerichter en voorkom je dat een klein idee ongemerkt steeds groter wordt.',
+    disclaimer: 'De bedragen zijn richtbedragen voor je planning, geen actuele prijs- of beschikbaarheidsbelofte.',
+    tiers: [
+      {
+        label: 'Tot €10',
+        title: 'Schoen & klein gebaar',
+        description: 'Voor een klein moment, aanvulling of cadeautje dat vooral leuk en passend moet zijn.',
+        examples: ['Kleine spelletjes', 'Creatieve spullen', 'Accessoires'],
+      },
+      {
+        label: '€10–€25',
+        title: 'Veel keuze voor pakjesavond',
+        description: 'Een breed middenbudget voor speelgoed, verzorging, hobby, mode en praktische cadeaus.',
+        examples: ['Speelgoed & hobby', 'Verzorging', 'Mode of kantoor'],
+      },
+      {
+        label: '€25+',
+        title: 'Een groter hoofdcadeau',
+        description: 'Voor één bewuster gekozen cadeau rond bijvoorbeeld tech, wonen, sport of een grotere hobbywens.',
+        examples: ['Elektronica', 'Sport & outdoor', 'Wonen of keuken'],
+      },
+    ],
+  },
+  checklist: {
+    eyebrow: '✦ Slim kiezen voor 5 december',
+    title: 'Vier checks vóór je een Sinterklaascadeau kiest.',
+    description:
+      'Een goede keuze draait niet alleen om prijs. Leeftijd, interesse, wat iemand al heeft en hoe het cadeau gebruikt wordt, maken vaak meer verschil.',
+    items: [
+      {
+        title: 'Past het bij de leeftijd?',
+        description: 'Controleer bij speelgoed en creatieve sets of leeftijd, moeilijkheid en gebruik echt aansluiten bij de ontvanger.',
+      },
+      {
+        title: 'Is het iets voor deze persoon?',
+        description: 'Een cadeau dat past bij een hobby of dagelijkse routine voelt meestal persoonlijker dan een algemene bestseller.',
+      },
+      {
+        title: 'Heeft iemand dit al?',
+        description: 'Vergelijk wensen en eerdere cadeaus voordat je koopt, zeker bij populaire speelgoedlijnen, gadgets en accessoires.',
+      },
+      {
+        title: 'Is er nog iets nodig?',
+        description: 'Denk bij elektronica en speelgoed ook aan batterijen, opladen, formaat, accessoires of andere onderdelen die nodig kunnen zijn.',
+      },
+    ],
+  },
+  search: {
+    enabled: false,
+    eyebrow: '✦ Gericht Sinterklaascadeaus ontdekken',
+    title: 'Zoek straks direct vanuit je cadeauplan.',
+    description:
+      'Zodra passende partnerdata beschikbaar is, kan Winkelnu hier echte Sinterklaasselecties tonen met producten, winkelprijzen en aanbiedingen uit meerdere aangesloten winkels.',
+    routes: [
+      { label: 'Schoencadeaus', description: 'Kleine cadeaus voor een schoenmoment.', query: 'schoencadeaus' },
+      { label: 'Cadeaus voor kinderen', description: 'Speelgoed, hobby en ideeën per leeftijd en interesse.', query: 'sinterklaas cadeau kinderen' },
+      { label: 'Cadeaus voor volwassenen', description: 'Ideeën rond hobby, verzorging, wonen en tech.', query: 'sinterklaas cadeau volwassenen' },
+      { label: 'Pakjesavond', description: 'Een brede mix van cadeaus voor verschillende ontvangers.', query: 'pakjesavond cadeaus' },
+    ],
+  },
+} as const satisfies SeasonalPageBlueprint
+
 const seasonalPageBlueprints: Record<string, SeasonalPageBlueprint> = {
   halloween: halloweenBlueprint,
+  sinterklaas: sinterklaasBlueprint,
 }
 
 export function getSeasonalPageBlueprint(collectionSlug: string): SeasonalPageBlueprint | undefined {
