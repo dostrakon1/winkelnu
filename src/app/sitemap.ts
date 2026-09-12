@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
 import { resolveSiteOrigin } from '@/config/sites'
+import { editorialCollections } from '@/content/collections'
 import { buyingGuides, editorialCategories } from '@/content/editorial-catalog'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
@@ -14,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/koopgidsen',
     ...editorialCategories.map((category) => `/koopgidsen/categorie/${category.slug}`),
     ...buyingGuides.map((guide) => `/koopgidsen/${guide.slug}`),
+    ...editorialCollections.map((collection) => `/collecties/${collection.slug}`),
   ]
   const entries: MetadataRoute.Sitemap = [
     { url: baseUrl, changeFrequency: 'monthly', priority: 1 },

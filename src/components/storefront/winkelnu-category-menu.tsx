@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import { getCategoryImage } from '@/content/category-images'
+import { SeasonalCampaignMenuTile } from './seasonal-campaign-layer'
 
 const menuCategories = [
   { slug: 'elektronica', title: 'Elektronica' },
@@ -161,6 +162,7 @@ export function WinkelnuCategoryMenu({ mobile = false }: { mobile?: boolean }) {
               </Link>
             ))}
           </div>
+          <SeasonalCampaignMenuTile mobile onNavigate={closeMenu} />
           <Link
             href="/collecties/cadeaus-feest"
             onClick={closeMenu}
@@ -232,6 +234,7 @@ export function WinkelnuCategoryMenu({ mobile = false }: { mobile?: boolean }) {
               <span className="text-[10px] font-medium text-[var(--wn-text-muted)]">Uitgelicht</span>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-3">
+              <SeasonalCampaignMenuTile onNavigate={closeMenu} />
               {featuredCategories.map((category) => (
                 <FeaturedCategoryTile key={category.slug} {...category} onNavigate={closeMenu} />
               ))}

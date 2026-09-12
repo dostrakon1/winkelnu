@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
+import { SeasonalCampaignBar } from './seasonal-campaign-layer'
 import { WinkelnuBrand } from './winkelnu-brand'
 import { WinkelnuCategoryMenu } from './winkelnu-category-menu'
 import { WinkelnuNavLink } from './winkelnu-nav-link'
@@ -26,6 +27,7 @@ export function WinkelnuHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[image:var(--wn-gradient-market)] text-white shadow-[0_10px_30px_rgba(7,20,20,0.13)]">
+      <SeasonalCampaignBar />
       <a
         href="#inhoud"
         className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:m-3 focus:rounded-lg focus:bg-white focus:p-3 focus:text-[var(--wn-petrol)]"
