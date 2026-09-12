@@ -11,7 +11,7 @@ const toneStyles = {
     body: 'text-[#f4e7d8]/75',
     meta: 'text-[#ffb889]',
     cta: 'text-[#ffd7bd] hover:text-white',
-    divider: 'border-white/12',
+    divider: 'border-white/[0.12]',
   },
   peach: {
     card: 'border-[rgba(233,120,61,0.24)] bg-[#f1d6c5] text-[var(--wn-petrol-deep)]',
