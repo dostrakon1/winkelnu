@@ -9,28 +9,28 @@ import { editorialCollections, getEditorialCollection } from '@/content/collecti
 
 const festiveThemeVariants = [
   {
-    card: 'border-[rgba(233,120,61,0.28)] bg-[var(--wn-petrol-deep)] text-[var(--wn-cream)]',
+    card: 'wn-editorial-petrol border-[rgba(233,120,61,0.28)] text-[var(--wn-cream)]',
     eyebrow: 'text-[#ffb889]',
     title: 'text-[#fff7ec]',
     body: 'text-[#f4e7d8]/75',
     chip: 'border-white/15 bg-white/10 text-[#fff7ec] hover:border-[#ffb889]/70 hover:bg-white/15',
   },
   {
-    card: 'border-[rgba(233,120,61,0.24)] bg-[#f1d6c5] text-[var(--wn-petrol-deep)]',
+    card: 'wn-editorial-peach border-[rgba(233,120,61,0.24)] text-[var(--wn-petrol-deep)]',
     eyebrow: 'text-[#b85427]',
     title: 'text-[var(--wn-petrol-deep)]',
     body: 'text-[rgba(13,46,45,0.72)]',
     chip: 'border-[rgba(13,46,45,0.14)] bg-white/55 text-[var(--wn-petrol-deep)] hover:border-[var(--wn-warm)] hover:bg-white/75',
   },
   {
-    card: 'border-[rgba(18,59,58,0.12)] bg-[#fff8ef] text-[var(--wn-petrol-deep)]',
+    card: 'wn-editorial-cream border-[rgba(18,59,58,0.12)] text-[var(--wn-petrol-deep)]',
     eyebrow: 'text-[var(--wn-warm)]',
     title: 'text-[var(--wn-petrol-deep)]',
     body: 'text-[rgba(30,36,35,0.66)]',
     chip: 'border-[rgba(18,59,58,0.14)] bg-white text-[var(--wn-petrol-deep)] hover:border-[var(--wn-warm)]',
   },
   {
-    card: 'border-[rgba(18,59,58,0.12)] bg-[var(--wn-petrol-soft)] text-[var(--wn-petrol-deep)]',
+    card: 'wn-editorial-sage border-[rgba(18,59,58,0.12)] text-[var(--wn-petrol-deep)]',
     eyebrow: 'text-[var(--wn-warm)]',
     title: 'text-[var(--wn-petrol-deep)]',
     body: 'text-[rgba(13,46,45,0.7)]',
@@ -69,7 +69,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
         </div>
 
         <section className="wn-container pt-8 sm:pt-10" aria-labelledby="collection-title">
-          <div className="overflow-hidden rounded-[2rem] border border-[rgba(233,120,61,0.28)] bg-[var(--wn-petrol-deep)] shadow-[var(--wn-shadow-md)]">
+          <div className="wn-bg-brand-dark overflow-hidden rounded-[2rem] border border-[rgba(233,120,61,0.28)] shadow-[var(--wn-shadow-md)]">
             <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
               <div className="relative min-h-[22rem] overflow-hidden bg-[var(--wn-cream)] sm:min-h-[28rem] lg:min-h-[34rem]">
                 {image ? (
@@ -93,11 +93,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
                 <span aria-hidden="true" className="absolute -bottom-24 -left-16 h-56 w-56 rounded-full border border-[#ffd7bd]/10" />
                 <div className="relative z-10 max-w-2xl">
                   <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#ffb889]">✦ Winkelnu collectie</p>
-                  <h1
-                    id="collection-title"
-                    className="mt-4 text-5xl font-semibold leading-[0.98] tracking-[-0.045em] text-[#fff7ec] sm:text-6xl"
-                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                  >
+                  <h1 id="collection-title" className="wn-display mt-4 text-5xl font-semibold leading-[0.98] tracking-[-0.045em] text-[#fff7ec] sm:text-6xl">
                     {collection.title}
                   </h1>
                   <p className="mt-6 max-w-xl text-base leading-8 text-[#f4e7d8]/78">{collection.intro}</p>
@@ -120,11 +116,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
         <section className="wn-container wn-section" aria-labelledby="themas">
           <div className="max-w-3xl">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--wn-warm)]">✦ Voor ieder moment iets passends</p>
-            <h2
-              id="themas"
-              className="mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)] sm:text-5xl"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-            >
+            <h2 id="themas" className="wn-display mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)] sm:text-5xl">
               Kies een feestelijk thema
             </h2>
             <p className="wn-body-muted mt-4 max-w-2xl leading-7">
@@ -148,10 +140,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
                       <p className={`text-xs font-bold uppercase tracking-[0.18em] ${variant.eyebrow}`}>✦ Inspiratie</p>
                       <span className={`text-xs font-bold tracking-[0.16em] ${variant.eyebrow}`}>{String(index + 1).padStart(2, '0')}</span>
                     </div>
-                    <h3
-                      className={`mt-6 text-3xl font-semibold leading-tight tracking-[-0.03em] ${variant.title}`}
-                      style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                    >
+                    <h3 className={`wn-display mt-6 text-3xl font-semibold leading-tight tracking-[-0.03em] ${variant.title}`}>
                       {section.title}
                     </h3>
                     <p className={`mt-4 flex-1 text-sm leading-7 ${variant.body}`}>{section.description}</p>
@@ -177,15 +166,12 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
           </div>
         </section>
 
-        <section className="bg-[var(--wn-petrol-deep)] text-[var(--wn-cream)]">
+        <section className="wn-bg-brand-dark text-[var(--wn-cream)]">
           <div className="wn-container wn-section relative overflow-hidden">
             <span aria-hidden="true" className="absolute -right-20 top-8 h-56 w-56 rounded-full border border-white/10" />
             <div className="relative z-10 max-w-3xl">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#ffb889]">Gericht verder zoeken</p>
-              <h2
-                className="mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[#fff7ec]"
-                style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-              >
+              <h2 className="wn-display mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[#fff7ec]">
                 Alle productrubrieken
               </h2>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-[#f4e7d8]/75">
@@ -241,7 +227,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
         </div>
       </section>
 
-      <section className="border-t border-[var(--wn-border)] bg-white/50">
+      <section className="wn-bg-brand-sage border-t border-[var(--wn-border)]">
         <div className="wn-container wn-section">
           <h2 className="wn-heading text-3xl">Alle productrubrieken</h2>
           <p className="wn-body-muted mt-3 max-w-2xl">Wil je gericht vergelijken? Ga dan naar de vaste productcategorie waar het product thuishoort.</p>
