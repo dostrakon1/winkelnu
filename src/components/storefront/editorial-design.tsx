@@ -5,7 +5,7 @@ export type EditorialTone = 'petrol' | 'peach' | 'cream' | 'sage'
 
 const toneStyles = {
   petrol: {
-    card: 'border-[rgba(233,120,61,0.28)] bg-[var(--wn-petrol-deep)] text-[var(--wn-cream)]',
+    card: 'wn-editorial-petrol border-[rgba(233,120,61,0.28)] text-[var(--wn-cream)]',
     eyebrow: 'text-[#ffb889]',
     title: 'text-[#fff7ec]',
     body: 'text-[#f4e7d8]/75',
@@ -14,7 +14,7 @@ const toneStyles = {
     divider: 'border-white/[0.12]',
   },
   peach: {
-    card: 'border-[rgba(233,120,61,0.24)] bg-[#f1d6c5] text-[var(--wn-petrol-deep)]',
+    card: 'wn-editorial-peach border-[rgba(233,120,61,0.24)] text-[var(--wn-petrol-deep)]',
     eyebrow: 'text-[#b85427]',
     title: 'text-[var(--wn-petrol-deep)]',
     body: 'text-[rgba(13,46,45,0.72)]',
@@ -23,7 +23,7 @@ const toneStyles = {
     divider: 'border-[rgba(13,46,45,0.12)]',
   },
   cream: {
-    card: 'border-[rgba(18,59,58,0.12)] bg-[#fff8ef] text-[var(--wn-petrol-deep)]',
+    card: 'wn-editorial-cream border-[rgba(18,59,58,0.12)] text-[var(--wn-petrol-deep)]',
     eyebrow: 'text-[var(--wn-warm)]',
     title: 'text-[var(--wn-petrol-deep)]',
     body: 'text-[rgba(30,36,35,0.66)]',
@@ -32,7 +32,7 @@ const toneStyles = {
     divider: 'border-[rgba(18,59,58,0.10)]',
   },
   sage: {
-    card: 'border-[rgba(18,59,58,0.12)] bg-[var(--wn-petrol-soft)] text-[var(--wn-petrol-deep)]',
+    card: 'wn-editorial-sage border-[rgba(18,59,58,0.12)] text-[var(--wn-petrol-deep)]',
     eyebrow: 'text-[var(--wn-warm)]',
     title: 'text-[var(--wn-petrol-deep)]',
     body: 'text-[rgba(13,46,45,0.7)]',
@@ -84,10 +84,7 @@ export function EditorialFeatureCard({
           {number ? <span className={`text-xs font-bold tracking-[0.16em] ${styles.meta}`}>{number}</span> : null}
         </div>
 
-        <h3
-          className={`mt-6 text-2xl font-semibold leading-tight tracking-[-0.03em] sm:text-3xl ${styles.title}`}
-          style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-        >
+        <h3 className={`wn-display mt-6 text-2xl font-semibold leading-tight tracking-[-0.03em] sm:text-3xl ${styles.title}`}>
           {href ? (
             <Link href={href} className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)]">
               {title}

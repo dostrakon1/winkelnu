@@ -21,7 +21,7 @@ export function CategoryCard({ category }: { category: EditorialBrowseEntry }) {
 
   if (isCollection) {
     return (
-      <article className="wn-surface wn-card-interactive overflow-hidden border-[rgba(233,120,61,0.38)] bg-[var(--wn-petrol-deep)] md:col-span-2 lg:col-span-2">
+      <article className="wn-bg-brand-dark wn-card-interactive overflow-hidden rounded-[var(--wn-radius-xl)] border border-[rgba(233,120,61,0.38)] shadow-[var(--wn-shadow-sm)] md:col-span-2 lg:col-span-2">
         <div className="grid h-full lg:grid-cols-[0.92fr_1.08fr]">
           <Link
             href={href}
@@ -44,17 +44,14 @@ export function CategoryCard({ category }: { category: EditorialBrowseEntry }) {
             </span>
           </Link>
 
-          <div className="relative flex h-full flex-col justify-center overflow-hidden bg-[var(--wn-petrol-deep)] px-7 py-9 text-[var(--wn-cream)] sm:px-9 lg:px-10 lg:py-10">
+          <div className="relative flex h-full flex-col justify-center overflow-hidden px-7 py-9 text-[var(--wn-cream)] sm:px-9 lg:px-10 lg:py-10">
             <span aria-hidden="true" className="absolute -right-16 -top-16 h-44 w-44 rounded-full border border-white/10 bg-[rgba(233,120,61,0.1)]" />
             <span aria-hidden="true" className="absolute -bottom-20 -left-12 h-40 w-40 rounded-full border border-[#ffd7bd]/10" />
 
             <div className="relative z-10">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#ffb889]">✦ {eyebrow}</p>
               <Link href={href} className="group rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)]">
-                <h3
-                  className="mt-3 text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-[#fff7ec] transition-colors group-hover:text-[#ffd7bd] sm:text-[2.7rem]"
-                  style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                >
+                <h3 className="wn-display mt-3 text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-[#fff7ec] transition-colors group-hover:text-[#ffd7bd] sm:text-[2.7rem]">
                   {category.title}
                 </h3>
               </Link>
@@ -95,7 +92,7 @@ export function CategoryCard({ category }: { category: EditorialBrowseEntry }) {
         )}
         <div className="px-6 pt-6 sm:px-7">
           <p className="wn-eyebrow">{eyebrow}</p>
-          <h3 className="mt-3 text-2xl font-bold tracking-tight group-hover:text-[var(--wn-petrol)]">{category.title}</h3>
+          <h3 className="wn-display mt-3 text-2xl font-semibold leading-tight tracking-[-0.025em] text-[var(--wn-petrol-deep)] transition-colors group-hover:text-[var(--wn-petrol)]">{category.title}</h3>
         </div>
       </Link>
       <div className="flex flex-1 flex-col px-6 pb-5 sm:px-7">

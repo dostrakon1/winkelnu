@@ -60,7 +60,7 @@ export default async function HomePage() {
                   { number: '01', title: 'Ontdek producten', description: 'Oriënteer je op merken en producttypen die bij je gebruik passen.' },
                   { number: '02', title: 'Vergelijk met kennis', description: 'Leer welke eigenschappen, gebruikskosten en praktische verschillen belangrijk zijn.' },
                   { number: '03', title: 'Kies je winkel', description: 'Zodra aanbiedingen beschikbaar zijn, vergelijk je betrouwbare winkeldata en kies je zelf waar je koopt.' },
-                ].map((item) => <div key={item.number} className="flex gap-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xs font-bold text-[var(--wn-petrol)]">{item.number}</span><div><h2 className="font-bold">{item.title}</h2><p className="wn-body-muted mt-1 text-sm leading-6">{item.description}</p></div></div>)}
+                ].map((item) => <div key={item.number} className="flex gap-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xs font-bold text-[var(--wn-petrol)]">{item.number}</span><div><h2 className="wn-ui-heading text-base">{item.title}</h2><p className="wn-body-muted mt-1 text-sm leading-6">{item.description}</p></div></div>)}
               </div>
             </aside>
           )}
@@ -151,7 +151,7 @@ export default async function HomePage() {
           <div className="flex flex-wrap items-end justify-between gap-5">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--wn-warm)]">✦ Uitgelichte keuzehulpen</p>
-              <h2 className="mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)] sm:text-5xl" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>Begin met een goede voorbereiding.</h2>
+              <h2 className="wn-display mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)] sm:text-5xl">Begin met een goede voorbereiding.</h2>
               <p className="wn-body-muted mt-4 max-w-2xl">Een praktische selectie uit onze hoofdcategorieën. Op de koopgidsenpagina vind je alle {buyingGuides.length} gidsen.</p>
             </div>
             <Link href="/koopgidsen" className="inline-flex min-h-12 items-center font-bold text-[var(--wn-petrol)] hover:underline">Alle {buyingGuides.length} koopgidsen →</Link>
@@ -161,12 +161,12 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="border-y border-[var(--wn-border)] bg-[#fff8ef]">
+        <section className="wn-bg-brand-warm border-y border-[var(--wn-border)]">
           <div className="wn-container wn-section">
             <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--wn-warm)]">✦ Vergelijk met kennis</p>
-                <h2 className="mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)] sm:text-5xl" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>Ontdek wat bij jou past.</h2>
+                <h2 className="wn-display mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)] sm:text-5xl">Ontdek wat bij jou past.</h2>
                 <p className="wn-body-muted mt-5 leading-8">Van belangrijke specificaties tot gebruikskosten en onderhoud: onze gidsen helpen je de verschillen te begrijpen. Zo kun je gerichter zoeken en kiezen.</p>
                 <Link href="/koopgidsen" className="mt-5 inline-flex min-h-12 items-center font-bold text-[var(--wn-petrol)] hover:underline">Ontdek de koopgidsen →</Link>
               </div>
@@ -175,7 +175,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="border-t border-[var(--wn-border)] bg-[var(--wn-petrol-soft)]"><div className="wn-container flex flex-col gap-5 py-10 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="wn-heading text-2xl">Een vraag of een suggestie?</h2><p className="mt-2 text-sm leading-7 text-[var(--wn-text-muted)]">We horen graag welke productcategorie of keuzehulp jij graag op Winkelnu zou zien.</p></div><a href="mailto:info@akflow.nl?subject=Winkelnu.nl%20-%20Vraag%20of%20suggestie" className="wn-button wn-button-primary shrink-0">Contact opnemen →</a></div></section>
+        <section className="wn-bg-brand-sage border-t border-[var(--wn-border)]"><div className="wn-container flex flex-col gap-5 py-10 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="wn-heading text-2xl">Een vraag of een suggestie?</h2><p className="mt-2 text-sm leading-7 text-[var(--wn-text-muted)]">We horen graag welke productcategorie of keuzehulp jij graag op Winkelnu zou zien.</p></div><a href="mailto:info@akflow.nl?subject=Winkelnu.nl%20-%20Vraag%20of%20suggestie" className="wn-button wn-button-primary shrink-0">Contact opnemen →</a></div></section>
       </main>
       <WinkelnuFooter />
     </div>
