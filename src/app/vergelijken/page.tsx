@@ -3,6 +3,7 @@ import Link from 'next/link'
 import {
   applyIntentAwareComparisonContext,
   buildIntentAwareComparisonContext,
+  evaluateComparisonConstraints,
 } from '@/application/comparison/intent-aware-comparison'
 import { analyzePredictiveSearch } from '@/application/search/predictive-search-core'
 import { buildPredictiveSearchIndex } from '@/application/search/predictive-search-index'
@@ -112,11 +113,15 @@ export default async function ComparePage({
     ? analyzePredictiveSearch(contextQuery, buildPredictiveSearchIndex(), 4)
     : null
   const comparisonContext = contextAnalysis
-    ? buildIntentAwareComparisonContext(contextAnalysis, baseIntelligence.group)
+    ? buildIntentAwareComparisonContext(contextAnalysis, baseIntelligence)
     : null
   const intelligence = comparisonContext
     ? applyIntentAwareComparisonContext(baseIntelligence, comparisonContext)
     : baseIntelligence
+  const constraintSummaries = comparisonContext
+    ? evaluateComparisonConstraints(intelligence, comparisonContext)
+    : []
+  const hasConcreteConstraints = comparisonContext?.preferenceConstraints.some((constraint) => constraint.kind !== 'preference') ?? false
 
   const contextPriorityLabels = comparisonContext?.priorityMetricKeys
     .map((key) => intelligence.rows.find((row) => row.key === key)?.label)
@@ -160,14 +165,16 @@ export default async function ComparePage({
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--wn-petrol)]">Van Zoekkompas naar Vergelijkkompas</p>
               <p className="mt-2 text-lg font-black leading-7 text-[var(--wn-petrol-deep)]">“{comparisonContext.originalQuery}”</p>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--wn-text-muted)]">
-                Winkelnu gebruikt dezelfde deterministische intentanalyse opnieuw. Alleen context die voor dit producttype een expliciete vergelijkregel heeft, verandert de volgorde van eigenschappen. Er ontstaat geen persoonlijke of verborgen totaalscore.
+                Winkelnu leest nu zowel gebruikscontext als letterlijk genoemde voorkeuren en grenzen. Expliciet genoemde wensen krijgen voorrang; onbekende productspecificaties worden nooit als nadeel behandeld.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {comparisonContext.correctedQuery ? <WinkelnuBadge variant="neutral">Typo gelezen als: {comparisonContext.correctedQuery}</WinkelnuBadge> : null}
-                {comparisonContext.appliedIntentLabels.map((label) => <WinkelnuBadge key={label} variant="success">{label}</WinkelnuBadge>)}
+                {comparisonContext.appliedPreferenceLabels.map((label) => <WinkelnuBadge key={`preference:${label}`} variant="success">Voorkeur: {label}</WinkelnuBadge>)}
+                {comparisonContext.unappliedPreferenceLabels.map((label) => <WinkelnuBadge key={`unapplied:${label}`} variant="neutral">Herkend, nog niet meetbaar: {label}</WinkelnuBadge>)}
+                {comparisonContext.appliedIntentLabels.map((label) => <WinkelnuBadge key={`intent:${label}`} variant="success">{label}</WinkelnuBadge>)}
                 {comparisonContext.recognizedIntentLabels
                   .filter((label) => !comparisonContext.appliedIntentLabels.includes(label) && !label.startsWith('Budget tot'))
-                  .map((label) => <WinkelnuBadge key={label} variant="neutral">Context: {label}</WinkelnuBadge>)}
+                  .map((label) => <WinkelnuBadge key={`context:${label}`} variant="neutral">Context: {label}</WinkelnuBadge>)}
                 {comparisonContext.budgetMax != null ? <WinkelnuBadge variant="neutral">Budget tot {formatBudget(comparisonContext.budgetMax)}</WinkelnuBadge> : null}
               </div>
               {contextPriorityLabels.length > 0 ? (
@@ -209,7 +216,7 @@ export default async function ComparePage({
               <p className="wn-eyebrow">Grootste verschillen</p>
               <h2 className="wn-heading mt-2 text-2xl sm:text-3xl">Begin bij wat er werkelijk anders is.</h2>
               <p className="mt-3 text-sm leading-6 text-[var(--wn-text-muted)]">
-                Vergelijkkompas geeft voorrang aan eigenschappen die bij {intelligence.groupLabel.toLocaleLowerCase('nl-NL')} belangrijk zijn{comparisonContext?.appliedIntentLabels.length ? ' én bij je herkende gebruikscontext passen' : ''}. Alleen bekende gegevens worden gebruikt; ontbrekende informatie wordt nooit als nadeel gerekend.
+                Vergelijkkompas geeft voorrang aan eigenschappen die bij {intelligence.groupLabel.toLocaleLowerCase('nl-NL')} belangrijk zijn{comparisonContext?.priorityMetricKeys.length ? ' én die in je eigen zoekvraag naar voren komen' : ''}. Alleen bekende gegevens worden gebruikt; ontbrekende informatie wordt nooit als nadeel gerekend.
               </p>
             </div>
 
@@ -263,6 +270,27 @@ export default async function ComparePage({
                 </div>
               ))}
             </div>
+
+            {hasConcreteConstraints ? (
+              <div className="grid border-b border-[var(--wn-border)]" style={{ gridTemplateColumns }}>
+                <div className="p-4 text-sm font-bold text-[var(--wn-petrol-deep)] sm:p-5">
+                  Jouw concrete criteria
+                  <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--wn-text-muted)]">Alleen controleerbare gegevens</span>
+                </div>
+                {items.map(({ product }, index) => {
+                  const summary = constraintSummaries[index]
+                  return (
+                    <div key={`${product.id}:constraints`} className="border-l border-[var(--wn-border)] p-4 text-sm leading-6 sm:p-5">
+                      <div className="flex max-w-56 flex-wrap gap-2">
+                        {summary?.matches.map((label) => <WinkelnuBadge key={`match:${label}`} variant="success">Voldoet: {label}</WinkelnuBadge>)}
+                        {summary?.misses.map((label) => <WinkelnuBadge key={`miss:${label}`} variant="neutral">Voldoet niet: {label}</WinkelnuBadge>)}
+                        {summary?.unknown.map((label) => <WinkelnuBadge key={`unknown:${label}`} variant="neutral">Nog onbekend: {label}</WinkelnuBadge>)}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : null}
 
             <div className="grid border-b border-[var(--wn-border)]" style={{ gridTemplateColumns }}>
               <div className="p-4 text-sm font-bold text-[var(--wn-petrol-deep)] sm:p-5">Winkelprijs</div>
@@ -339,7 +367,7 @@ export default async function ComparePage({
 
         <div className="mt-6 grid gap-3 md:grid-cols-2">
           <div className="rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4 text-sm leading-6 text-[var(--wn-petrol-deep)]">
-            <strong>Zo leest Vergelijkkompas:</strong> een groen sterk punt verschijnt alleen wanneer de geselecteerde modellen dezelfde meetbare eigenschap bekend hebben en de waarden rechtstreeks vergelijkbaar zijn. Zoekcontext kan de volgorde beïnvloeden, maar nooit een verborgen winnaar maken.
+            <strong>Zo leest Vergelijkkompas:</strong> expliciete voorkeuren krijgen voorrang op bredere gebruikscontext. Een criterium telt alleen als voldaan of niet voldaan wanneer de benodigde productspecificatie bekend en veilig vergelijkbaar is.
           </div>
           <div className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white p-4 text-sm leading-6 text-[var(--wn-text-muted)]">
             Specificaties kunnen per uitvoering verschillen. Controleer voor aankoop altijd de exacte modelcode, actuele prijs en uiteindelijke gegevens bij de webwinkel.
