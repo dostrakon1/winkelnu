@@ -78,22 +78,22 @@ export function ComparisonProductGrid({
           <div className="mb-7 rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] px-5 py-4 sm:px-6 sm:py-5">
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
               <div>
-                <p className="wn-eyebrow">Producten vergelijken</p>
-                <h2 className="wn-heading mt-2 text-2xl">Zet vergelijkbare modellen direct naast elkaar.</h2>
+                <p className="wn-eyebrow">Winkelnu Vergelijkkompas</p>
+                <h2 className="wn-heading mt-2 text-2xl">Vergelijk niet alleen meer. Begrijp de verschillen.</h2>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--wn-text-muted)]">
-                  In deze categorie zijn {comparableItems} producten van {comparableGroups === 1 ? 'één vergelijkbaar producttype' : `${comparableGroups} vergelijkbare producttypen`} beschikbaar. Kies minimaal twee modellen van hetzelfde type; daarna verschijnt de vergelijkknop onder in beeld.
+                  In deze selectie zijn {comparableItems} producten van {comparableGroups === 1 ? 'één vergelijkbaar producttype' : `${comparableGroups} vergelijkbare producttypen`} beschikbaar. Kies twee tot vier modellen van hetzelfde type; Vergelijkkompas zet daarna de belangrijkste eigenschappen en objectief meetbare sterke punten vooraan.
                 </p>
               </div>
               <div className="grid gap-2 text-xs font-semibold text-[var(--wn-petrol-deep)] sm:grid-cols-3 lg:grid-cols-1">
-                <span className="rounded-full bg-white/80 px-3 py-2">1. Kies een model</span>
-                <span className="rounded-full bg-white/80 px-3 py-2">2. Kies hetzelfde type</span>
-                <span className="rounded-full bg-white/80 px-3 py-2">3. Vergelijk verschillen</span>
+                <span className="rounded-full bg-white/80 px-3 py-2">1. Kies 2–4 modellen</span>
+                <span className="rounded-full bg-white/80 px-3 py-2">2. Zelfde producttype</span>
+                <span className="rounded-full bg-white/80 px-3 py-2">3. Ontdek kernverschillen</span>
               </div>
             </div>
           </div>
         ) : (
           <div className="mb-7 rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white px-5 py-4 text-sm leading-6 text-[var(--wn-text-muted)]">
-            Productvergelijking wordt hier automatisch beschikbaar zodra minimaal twee modellen van hetzelfde producttype in de catalogus staan.
+            Vergelijkkompas wordt hier automatisch beschikbaar zodra minimaal twee modellen van hetzelfde producttype in de catalogus staan.
           </div>
         )
       ) : null}
@@ -106,14 +106,14 @@ export function ComparisonProductGrid({
           const limitReached = selectedSlugs.length >= MAX_COMPARISON_PRODUCTS && !selected
           const disabled = !selected && (!hasComparablePeer || wrongGroup || limitReached)
           const buttonLabel = selected
-            ? '✓ Geselecteerd voor vergelijking'
+            ? '✓ Geselecteerd voor Vergelijkkompas'
             : !hasComparablePeer
               ? 'Vergelijken nog niet beschikbaar'
               : wrongGroup
                 ? 'Kies hetzelfde producttype'
                 : limitReached
                   ? 'Maximaal 4 geselecteerd'
-                  : '+ Toevoegen aan vergelijking'
+                  : '+ Toevoegen aan Vergelijkkompas'
 
           const comparisonAction = (
             <button
@@ -172,8 +172,8 @@ export function ComparisonProductGrid({
               <p className="font-bold text-[var(--wn-ink)]">{selectedSlugs.length} van maximaal {MAX_COMPARISON_PRODUCTS} geselecteerd</p>
               <p className="mt-1 text-xs leading-5 text-[var(--wn-text-muted)]">
                 {selectedSlugs.length < MIN_COMPARISON_PRODUCTS
-                  ? 'Selecteer nog één product van hetzelfde type om de verschillen te zien.'
-                  : 'Klaar om vergelijkbare productspecificaties naast elkaar te zetten.'}
+                  ? 'Selecteer nog één product van hetzelfde type om Vergelijkkompas te openen.'
+                  : 'Klaar. Winkelnu zet kernverschillen, bekende prijzen en sterke punten voor je op een rij.'}
               </p>
             </div>
             <div className="flex gap-2">
@@ -186,7 +186,7 @@ export function ComparisonProductGrid({
               </button>
               {selectedSlugs.length >= MIN_COMPARISON_PRODUCTS ? (
                 <Link href={compareHref} className="wn-button wn-button-primary flex-1 sm:flex-none">
-                  Vergelijk {selectedSlugs.length} producten →
+                  Open Vergelijkkompas →
                 </Link>
               ) : null}
             </div>
