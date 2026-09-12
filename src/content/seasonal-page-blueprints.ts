@@ -253,9 +253,110 @@ const sinterklaasBlueprint = {
   },
 } as const satisfies SeasonalPageBlueprint
 
+const kerstBlueprint = {
+  heroCtaLabel: 'Plan je kerst ↓',
+  planner: {
+    eyebrow: '✦ Begin bij het kerstmoment',
+    title: 'Wat wil je voor Kerst regelen?',
+    description:
+      'Kerst bestaat uit meer dan alleen cadeaus. Kies eerst het moment waar je mee bezig bent en ga daarna gericht door naar inspiratie voor cadeaus, sfeer, tafelen of kinderen.',
+    routes: [
+      {
+        label: 'Kerstcadeaus',
+        title: 'Vind een cadeau dat echt past',
+        description: 'Begin bij de ontvanger, interesse en het gebruiksmoment in plaats van bij een eindeloze lijst losse cadeau-ideeën.',
+        href: '#kerstcadeaus',
+      },
+      {
+        label: 'Sfeer in huis',
+        title: 'Maak thuis warm en feestelijk',
+        description: 'Combineer verlichting, wonen en kleine sfeermakers zodat je huis als één geheel voelt zonder te overdrijven.',
+        href: '#voor-thuis',
+      },
+      {
+        label: 'Koken & tafelen',
+        title: 'Bereid het kerstdiner slimmer voor',
+        description: 'Denk vooraf aan koken, serveren, koffie en praktische keukenhulp zodat de avond zelf rustiger verloopt.',
+        href: '#koken-tafelen',
+      },
+      {
+        label: 'Met kinderen',
+        title: 'Cadeaus en gezelligheid voor kinderen',
+        description: 'Kies speelgoed, creatieve ideeën en activiteiten die passen bij leeftijd, interesse en samen tijd doorbrengen.',
+        href: '#voor-kinderen',
+      },
+    ],
+  },
+  budget: {
+    eyebrow: '✦ Kies je kerstbudget',
+    title: 'Verdeel je budget vóór je gaat zoeken.',
+    description:
+      'Met meerdere cadeaus, etentjes en sfeeraankopen loopt Kerst snel op. Door vooraf per persoon of onderdeel een budget te kiezen, blijft vergelijken overzichtelijker.',
+    disclaimer: 'De bedragen zijn richtbedragen voor je planning, geen actuele prijs- of beschikbaarheidsbelofte.',
+    tiers: [
+      {
+        label: 'Tot €15',
+        title: 'Klein cadeau of sfeerdetail',
+        description: 'Voor een attent gebaar, klein cadeautje of een praktische toevoeging aan tafel en interieur.',
+        examples: ['Kleine accessoires', 'Spel of hobby', 'Tafel- en sfeerdetails'],
+      },
+      {
+        label: '€15–€40',
+        title: 'Een compleet en persoonlijk cadeau',
+        description: 'Een breed middenbudget voor verzorging, keuken, mode, speelgoed en kleinere elektronica.',
+        examples: ['Verzorging & mode', 'Keuken & koffie', 'Speelgoed of gadgets'],
+      },
+      {
+        label: '€40+',
+        title: 'Een groter kerstcadeau',
+        description: 'Voor één bewuster gekozen cadeau of een groter onderdeel voor thuis, hobby, tech of samen beleven.',
+        examples: ['Elektronica', 'Wonen & huishouden', 'Sport, hobby of keuken'],
+      },
+    ],
+  },
+  checklist: {
+    eyebrow: '✦ Slim kiezen voor Kerst',
+    title: 'Vier checks vóór je iets voor Kerst kiest.',
+    description:
+      'Een korte controle helpt om cadeaus en kerstaankopen beter te laten passen bij de persoon, het moment en hoe je het na de feestdagen nog gebruikt.',
+    items: [
+      {
+        title: 'Past het bij de persoon?',
+        description: 'Kijk eerst naar interesses, dagelijkse routines en wat iemand al gebruikt voordat je voor een populaire keuze gaat.',
+      },
+      {
+        title: 'Wordt het echt gebruikt?',
+        description: 'Een praktisch of persoonlijk cadeau dat vaker terugkomt is vaak waardevoller dan iets dat alleen tijdens de feestdagen leuk lijkt.',
+      },
+      {
+        title: 'Past het bij het moment?',
+        description: 'Denk bij koken, wonen en sfeer aan ruimte, aantal gasten en wat je al in huis hebt zodat aankopen samen kloppen.',
+      },
+      {
+        title: 'Kan het na Kerst ook mee?',
+        description: 'Geef waar mogelijk de voorkeur aan producten die niet alleen voor één avond of één seizoen bruikbaar zijn.',
+      },
+    ],
+  },
+  search: {
+    enabled: false,
+    eyebrow: '✦ Gericht kerstproducten ontdekken',
+    title: 'Zoek straks direct vanuit je kerstplan.',
+    description:
+      'Zodra passende partnerdata beschikbaar is, kan Winkelnu hier echte kerstselecties tonen met producten, winkelprijzen en aanbiedingen uit meerdere aangesloten winkels.',
+    routes: [
+      { label: 'Kerstcadeaus', description: 'Cadeau-ideeën voor verschillende personen en interesses.', query: 'kerstcadeaus' },
+      { label: 'Kerst voor thuis', description: 'Sfeer, wonen en praktische producten voor gezellige dagen thuis.', query: 'kerst thuis sfeer' },
+      { label: 'Koken & tafelen', description: 'Keuken, koffie en producten voor het kerstdiner.', query: 'kerst koken tafelen' },
+      { label: 'Kerst met kinderen', description: 'Speelgoed, hobby en ideeën voor samen tijd doorbrengen.', query: 'kerst kinderen speelgoed' },
+    ],
+  },
+} as const satisfies SeasonalPageBlueprint
+
 const seasonalPageBlueprints: Record<string, SeasonalPageBlueprint> = {
   halloween: halloweenBlueprint,
   sinterklaas: sinterklaasBlueprint,
+  kerst: kerstBlueprint,
 }
 
 export function getSeasonalPageBlueprint(collectionSlug: string): SeasonalPageBlueprint | undefined {
