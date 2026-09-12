@@ -25,7 +25,6 @@ export type SeasonalSearchRoute = {
 
 export type SeasonalPageBlueprint = {
   heroCtaLabel: string
-  heroCtaHref: string
   planner: {
     eyebrow: string
     title: string
@@ -55,7 +54,6 @@ export type SeasonalPageBlueprint = {
 
 const halloweenBlueprint = {
   heroCtaLabel: 'Plan je Halloween ↓',
-  heroCtaHref: '#halloween-plan',
   planner: {
     eyebrow: '✦ Begin bij je plan',
     title: 'Wat voor Halloween wil je maken?',
