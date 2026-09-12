@@ -1,6 +1,7 @@
+import { activeSite } from '@/config/sites'
 import type { BuyingGuide } from '@/content/koopgidsen'
 
-const SITE_URL = 'https://winkelnu.nl'
+const SITE_URL = activeSite.canonicalOrigin
 
 type EditorialCategory = {
   slug: string
@@ -45,8 +46,8 @@ export function buildBuyingGuideStructuredData(input: {
         headline: guide.title,
         description: guide.description,
         dateModified: guide.updated,
-        author: { '@type': 'Organization', name: 'Redactie Winkelnu', url: SITE_URL },
-        publisher: { '@type': 'Organization', name: 'Winkelnu', url: SITE_URL },
+        author: { '@type': 'Organization', name: activeSite.editorial.authorName, url: SITE_URL },
+        publisher: { '@type': 'Organization', name: activeSite.editorial.publisherName, url: SITE_URL },
         mainEntityOfPage: { '@type': 'WebPage', '@id': guideUrl },
         ...(category ? { articleSection: category.title } : {}),
       },
@@ -74,7 +75,7 @@ export function buildEditorialCategoryStructuredData(input: {
         url: categoryUrl,
         name: category.title,
         description: category.description,
-        isPartOf: { '@type': 'WebSite', name: 'Winkelnu', url: SITE_URL },
+        isPartOf: { '@type': 'WebSite', name: activeSite.brandName, url: SITE_URL },
       },
       {
         '@type': 'ItemList',
