@@ -5,9 +5,11 @@ import { babyKindBuyingGuides } from './baby-kind-guides'
 import { dierenBuyingGuides } from './dieren-guides'
 import { autoFietsBuyingGuides } from './auto-fiets-guides'
 import { categories, getCategoryContent } from './categories'
-import { editorialCollections } from './collections'
+import { cadeausFeestCollection } from './collections/cadeaus-feest'
 
-export const editorialCategories = [...categories, ...editorialCollections] as const
+// Alleen blijvende rubrieken horen in de vaste categorie-UI. Tijdelijke seizoenscollecties
+// worden uitsluitend via de Seasonal Campaign Layer uitgelicht wanneer hun periode actief is.
+export const editorialCategories = [...categories, cadeausFeestCollection] as const
 
 export const buyingGuides: BuyingGuide[] = [
   ...existingBuyingGuides,
