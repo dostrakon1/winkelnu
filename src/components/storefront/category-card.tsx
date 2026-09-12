@@ -8,7 +8,7 @@ type EditorialBrowseEntry = (typeof editorialCategories)[number]
 
 export function CategoryCard({ category }: { category: EditorialBrowseEntry }) {
   const isCollection = 'sections' in category
-  const image = isCollection ? undefined : getCategoryImage(category.slug, category.title)
+  const image = getCategoryImage(category.slug, category.title)
   const count = isCollection ? category.sections.length : guidesForCategory(category.slug).length
   const href = isCollection ? `/collecties/${category.slug}` : `/koopgidsen/categorie/${category.slug}`
   const eyebrow = isCollection ? 'Collectie' : 'Keuzehulp'
@@ -27,8 +27,19 @@ export function CategoryCard({ category }: { category: EditorialBrowseEntry }) {
             href={href}
             className="group relative block min-h-64 overflow-hidden bg-[var(--wn-cream)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)] lg:min-h-full"
           >
-            <WinkelnuSurfaceMotif className="h-full min-h-64 w-full transition-transform duration-300 group-hover:scale-[1.015] motion-reduce:transform-none" />
-            <span className="absolute left-6 top-6 inline-flex rounded-full border border-[rgba(233,120,61,0.28)] bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[var(--wn-warm)] shadow-sm">
+            {image ? (
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                sizes="(max-width: 1023px) 100vw, 34vw"
+                className="object-cover transition-transform duration-300 group-hover:scale-[1.025] motion-reduce:transform-none"
+                style={{ objectPosition: image.position }}
+              />
+            ) : (
+              <WinkelnuSurfaceMotif className="h-full min-h-64 w-full transition-transform duration-300 group-hover:scale-[1.015] motion-reduce:transform-none" />
+            )}
+            <span className="absolute left-6 top-6 inline-flex rounded-full border border-[rgba(233,120,61,0.28)] bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[var(--wn-warm)] shadow-sm backdrop-blur-sm">
               Cadeaus & feest
             </span>
           </Link>
