@@ -89,9 +89,9 @@ export const seasonalCampaigns = [
     bannerLabel: 'Kerst bij Winkelnu — ontdek cadeau-inspiratie',
     imageSlug: 'cadeaus-feest',
     imageLabel: 'Cadeaus & feest',
-    heroGradient: 'linear-gradient(135deg, #082b28 0%, #17463c 52%, #87652f 100%)',
-    accent: '#dca75b',
-    accentSoft: '#f5ddb4',
+    heroGradient: 'linear-gradient(135deg, #36070b 0%, #74131b 46%, #9d2430 68%, #143a33 100%)',
+    accent: '#b51f2e',
+    accentSoft: '#f3d39a',
     chips: [
       { label: 'Cadeaus', href: '/collecties/kerst#kerstcadeaus' },
       { label: 'Voor thuis', href: '/collecties/kerst#voor-thuis' },
