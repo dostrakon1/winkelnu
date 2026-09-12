@@ -1,6 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
+  applyIntentAwareComparisonContext,
+  buildIntentAwareComparisonContext,
+} from '@/application/comparison/intent-aware-comparison'
+import { analyzePredictiveSearch } from '@/application/search/predictive-search-core'
+import { buildPredictiveSearchIndex } from '@/application/search/predictive-search-index'
+import {
   MIN_COMPARISON_PRODUCTS,
   NOT_APPLICABLE_COMPARISON_VALUE,
   parseComparisonProductSlugs,
@@ -17,13 +23,23 @@ import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-
 
 export const metadata: Metadata = {
   title: 'Vergelijkkompas | Producten slim vergelijken',
-  description: 'Vergelijk producten op de eigenschappen die voor dit producttype echt relevant zijn en ontdek de belangrijkste verschillen.',
+  description: 'Vergelijk producten op de eigenschappen die voor dit producttype en jouw zoekvraag echt relevant zijn.',
   alternates: { canonical: '/vergelijken' },
   robots: { index: false, follow: true },
 }
 
 function formatMoney(amount: string): string {
   return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(amount))
+}
+
+function formatBudget(amount: number): string {
+  return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(amount)
+}
+
+function firstSearchParam(value: string | string[] | undefined): string | undefined {
+  const first = Array.isArray(value) ? value[0] : value
+  const normalized = first?.trim().slice(0, 160)
+  return normalized || undefined
 }
 
 function EmptyComparison({
@@ -57,6 +73,7 @@ export default async function ComparePage({
 }) {
   const raw = await searchParams
   const slugs = parseComparisonProductSlugs(raw.producten)
+  const contextQuery = firstSearchParam(raw.q)
   const catalog = await createStorefrontCatalogService()
   const resolved = await Promise.all(slugs.map((slug) => catalog.getProduct(slug)))
   const items = resolved.filter((item) => item !== null)
@@ -81,8 +98,8 @@ export default async function ComparePage({
     )
   }
 
-  const intelligence = buildSmartComparison(products)
-  if (!intelligence) {
+  const baseIntelligence = buildSmartComparison(products)
+  if (!baseIntelligence) {
     return (
       <EmptyComparison
         title="Deze vergelijking kan nog niet slim worden opgebouwd."
@@ -90,6 +107,20 @@ export default async function ComparePage({
       />
     )
   }
+
+  const contextAnalysis = contextQuery
+    ? analyzePredictiveSearch(contextQuery, buildPredictiveSearchIndex(), 4)
+    : null
+  const comparisonContext = contextAnalysis
+    ? buildIntentAwareComparisonContext(contextAnalysis, baseIntelligence.group)
+    : null
+  const intelligence = comparisonContext
+    ? applyIntentAwareComparisonContext(baseIntelligence, comparisonContext)
+    : baseIntelligence
+
+  const contextPriorityLabels = comparisonContext?.priorityMetricKeys
+    .map((key) => intelligence.rows.find((row) => row.key === key)?.label)
+    .filter((label): label is string => Boolean(label)) ?? []
 
   const firstCategoryId = products[0]?.categoryId
   const categories = firstCategoryId ? await catalog.listCategories() : []
@@ -108,7 +139,7 @@ export default async function ComparePage({
   const productHighlights = intelligence.productHighlights.map((highlights, index) => [
     ...(priceBestIndexes.includes(index) ? ['Laagste bekende totaalprijs'] : []),
     ...highlights,
-  ].slice(0, 3))
+  ].filter((label, position, all) => all.indexOf(label) === position).slice(0, 3))
 
   return (
     <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
@@ -121,8 +152,31 @@ export default async function ComparePage({
             Zie wat deze {intelligence.groupLabel.toLocaleLowerCase('nl-NL')} echt van elkaar onderscheidt.
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--wn-text-muted)] sm:text-lg">
-            Geen algemene winnaar en geen verborgen totaalscore. Winkelnu brengt de bekende productspecificaties samen, herkent verschillende benamingen voor dezelfde eigenschap en zet de belangrijkste verschillen voor dit producttype bovenaan.
+            Geen algemene winnaar en geen verborgen totaalscore. Winkelnu brengt bekende productspecificaties samen, herkent verschillende benamingen voor dezelfde eigenschap en zet de belangrijkste verschillen voor dit producttype vooraan.
           </p>
+
+          {comparisonContext?.originalQuery ? (
+            <div className="mt-7 max-w-4xl rounded-[var(--wn-radius-xl)] border border-[color:rgba(18,59,58,0.14)] bg-white/80 p-5 shadow-[var(--wn-shadow-xs)] sm:p-6">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--wn-petrol)]">Van Zoekkompas naar Vergelijkkompas</p>
+              <p className="mt-2 text-lg font-black leading-7 text-[var(--wn-petrol-deep)]">“{comparisonContext.originalQuery}”</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--wn-text-muted)]">
+                Winkelnu gebruikt dezelfde deterministische intentanalyse opnieuw. Alleen context die voor dit producttype een expliciete vergelijkregel heeft, verandert de volgorde van eigenschappen. Er ontstaat geen persoonlijke of verborgen totaalscore.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {comparisonContext.correctedQuery ? <WinkelnuBadge variant="neutral">Typo gelezen als: {comparisonContext.correctedQuery}</WinkelnuBadge> : null}
+                {comparisonContext.appliedIntentLabels.map((label) => <WinkelnuBadge key={label} variant="success">{label}</WinkelnuBadge>)}
+                {comparisonContext.recognizedIntentLabels
+                  .filter((label) => !comparisonContext.appliedIntentLabels.includes(label) && !label.startsWith('Budget tot'))
+                  .map((label) => <WinkelnuBadge key={label} variant="neutral">Context: {label}</WinkelnuBadge>)}
+                {comparisonContext.budgetMax != null ? <WinkelnuBadge variant="neutral">Budget tot {formatBudget(comparisonContext.budgetMax)}</WinkelnuBadge> : null}
+              </div>
+              {contextPriorityLabels.length > 0 ? (
+                <div className="mt-4 text-sm leading-6 text-[var(--wn-petrol-deep)]">
+                  <strong>Extra nadruk in deze vergelijking:</strong> {contextPriorityLabels.join(' · ')}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="mt-7 flex flex-wrap gap-2">
             <span className="mr-1 self-center text-xs font-bold uppercase tracking-[0.08em] text-[var(--wn-text-muted)]">We letten hier vooral op</span>
@@ -132,13 +186,18 @@ export default async function ComparePage({
           </div>
 
           <div className="mt-7 flex flex-wrap gap-3">
+            {comparisonContext?.originalQuery ? (
+              <WinkelnuButton href={`/zoeken?q=${encodeURIComponent(comparisonContext.originalQuery)}`} variant="secondary">
+                Terug naar Zoekkompas
+              </WinkelnuButton>
+            ) : null}
             {firstCategory ? (
               <WinkelnuButton href={`/categorie/${firstCategory.slug}`} variant="secondary">
                 Andere producten kiezen
               </WinkelnuButton>
-            ) : (
+            ) : !comparisonContext?.originalQuery ? (
               <WinkelnuButton href="/zoeken" variant="secondary">Andere producten zoeken</WinkelnuButton>
-            )}
+            ) : null}
           </div>
         </div>
       </section>
@@ -150,7 +209,7 @@ export default async function ComparePage({
               <p className="wn-eyebrow">Grootste verschillen</p>
               <h2 className="wn-heading mt-2 text-2xl sm:text-3xl">Begin bij wat er werkelijk anders is.</h2>
               <p className="mt-3 text-sm leading-6 text-[var(--wn-text-muted)]">
-                Vergelijkkompas geeft voorrang aan eigenschappen die bij {intelligence.groupLabel.toLocaleLowerCase('nl-NL')} belangrijk zijn. Alleen bekende gegevens worden gebruikt; ontbrekende informatie wordt nooit als nadeel gerekend.
+                Vergelijkkompas geeft voorrang aan eigenschappen die bij {intelligence.groupLabel.toLocaleLowerCase('nl-NL')} belangrijk zijn{comparisonContext?.appliedIntentLabels.length ? ' én bij je herkende gebruikscontext passen' : ''}. Alleen bekende gegevens worden gebruikt; ontbrekende informatie wordt nooit als nadeel gerekend.
               </p>
             </div>
 
@@ -209,6 +268,10 @@ export default async function ComparePage({
               <div className="p-4 text-sm font-bold text-[var(--wn-petrol-deep)] sm:p-5">Winkelprijs</div>
               {items.map(({ product, offers }, index) => {
                 const highlighted = priceBestIndexes.includes(index)
+                const knownPrice = knownPrices[index]
+                const budgetStatus = comparisonContext?.budgetMax != null && knownPrice != null && Number.isFinite(knownPrice)
+                  ? knownPrice <= comparisonContext.budgetMax ? 'within' : 'above'
+                  : comparisonContext?.budgetMax != null ? 'unknown' : null
                 return (
                   <div
                     key={`${product.id}:price`}
@@ -217,10 +280,17 @@ export default async function ComparePage({
                     {offers[0] ? (
                       <div className="space-y-2">
                         <span className="font-bold text-[var(--wn-petrol-deep)]">Vanaf bekende totaalprijs {formatMoney(offers[0].totalAmount)}</span>
-                        {highlighted ? <div><WinkelnuBadge variant="success">Laagste bekende totaalprijs</WinkelnuBadge></div> : null}
+                        <div className="flex flex-wrap gap-2">
+                          {highlighted ? <WinkelnuBadge variant="success">Laagste bekende totaalprijs</WinkelnuBadge> : null}
+                          {budgetStatus === 'within' ? <WinkelnuBadge variant="success">Binnen genoemd budget</WinkelnuBadge> : null}
+                          {budgetStatus === 'above' ? <WinkelnuBadge variant="neutral">Boven genoemd budget</WinkelnuBadge> : null}
+                        </div>
                       </div>
                     ) : (
-                      <span className="text-[var(--wn-text-muted)]">Nog geen winkelprijzen gekoppeld.</span>
+                      <div className="space-y-2">
+                        <span className="text-[var(--wn-text-muted)]">Nog geen winkelprijzen gekoppeld.</span>
+                        {budgetStatus === 'unknown' ? <div><WinkelnuBadge variant="neutral">Budget nog niet te beoordelen</WinkelnuBadge></div> : null}
+                      </div>
                     )}
                   </div>
                 )
@@ -235,7 +305,9 @@ export default async function ComparePage({
               >
                 <div className="p-4 text-sm font-bold text-[var(--wn-petrol-deep)] sm:p-5">
                   {row.label}
-                  {row.importance === 'primary' ? (
+                  {comparisonContext?.priorityMetricKeys.includes(row.key) ? (
+                    <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--wn-petrol)]">Relevant voor je zoekvraag</span>
+                  ) : row.importance === 'primary' ? (
                     <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--wn-text-muted)]">Kernverschil</span>
                   ) : null}
                 </div>
@@ -267,7 +339,7 @@ export default async function ComparePage({
 
         <div className="mt-6 grid gap-3 md:grid-cols-2">
           <div className="rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4 text-sm leading-6 text-[var(--wn-petrol-deep)]">
-            <strong>Zo leest Vergelijkkompas:</strong> een groen sterk punt verschijnt alleen wanneer de geselecteerde modellen dezelfde meetbare eigenschap bekend hebben en de waarden rechtstreeks vergelijkbaar zijn. Er wordt geen verborgen totaalscore gebruikt.
+            <strong>Zo leest Vergelijkkompas:</strong> een groen sterk punt verschijnt alleen wanneer de geselecteerde modellen dezelfde meetbare eigenschap bekend hebben en de waarden rechtstreeks vergelijkbaar zijn. Zoekcontext kan de volgorde beïnvloeden, maar nooit een verborgen winnaar maken.
           </div>
           <div className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white p-4 text-sm leading-6 text-[var(--wn-text-muted)]">
             Specificaties kunnen per uitvoering verschillen. Controleer voor aankoop altijd de exacte modelcode, actuele prijs en uiteindelijke gegevens bij de webwinkel.

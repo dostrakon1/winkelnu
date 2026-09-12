@@ -27,12 +27,14 @@ type ComparisonProductGridProps = {
   items: ComparisonProductGridItem[]
   showIntro?: boolean
   gridClassName?: string
+  comparisonQuery?: string
 }
 
 export function ComparisonProductGrid({
   items,
   showIntro = true,
   gridClassName = 'grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3',
+  comparisonQuery,
 }: ComparisonProductGridProps) {
   const [selectedSlugs, setSelectedSlugs] = useState<string[]>([])
   const selectedSet = useMemo(() => new Set(selectedSlugs), [selectedSlugs])
@@ -55,7 +57,10 @@ export function ComparisonProductGrid({
   const selectedGroup = selectedSlugs.length > 0
     ? items.find((item) => item.slug === selectedSlugs[0])?.comparisonGroup ?? null
     : null
-  const compareHref = `/vergelijken?producten=${encodeURIComponent(selectedSlugs.join(','))}`
+  const compareParams = new URLSearchParams({ producten: selectedSlugs.join(',') })
+  const normalizedComparisonQuery = comparisonQuery?.trim().slice(0, 160)
+  if (normalizedComparisonQuery) compareParams.set('q', normalizedComparisonQuery)
+  const compareHref = `/vergelijken?${compareParams.toString()}`
 
   function toggle(slug: string) {
     setSelectedSlugs((current) => {
@@ -69,6 +74,18 @@ export function ComparisonProductGrid({
       if (current.length >= MAX_COMPARISON_PRODUCTS) return current
       return [...current, slug]
     })
+  }
+
+  function openComparison(event: React.MouseEvent<HTMLAnchorElement>) {
+    if (normalizedComparisonQuery || typeof window === 'undefined' || window.location.pathname !== '/zoeken') return
+    const liveQuery = currentSearchQuery()?.trim().slice(0, 160)
+    if (!liveQuery) return
+    event.preventDefault()
+    const params = new URLSearchParams({
+      producten: selectedSlugs.join(','),
+      q: liveQuery,
+    })
+    window.location.assign(`/vergelijken?${params.toString()}`)
   }
 
   return (
@@ -173,7 +190,9 @@ export function ComparisonProductGrid({
               <p className="mt-1 text-xs leading-5 text-[var(--wn-text-muted)]">
                 {selectedSlugs.length < MIN_COMPARISON_PRODUCTS
                   ? 'Selecteer nog één product van hetzelfde type om Vergelijkkompas te openen.'
-                  : 'Klaar. Winkelnu zet kernverschillen, bekende prijzen en sterke punten voor je op een rij.'}
+                  : normalizedComparisonQuery
+                    ? 'Klaar. Je Zoekkompas-vraag gaat mee, zodat Vergelijkkompas de relevante verschillen extra nadruk kan geven.'
+                    : 'Klaar. Winkelnu zet kernverschillen, bekende prijzen en sterke punten voor je op een rij.'}
               </p>
             </div>
             <div className="flex gap-2">
@@ -185,7 +204,7 @@ export function ComparisonProductGrid({
                 Wissen
               </button>
               {selectedSlugs.length >= MIN_COMPARISON_PRODUCTS ? (
-                <Link href={compareHref} className="wn-button wn-button-primary flex-1 sm:flex-none">
+                <Link href={compareHref} onClick={openComparison} className="wn-button wn-button-primary flex-1 sm:flex-none">
                   Open Vergelijkkompas →
                 </Link>
               ) : null}
