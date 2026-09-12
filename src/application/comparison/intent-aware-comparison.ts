@@ -1,5 +1,6 @@
 import type { PredictiveSearchAnalysis, SearchIntentKey } from '@/application/search/predictive-search-core'
 import type { ProductComparisonGroup } from '@/domain/catalog/comparison'
+import type { SmartComparisonResult } from '@/domain/catalog/comparison-intelligence'
 
 export type IntentAwareComparisonContext = {
   originalQuery?: string
@@ -59,5 +60,56 @@ export function buildIntentAwareComparisonContext(
     recognizedIntentLabels: analysis.intents.map((intent) => intent.label),
     appliedIntentLabels,
     priorityMetricKeys,
+  }
+}
+
+export function applyIntentAwareComparisonContext(
+  comparison: SmartComparisonResult,
+  context: IntentAwareComparisonContext,
+): SmartComparisonResult {
+  if (context.priorityMetricKeys.length === 0) return comparison
+
+  const priorityOrder = new Map(context.priorityMetricKeys.map((key, index) => [key, index]))
+  const originalOrder = new Map(comparison.rows.map((row, index) => [row.key, index]))
+  const rows = [...comparison.rows].sort((left, right) => {
+    const leftPriority = priorityOrder.get(left.key)
+    const rightPriority = priorityOrder.get(right.key)
+    if (leftPriority != null || rightPriority != null) {
+      if (leftPriority == null) return 1
+      if (rightPriority == null) return -1
+      if (leftPriority !== rightPriority) return leftPriority - rightPriority
+    }
+    return (originalOrder.get(left.key) ?? 0) - (originalOrder.get(right.key) ?? 0)
+  })
+
+  const priorityLabels = context.priorityMetricKeys
+    .map((key) => rows.find((row) => row.key === key)?.label)
+    .filter((label): label is string => Boolean(label))
+  const focus = [...priorityLabels, ...comparison.focus]
+    .filter((label, index, all) => all.indexOf(label) === index)
+    .slice(0, 6)
+
+  const keyDifferences = [
+    ...rows.filter((row) => priorityOrder.has(row.key) && row.isDifferent),
+    ...comparison.keyDifferences,
+  ]
+    .filter((row, index, all) => all.findIndex((candidate) => candidate.key === row.key) === index)
+    .slice(0, 4)
+
+  const contextualHighlights = comparison.productHighlights.map((existing, productIndex) => {
+    const priorityHighlights = rows
+      .filter((row) => priorityOrder.has(row.key) && row.bestProductIndexes.includes(productIndex) && row.standoutLabel)
+      .map((row) => row.standoutLabel as string)
+    return [...priorityHighlights, ...existing]
+      .filter((label, index, all) => all.indexOf(label) === index)
+      .slice(0, 3)
+  })
+
+  return {
+    ...comparison,
+    focus,
+    rows,
+    keyDifferences,
+    productHighlights: contextualHighlights,
   }
 }
