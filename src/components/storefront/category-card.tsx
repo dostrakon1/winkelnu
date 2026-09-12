@@ -21,7 +21,7 @@ export function CategoryCard({ category }: { category: EditorialBrowseEntry }) {
 
   if (isCollection) {
     return (
-      <article className="wn-bg-brand-dark wn-surface wn-card-interactive overflow-hidden border-[rgba(233,120,61,0.38)] md:col-span-2 lg:col-span-2">
+      <article className="wn-bg-brand-dark wn-card-interactive overflow-hidden rounded-[var(--wn-radius-xl)] border border-[rgba(233,120,61,0.38)] shadow-[var(--wn-shadow-sm)] md:col-span-2 lg:col-span-2">
         <div className="grid h-full lg:grid-cols-[0.92fr_1.08fr]">
           <Link
             href={href}
