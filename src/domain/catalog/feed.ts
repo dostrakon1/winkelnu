@@ -1,4 +1,4 @@
-import type { Money } from './types'
+import type { Money, ProductSpecification, ProductVisualKind } from './types'
 
 export type FeedCandidate = {
   sourceKey: string
@@ -11,6 +11,8 @@ export type FeedCandidate = {
   merchantSku?: string
   sourceCategory?: string
   imageUrls: string[]
+  specifications?: ProductSpecification[]
+  visualKind?: ProductVisualKind
   price: Money
   previousPrice?: Money
   shippingCost?: Money

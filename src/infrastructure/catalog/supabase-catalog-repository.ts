@@ -2,11 +2,28 @@ import 'server-only'
 
 import type { CatalogReadRepository, CatalogWriteRepository, ProductWithOffers } from '@/application/catalog/ports'
 import type { ImportReject, ImportRun, MatchReviewItem } from '@/domain/catalog/import-observability'
-import type { Category, Merchant, Offer, Product } from '@/domain/catalog/types'
+import type { Category, Merchant, Offer, Product, ProductSpecification, ProductVisualKind } from '@/domain/catalog/types'
 import { createSupabaseServerClient } from '@/infrastructure/supabase/server-client'
 
 function money(amount: unknown): { amount: string; currency: 'EUR' } {
   return { amount: String(amount ?? '0.00'), currency: 'EUR' }
+}
+
+function productSpecifications(value: unknown): ProductSpecification[] | undefined {
+  if (!Array.isArray(value)) return undefined
+  const specifications = value.flatMap((candidate) => {
+    if (!candidate || typeof candidate !== 'object') return []
+    const record = candidate as Record<string, unknown>
+    if (typeof record.label !== 'string' || typeof record.value !== 'string') return []
+    const label = record.label.trim()
+    const specificationValue = record.value.trim()
+    return label && specificationValue ? [{ label, value: specificationValue }] : []
+  }).slice(0, 80)
+  return specifications.length > 0 ? specifications : undefined
+}
+
+function productVisualKind(value: unknown): ProductVisualKind | undefined {
+  return typeof value === 'string' && value.trim() ? value as ProductVisualKind : undefined
 }
 
 function fail(error: { message: string } | null, context: string): void {
@@ -61,6 +78,8 @@ export class SupabaseCatalogRepository implements CatalogReadRepository, Catalog
       mpn: row.mpn ?? undefined,
       imageUrl: row.primary_image_url ?? undefined,
       categoryId: undefined,
+      specifications: productSpecifications(row.specifications),
+      visualKind: productVisualKind(row.visual_kind),
     }
 
     const { data: offerRows, error: offersError } = await this.db
@@ -112,6 +131,8 @@ export class SupabaseCatalogRepository implements CatalogReadRepository, Catalog
       mpn: row.mpn ?? undefined,
       imageUrl: row.primary_image_url ?? undefined,
       categoryId: row.categories?.external_key ?? undefined,
+      specifications: productSpecifications(row.specifications),
+      visualKind: productVisualKind(row.visual_kind),
     }))
   }
 
@@ -170,6 +191,8 @@ export class SupabaseCatalogRepository implements CatalogReadRepository, Catalog
       mpn: product.mpn ?? null,
       primary_gtin: product.gtin ?? null,
       primary_image_url: product.imageUrl ?? null,
+      ...(product.specifications ? { specifications: product.specifications } : {}),
+      ...(product.visualKind ? { visual_kind: product.visualKind } : {}),
       status: 'published',
       updated_at: new Date().toISOString(),
     }, { onConflict: 'external_key' })

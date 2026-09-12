@@ -4,12 +4,31 @@ import type { FeedAdapter } from '@/infrastructure/feeds/adapter'
 import type { ImportReject, ImportRun, MatchReviewItem } from '@/domain/catalog/import-observability'
 import { decideStrongProductIdentity, type ProductMatchDecision } from '@/domain/catalog/matching'
 import { validateFeedCandidate } from '@/domain/catalog/validate-feed-candidate'
-import type { Merchant, Offer, Product } from '@/domain/catalog/types'
+import type { Merchant, Offer, Product, ProductSpecification } from '@/domain/catalog/types'
 
 function slugify(value: string): string {
   return value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 function safeIdPart(value: string): string { return value.toLowerCase().replace(/[^a-z0-9:_-]+/g, '-') }
+
+function sanitizeSpecifications(specifications: readonly ProductSpecification[] | undefined): ProductSpecification[] | undefined {
+  if (!specifications) return undefined
+  const seen = new Set<string>()
+  const result: ProductSpecification[] = []
+
+  for (const specification of specifications) {
+    const label = specification.label.trim().replace(/\s+/g, ' ').slice(0, 120)
+    const value = specification.value.trim().replace(/\s+/g, ' ').slice(0, 500)
+    if (!label || !value) continue
+    const key = label.toLocaleLowerCase('nl-NL')
+    if (seen.has(key)) continue
+    seen.add(key)
+    result.push({ label, value })
+    if (result.length >= 80) break
+  }
+
+  return result.length > 0 ? result : undefined
+}
 
 export type FeedCategoryIdResolverInput = {
   sourceKey: string
@@ -94,7 +113,19 @@ export async function importFeed(input: {
           ? input.categoryIdBySourceCategory?.[candidate.sourceCategory] ?? input.categoryIdResolver?.({ sourceKey: candidate.sourceKey, sourceCategory: candidate.sourceCategory, title: candidate.title })
           : undefined
         const productId = canonicalProductId
-        const product: Product = { id: productId, slug: `${slugify(candidate.title)}-${candidate.merchantProductId.toLowerCase()}`, title: candidate.title, description: candidate.description, brand: candidate.brand, gtin: candidate.gtin, mpn: candidate.mpn, imageUrl: candidate.imageUrls[0], categoryId }
+        const product: Product = {
+          id: productId,
+          slug: `${slugify(candidate.title)}-${candidate.merchantProductId.toLowerCase()}`,
+          title: candidate.title,
+          description: candidate.description,
+          brand: candidate.brand,
+          gtin: candidate.gtin,
+          mpn: candidate.mpn,
+          imageUrl: candidate.imageUrls[0],
+          categoryId,
+          specifications: sanitizeSpecifications(candidate.specifications),
+          visualKind: candidate.visualKind,
+        }
         const offer: Offer = { id: `offer:${input.merchant.id}:${candidate.merchantProductId}`, productId, merchantId: input.merchant.id, merchantProductId: candidate.merchantProductId, price: candidate.price, shippingCost: candidate.shippingCost, availability: candidate.availability, productUrl: candidate.productUrl, affiliateUrl: candidate.affiliateUrl, sourceUpdatedAt: candidate.sourceUpdatedAt, importedAt: candidate.importedAt, lastSeenAt: startedAt, isActive: true }
         await input.repository.upsertProduct(product); await input.repository.upsertOffer(offer); imported += 1
       }

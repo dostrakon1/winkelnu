@@ -24,4 +24,11 @@ describe('parseCatalogSearchQuery', () => {
     expect(query.minPrice).toBe(100)
     expect(query.maxPrice).toBe(500)
   })
+
+  it('keeps the original natural-language query as internal ranking context', () => {
+    const query = parseCatalogSearchQuery({ q: '  lichte laptop met minimaal 16 GB RAM  ' })
+
+    expect(query.term).toBe('lichte laptop met minimaal 16 GB RAM')
+    expect(query.contextTerm).toBe('lichte laptop met minimaal 16 GB RAM')
+  })
 })

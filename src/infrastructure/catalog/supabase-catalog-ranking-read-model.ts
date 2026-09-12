@@ -4,6 +4,7 @@ import type { CatalogProductListItem } from '@/application/catalog/catalog-servi
 import type { CatalogRankingReadModel } from '@/application/catalog/read-model-ports'
 import type { CatalogSearchQuery } from '@/application/catalog/search-query'
 import type { OfferFreshnessStatus } from '@/domain/catalog/offer-freshness'
+import type { ProductSpecification, ProductVisualKind } from '@/domain/catalog/types'
 import { createSupabaseServerClient } from '@/infrastructure/supabase/server-client'
 
 type RankedRow = {
@@ -15,6 +16,8 @@ type RankedRow = {
   product_gtin: string | null
   product_mpn: string | null
   product_image_url: string | null
+  product_specifications: unknown
+  product_visual_kind: string | null
   category_external_key: string | null
   offer_external_key: string
   merchant_external_key: string
@@ -39,6 +42,19 @@ function freshness(value: string): OfferFreshnessStatus {
   return value === 'stale' ? 'stale' : 'fresh'
 }
 
+function specifications(value: unknown): ProductSpecification[] | undefined {
+  if (!Array.isArray(value)) return undefined
+  const result = value.flatMap((candidate) => {
+    if (!candidate || typeof candidate !== 'object') return []
+    const record = candidate as Record<string, unknown>
+    if (typeof record.label !== 'string' || typeof record.value !== 'string') return []
+    const label = record.label.trim()
+    const specificationValue = record.value.trim()
+    return label && specificationValue ? [{ label, value: specificationValue }] : []
+  }).slice(0, 80)
+  return result.length > 0 ? result : undefined
+}
+
 function mapRow(row: RankedRow): CatalogProductListItem {
   return {
     product: {
@@ -50,6 +66,8 @@ function mapRow(row: RankedRow): CatalogProductListItem {
       gtin: row.product_gtin ?? undefined,
       mpn: row.product_mpn ?? undefined,
       imageUrl: row.product_image_url ?? undefined,
+      specifications: specifications(row.product_specifications),
+      visualKind: row.product_visual_kind ? row.product_visual_kind as ProductVisualKind : undefined,
       categoryId: row.category_external_key ?? undefined,
     },
     bestOffer: {
@@ -106,7 +124,7 @@ export class SupabaseCatalogRankingReadModel implements CatalogRankingReadModel 
       p_max_total: input.maxPrice ?? null,
       p_in_stock_only: input.inStockOnly ?? false,
       p_sort: input.sort,
-      p_limit: Math.min(Math.max(input.limit, 1), 49),
+      p_limit: Math.min(Math.max(input.limit, 1), 97),
       p_offset: Math.max(input.offset, 0),
     })
 

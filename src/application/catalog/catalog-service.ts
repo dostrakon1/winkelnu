@@ -4,6 +4,7 @@ import { getProductComparisonGroup } from '@/domain/catalog/comparison'
 import { classifyOfferAvailability } from '@/domain/catalog/offer-availability'
 import { classifyOfferFreshness, type OfferFreshnessStatus } from '@/domain/catalog/offer-freshness'
 import type { Category, Merchant, Offer, Product } from '@/domain/catalog/types'
+import { rankConstraintAwareCandidates } from '@/application/search/constraint-aware-candidate-ranking'
 
 export type RankedOffer = {
   offer: Offer
@@ -143,7 +144,7 @@ export class CatalogService {
 
   async getCategory(slug: string): Promise<Category | null> {
     const categories = await this.repository.listCategories()
-    return categories.find((category) => category.slug === slug) ?? null
+    return categories.find((item) => item.slug === slug) ?? null
   }
 
   async getCategoryDiscovery(input: {
@@ -222,12 +223,16 @@ export class CatalogService {
       return b.score - a.score || a.item.product.title.localeCompare(b.item.product.title, 'nl-NL')
     })
 
+    const orderedItems = query.sort === 'relevance' && query.contextTerm
+      ? rankConstraintAwareCandidates(filtered.map(({ item }) => item), query.contextTerm).map((candidate) => candidate.item)
+      : filtered.map(({ item }) => item)
+
     const offset = (query.page - 1) * query.pageSize
-    const pageItems = filtered.slice(offset, offset + query.pageSize + 1)
+    const pageItems = orderedItems.slice(offset, offset + query.pageSize + 1)
 
     return {
       query,
-      products: pageItems.slice(0, query.pageSize).map(({ item }) => item),
+      products: pageItems.slice(0, query.pageSize),
       page: query.page,
       pageSize: query.pageSize,
       hasPrevious: query.page > 1,

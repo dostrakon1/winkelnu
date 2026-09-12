@@ -6,7 +6,12 @@ import { buildUniversalSearchRanking } from '@/application/search/universal-sear
 
 const index = buildPredictiveSearchIndex()
 
-function product(id: string, title: string, description?: string): CatalogProductListItem {
+function product(
+  id: string,
+  title: string,
+  description?: string,
+  specifications?: Array<{ label: string; value: string }>,
+): CatalogProductListItem {
   return {
     product: {
       id,
@@ -14,6 +19,7 @@ function product(id: string, title: string, description?: string): CatalogProduc
       title,
       description,
       brand: 'Testmerk',
+      specifications,
     },
     offerCount: 0,
   }
@@ -60,6 +66,36 @@ describe('universal search ranking', () => {
 
     expect(ranking.productCount).toBeLessThanOrEqual(3)
     expect(ranking.routeCount).toBeGreaterThan(0)
+  })
+
+  it('promotes an evidence-backed product match for an explicit constraint', () => {
+    const analysis = analyzePredictiveSearch('laptop met minimaal 16 GB RAM', index)
+    const ranking = buildUniversalSearchRanking({
+      analysis,
+      products: [
+        product('laptop-8gb', 'Laptop Basis', undefined, [{ label: 'Werkgeheugen', value: '8 GB' }]),
+        product('laptop-16gb', 'Laptop Plus', undefined, [{ label: 'RAM', value: '16 GB' }]),
+      ],
+    })
+    const products = ranking.items.filter((item) => item.type === 'product')
+
+    expect(products[0]?.type).toBe('product')
+    expect(products[0]?.type === 'product' ? products[0].item.product.id : '').toBe('laptop-16gb')
+    expect(products[0]?.type === 'product' ? products[0].reason : '').toContain('Minimaal 16 GB geheugen')
+  })
+
+  it('does not punish a product with unknown constraint data as if it failed', () => {
+    const analysis = analyzePredictiveSearch('laptop met minimaal 16 GB RAM', index)
+    const ranking = buildUniversalSearchRanking({
+      analysis,
+      products: [
+        product('unknown-memory', 'Laptop Unknown'),
+        product('known-miss', 'Laptop 8GB', undefined, [{ label: 'RAM', value: '8 GB' }]),
+      ],
+    })
+    const products = ranking.items.filter((item) => item.type === 'product')
+
+    expect(products[0]?.type === 'product' ? products[0].item.product.id : '').toBe('unknown-memory')
   })
 
   it('shows only navigational routes for pure gift intent', () => {

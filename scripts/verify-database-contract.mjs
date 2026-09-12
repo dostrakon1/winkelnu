@@ -20,6 +20,10 @@ const migrationPaths = [
   'supabase/migrations/0016_explicit_data_api_service_role_grants.sql',
   'supabase/migrations/0017_external_key_unique_constraints.sql',
   'supabase/migrations/0018_offer_ranking_hardening.sql',
+  'supabase/migrations/0019_security_hardening_and_fk_indexes.sql',
+  'supabase/migrations/0020_hierarchical_catalog_browsing.sql',
+  'supabase/migrations/0021_search_feedback_learning_signals.sql',
+  'supabase/migrations/0022_product_attribute_evidence.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -39,7 +43,8 @@ const requiredDataApiTables = [
 const requiredExternalKeyConflictTargets = ['merchants', 'categories', 'products', 'offers', 'import_runs']
 
 const requiredColumns = [
-  ['merchants', 'external_key'], ['categories', 'external_key'], ['products', 'external_key'], ['offers', 'external_key'],
+  ['merchants', 'external_key'], ['categories', 'external_key'], ['products', 'external_key'],
+  ['products', 'specifications'], ['products', 'visual_kind'], ['offers', 'external_key'],
   ['import_runs', 'external_key'], ['import_runs', 'offers_deactivated'], ['import_runs', 'review_required'], ['import_runs', 'correlation_id'],
   ['affiliate_click_events', 'external_key'], ['affiliate_click_events', 'offer_id'], ['affiliate_click_events', 'product_id'],
   ['affiliate_click_events', 'merchant_id'], ['affiliate_click_events', 'source_path'], ['affiliate_click_events', 'occurred_at'],
@@ -89,6 +94,7 @@ const requiredSecurityPatterns = [
   ['operations readiness service-role grant', /grant\s+execute\s+on\s+function\s+winkelnu_operations_security_readiness\(\)\s+to\s+service_role/i],
   ['operator action retention policy', /retain\s+records\s+for\s+at\s+least\s+90\s+days/i],
   ['service-role public schema usage', /grant\s+usage\s+on\s+schema\s+public\s+to\s+service_role/i],
+  ['catalog ranking RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+catalog_ranked_products\([\s\S]*?\)\s+from\s+anon\s*,\s*authenticated/i],
 ]
 
 const failures = []
@@ -122,7 +128,7 @@ for (const [table, column] of requiredColumns) {
 }
 
 for (const functionName of requiredFunctions) {
-  const pattern = new RegExp(`create\\s+or\\s+replace\\s+function\\s+${functionName}\\b`, 'i')
+  const pattern = new RegExp(`create\\s+(?:or\\s+replace\\s+)?function\\s+${functionName}\\b`, 'i')
   if (!pattern.test(migrations)) failures.push(`Missing required function: ${functionName}`)
 }
 
