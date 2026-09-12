@@ -5,6 +5,7 @@ import { CategoryCard } from '@/components/storefront/category-card'
 import { ComparisonProductGrid } from '@/components/storefront/comparison-product-grid'
 import { getEditorialTone } from '@/components/storefront/editorial-design'
 import { EditorialNotice, GuideCard } from '@/components/storefront/editorial-shell'
+import { SeasonalCampaignSpotlight } from '@/components/storefront/seasonal-campaign-layer'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 import { WinkelnuHero } from '@/components/storefront/winkelnu-hero'
@@ -74,6 +75,8 @@ export default async function HomePage() {
             <Link href="/koopgidsen" className={catalogEnabled ? 'wn-button wn-button-secondary' : 'wn-button wn-button-primary'}>Ontdek de koopgidsen</Link>
           </div>
         </WinkelnuHero>
+
+        <SeasonalCampaignSpotlight />
 
         {catalogEnabled && catalogProducts.length > 0 ? (
           <section id="producten" className="wn-container wn-section scroll-mt-6">
