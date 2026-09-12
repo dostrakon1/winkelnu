@@ -5,6 +5,11 @@ import {
   type PredictiveSearchKind,
   type PredictiveSearchSuggestion,
 } from './predictive-search-core'
+import {
+  candidateContextHighlights,
+  rankConstraintAwareCandidates,
+  type ConstraintAwareCandidate,
+} from './constraint-aware-candidate-ranking'
 
 export type UniversalSearchRouteItem = {
   type: 'route'
@@ -97,7 +102,20 @@ function productQualityTieBreaker(item: CatalogProductListItem): number {
   return score
 }
 
-function productReason(score: number, item: CatalogProductListItem): string {
+function contextualProductBoost(candidate: ConstraintAwareCandidate | undefined): number {
+  if (!candidate) return 0
+  return candidate.matchedCount * 18
+    - candidate.missedCount * 8
+    + Math.min(12, candidate.preferenceBoost)
+}
+
+function productReason(
+  score: number,
+  item: CatalogProductListItem,
+  candidate?: ConstraintAwareCandidate,
+): string {
+  const highlights = candidate ? candidateContextHighlights(candidate, 2) : []
+  if (highlights.length > 0) return `Past aantoonbaar bij je vraag: ${highlights.join(' · ')}`
   if (score >= 150) return 'Exacte productmatch'
   if (score >= 138) return 'Productnaam begint sterk met je zoekterm'
   if (score >= 122) return 'Sterke match in de productnaam'
@@ -106,17 +124,21 @@ function productReason(score: number, item: CatalogProductListItem): string {
   return 'Relevant product uit de Winkelnu-catalogus'
 }
 
-function scoreProduct(item: CatalogProductListItem, analysis: PredictiveSearchAnalysis): UniversalSearchProductItem | undefined {
+function scoreProduct(
+  item: CatalogProductListItem,
+  analysis: PredictiveSearchAnalysis,
+  contextualCandidate?: ConstraintAwareCandidate,
+): UniversalSearchProductItem | undefined {
   const searchTerm = analysis.productTerm ?? analysis.correctedTerm ?? analysis.normalizedTerm
   const relevance = productTextScore(item, searchTerm)
   if (relevance <= 0) return undefined
-  const score = relevance + productQualityTieBreaker(item)
+  const score = relevance + contextualProductBoost(contextualCandidate) + productQualityTieBreaker(item)
 
   return {
     type: 'product',
     item,
     score,
-    reason: productReason(relevance, item),
+    reason: productReason(relevance, item, contextualCandidate),
   }
 }
 
@@ -175,8 +197,12 @@ export function buildUniversalSearchRanking(input: {
 }): UniversalSearchRanking {
   const limit = Math.max(1, Math.min(10, input.limit ?? 7))
   const routes = input.analysis.suggestions.map((suggestion) => scoreRoute(suggestion, input.analysis))
+  const contextualCandidates = rankConstraintAwareCandidates(input.products, input.analysis.originalTerm)
+  const candidateByProductId = new Map(
+    contextualCandidates.map((candidate) => [candidate.item.product.id, candidate]),
+  )
   const products = input.products
-    .map((item) => scoreProduct(item, input.analysis))
+    .map((item) => scoreProduct(item, input.analysis, candidateByProductId.get(item.product.id)))
     .filter((item): item is UniversalSearchProductItem => Boolean(item))
 
   const all = [...routes, ...products]
