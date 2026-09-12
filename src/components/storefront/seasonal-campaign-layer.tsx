@@ -123,7 +123,7 @@ export function SeasonalCampaignMenuTile({ mobile = false, onNavigate }: { mobil
         style={{ background: campaign.heroGradient }}
       >
         <span>{campaign.eyebrow.replace('✦ ', '')}: {campaign.name}</span>
-        <ArrowIcon className="h-4 w-4" style={{ color: campaign.accentSoft } as never} />
+        <ArrowIcon className="h-4 w-4 text-[#ffd7bd]" />
       </Link>
     )
   }
