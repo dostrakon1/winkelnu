@@ -16,6 +16,8 @@ Vanuit `/zoeken` wordt de actuele `q` maximaal 160 tekens meegenomen naar:
 
 `/vergelijken?producten=<slug,slug>&q=<oorspronkelijke zoekvraag>`
 
+De selectiecomponent kan een expliciete `comparisonQuery` krijgen en gebruikt op `/zoeken` daarnaast de actuele `q` uit de browser als veilige fallback op het moment dat Vergelijkkompas wordt geopend. Hierdoor blijft de koppeling correct wanneer filters of navigatie de zoekpagina hebben aangepast zonder dat categoriepagina's onbedoeld zoekcontext krijgen.
+
 Vanuit categoriepagina's kan Vergelijkkompas zonder `q` blijven functioneren.
 
 ## Contextadapter
