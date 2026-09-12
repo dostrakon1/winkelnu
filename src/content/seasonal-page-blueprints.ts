@@ -45,6 +45,7 @@ export type SeasonalPageBlueprint = {
     items: readonly SeasonalChecklistItem[]
   }
   search: {
+    enabled: boolean
     eyebrow: string
     title: string
     description: string
@@ -138,10 +139,11 @@ const halloweenBlueprint = {
     ],
   },
   search: {
+    enabled: false,
     eyebrow: '✦ Gericht producten ontdekken',
     title: 'Zoek vanuit je Halloweenplan verder.',
     description:
-      'Gebruik de productzoeker om verschillende typen producten naast elkaar te bekijken. Zodra meer partnerdata beschikbaar is, kan Winkelnu hier ook winkelprijzen en aanbiedingen aan koppelen.',
+      'Gebruik de productzoeker om verschillende typen producten naast elkaar te bekijken. Zodra passende partnerdata beschikbaar is, kan Winkelnu hier actuele productselecties, winkelprijzen en aanbiedingen aan koppelen.',
     routes: [
       { label: 'Halloween decoratie', description: 'Sfeer voor tafel, kamer, tuin of entree.', query: 'halloween decoratie' },
       { label: 'Kostuum & accessoires', description: 'Verkleden, details en bijpassende accessoires.', query: 'halloween kostuum accessoires' },
