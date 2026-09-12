@@ -76,6 +76,18 @@ export function ComparisonProductGrid({
     })
   }
 
+  function openComparison(event: React.MouseEvent<HTMLAnchorElement>) {
+    if (normalizedComparisonQuery || typeof window === 'undefined' || window.location.pathname !== '/zoeken') return
+    const liveQuery = currentSearchQuery()?.trim().slice(0, 160)
+    if (!liveQuery) return
+    event.preventDefault()
+    const params = new URLSearchParams({
+      producten: selectedSlugs.join(','),
+      q: liveQuery,
+    })
+    window.location.assign(`/vergelijken?${params.toString()}`)
+  }
+
   return (
     <>
       {showIntro ? (
@@ -192,7 +204,7 @@ export function ComparisonProductGrid({
                 Wissen
               </button>
               {selectedSlugs.length >= MIN_COMPARISON_PRODUCTS ? (
-                <Link href={compareHref} className="wn-button wn-button-primary flex-1 sm:flex-none">
+                <Link href={compareHref} onClick={openComparison} className="wn-button wn-button-primary flex-1 sm:flex-none">
                   Open Vergelijkkompas →
                 </Link>
               ) : null}
