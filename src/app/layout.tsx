@@ -1,7 +1,20 @@
 import type { Metadata } from 'next'
+import { Manrope, Newsreader } from 'next/font/google'
 import { WinkelnuWebAnalytics } from '@/components/analytics/winkelnu-web-analytics'
 import { activeSite, resolveSiteOrigin } from '@/config/sites'
 import './globals.css'
+
+const winkelnuSans = Manrope({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-winkelnu-sans',
+})
+
+const winkelnuDisplay = Newsreader({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-winkelnu-display',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(resolveSiteOrigin(process.env.NEXT_PUBLIC_SITE_URL)),
@@ -36,7 +49,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang={activeSite.htmlLang}>
-      <body>
+      <body className={`${winkelnuSans.variable} ${winkelnuDisplay.variable}`}>
         {children}
         <WinkelnuWebAnalytics />
       </body>
