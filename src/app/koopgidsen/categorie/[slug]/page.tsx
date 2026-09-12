@@ -8,6 +8,7 @@ import { WinkelnuSurfaceMotif } from '@/components/storefront/winkelnu-surface-m
 import { getCategoryImage } from '@/content/category-images'
 import { editorialCategories, getEditorialCategory, guidesForCategory } from '@/content/editorial-catalog'
 import { getCatalogCategorySlug } from '@/content/guide-catalog-links'
+import { buildTopicSearchHref } from '@/content/topic-links'
 import { buildEditorialCategoryStructuredData } from '@/lib/seo/editorial-json-ld'
 import { serializeStructuredData } from '@/lib/seo/product-json-ld'
 
@@ -97,10 +98,15 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {category.subcategories.map((subcategory) => (
-              <article key={subcategory.title} className="wn-surface p-6">
-                <h3 className="font-semibold text-[var(--wn-petrol-deep)]">{subcategory.title}</h3>
+              <Link
+                key={subcategory.title}
+                href={buildTopicSearchHref(subcategory.title)}
+                className="wn-surface wn-card-interactive group block p-6 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)]"
+              >
+                <h3 className="font-semibold text-[var(--wn-petrol-deep)] group-hover:text-[var(--wn-petrol)]">{subcategory.title}</h3>
                 <p className="wn-body-muted mt-2 text-sm leading-6">{subcategory.description}</p>
-              </article>
+                <span className="mt-4 inline-flex text-sm font-bold text-[var(--wn-petrol)] group-hover:underline">Bekijk dit onderwerp →</span>
+              </Link>
             ))}
           </div>
         </div>
@@ -131,10 +137,16 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
             <h2 className="wn-heading mt-3 text-2xl">Populaire producttypen</h2>
             <div className="mt-6 flex flex-wrap gap-2">
               {category.popularProductTypes.map((productType) => (
-                <span key={productType} className="rounded-full border border-[var(--wn-border)] bg-[var(--wn-surface)] px-4 py-2 text-sm font-medium text-[var(--wn-petrol-deep)]">{productType}</span>
+                <Link
+                  key={productType}
+                  href={buildTopicSearchHref(productType)}
+                  className="inline-flex min-h-10 items-center rounded-full border border-[var(--wn-border)] bg-[var(--wn-surface)] px-4 py-2 text-sm font-medium text-[var(--wn-petrol-deep)] transition hover:border-[var(--wn-petrol)] hover:bg-white hover:text-[var(--wn-petrol)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-warm)]"
+                >
+                  {productType}
+                </Link>
               ))}
             </div>
-            <p className="wn-body-muted mt-5 text-sm leading-6">Zodra actuele productfeeds beschikbaar zijn, kunnen deze onderwerpen automatisch doorstromen naar vergelijkingen en aanbiedingen.</p>
+            <p className="wn-body-muted mt-5 text-sm leading-6">Klik op een producttype om direct verder te zoeken. Zodra actuele productfeeds beschikbaar zijn, stromen deze onderwerpen automatisch door naar vergelijkingen en aanbiedingen.</p>
           </aside>
         </div>
       </section>
