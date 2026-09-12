@@ -238,7 +238,7 @@ export function SeasonalCollectionPage({
             </div>
           </section>
 
-          {catalogEnabled ? (
+          {catalogEnabled && blueprint.search.enabled ? (
             <section className="wn-container wn-section" aria-labelledby="seasonal-search-title">
               <div className="max-w-3xl">
                 <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: campaign.accent }}>
