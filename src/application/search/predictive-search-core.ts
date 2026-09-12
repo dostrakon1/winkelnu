@@ -1,3 +1,5 @@
+import { stripPreferenceConstraintContext } from './preference-constraint-extraction'
+
 export type PredictiveSearchKind = 'category' | 'subcategory' | 'guide' | 'collection' | 'collection-section'
 
 export type PredictiveSearchIndexItem = {
@@ -372,7 +374,8 @@ export function analyzePredictiveSearch(
   const correctedTerm = corrected !== normalizedTerm ? corrected : undefined
   const intents = detectIntents(corrected, originalTerm ?? '')
   const budgetMax = detectBudget(originalTerm ?? '')
-  const productTerm = stripProductContext(corrected, intents, budgetMax)
+  const preferenceStripped = stripPreferenceConstraintContext(corrected, originalTerm)
+  const productTerm = stripProductContext(preferenceStripped, intents, budgetMax)
   const navigationOnly = !productTerm && intents.some((intent) => intent.key.startsWith('gift') || ['birthday', 'christmas', 'valentine'].includes(intent.key))
 
   const suggestions = index
