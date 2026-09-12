@@ -1,6 +1,7 @@
+import { activeSite } from '@/config/sites'
 import type { Category, Product } from '@/domain/catalog/types'
 
-const SITE_URL = 'https://winkelnu.nl'
+const SITE_URL = activeSite.canonicalOrigin
 
 type ProductStructuredDataInput = {
   product: Product
