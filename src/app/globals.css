@@ -21,8 +21,9 @@
   --wn-danger-bg: #fbe8e5;
   --wn-danger-text: #8d3a32;
 
-  /* Typography */
-  --wn-font-sans: Arial, Helvetica, sans-serif;
+  /* Winkelnu typography system */
+  --wn-font-sans: var(--font-winkelnu-sans), Manrope, Arial, Helvetica, sans-serif;
+  --wn-font-display: var(--font-winkelnu-display), Newsreader, Georgia, 'Times New Roman', serif;
   --wn-text-xs: 0.75rem;
   --wn-text-sm: 0.875rem;
   --wn-text-base: 1rem;
@@ -32,7 +33,7 @@
   --wn-text-3xl: 1.875rem;
   --wn-text-4xl: 2.25rem;
   --wn-text-5xl: 3rem;
-  --wn-leading-tight: 1.1;
+  --wn-leading-tight: 1.05;
   --wn-leading-body: 1.65;
 
   /* Spacing */
@@ -68,19 +69,19 @@
   --wn-duration-base: 200ms;
   --wn-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
-  /* Gradients */
+  /* Winkelnu gradient family */
   --wn-gradient-welcome: linear-gradient(
     118deg,
-    #faf7f0 0%,
-    #f4f0e7 46%,
-    #e4ece7 76%,
-    #cfded8 100%
+    #fffaf2 0%,
+    #f7f2e8 40%,
+    #e7efe9 72%,
+    #d4e2dc 100%
   );
   --wn-gradient-market: linear-gradient(
     135deg,
-    #0d2e2d 0%,
-    #123b3a 52%,
-    #244c48 100%
+    #0a2928 0%,
+    #123b3a 56%,
+    #2b514d 100%
   );
   --wn-gradient-morning: linear-gradient(
     180deg,
@@ -90,15 +91,58 @@
   );
   --wn-gradient-glow: radial-gradient(
     circle at 82% 30%,
-    rgba(233, 120, 61, 0.15) 0%,
-    rgba(233, 120, 61, 0.06) 22%,
-    rgba(247, 242, 232, 0) 58%
+    rgba(233, 120, 61, 0.18) 0%,
+    rgba(233, 120, 61, 0.07) 24%,
+    rgba(247, 242, 232, 0) 60%
   );
   --wn-gradient-evening: linear-gradient(
     145deg,
-    #0a2524 0%,
-    #123b3a 52%,
-    #28544f 100%
+    #082423 0%,
+    #123b3a 56%,
+    #315a55 100%
+  );
+  --wn-gradient-brand-warm: linear-gradient(
+    135deg,
+    #fff9f1 0%,
+    #f5e1d3 54%,
+    #e4ece7 100%
+  );
+  --wn-gradient-brand-sage: linear-gradient(
+    135deg,
+    #f9f5ed 0%,
+    #e7efe9 56%,
+    #d7e5df 100%
+  );
+  --wn-gradient-card-petrol: linear-gradient(
+    145deg,
+    #0b2a29 0%,
+    #123b3a 68%,
+    #214844 100%
+  );
+  --wn-gradient-card-peach: linear-gradient(
+    145deg,
+    #f8e8dc 0%,
+    #f1d6c5 66%,
+    #eac8b4 100%
+  );
+  --wn-gradient-card-cream: linear-gradient(
+    145deg,
+    #fffdf8 0%,
+    #fff8ef 64%,
+    #f2e9dd 100%
+  );
+  --wn-gradient-card-sage: linear-gradient(
+    145deg,
+    #f0f5f2 0%,
+    #dfe9e4 68%,
+    #d0dfd8 100%
+  );
+  --wn-gradient-hero-overlay: linear-gradient(
+    90deg,
+    rgba(255, 250, 242, 0.99) 0%,
+    rgba(247, 242, 232, 0.95) 34%,
+    rgba(231, 240, 235, 0.76) 58%,
+    rgba(18, 59, 58, 0.09) 100%
   );
 
   /* App semantics */
@@ -125,6 +169,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--wn-font-sans);
+  font-synthesis: none;
   line-height: var(--wn-leading-body);
   text-rendering: optimizeLegibility;
 }
@@ -151,7 +196,20 @@ textarea {
   outline-offset: 3px;
 }
 
-/* Winkelnu primitives */
+/* Winkelnu typography primitives */
+.wn-display {
+  font-family: var(--wn-font-display);
+  font-optical-sizing: auto;
+}
+
+.wn-ui-heading {
+  font-family: var(--wn-font-sans);
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+}
+
+/* Winkelnu layout primitives */
 .wn-container {
   width: min(100% - 3rem, 72rem);
   margin-inline: auto;
@@ -163,21 +221,53 @@ textarea {
 
 .wn-eyebrow {
   color: var(--wn-warm);
+  font-family: var(--wn-font-sans);
   font-size: var(--wn-text-xs);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
 .wn-heading {
   color: var(--wn-ink);
-  font-weight: 700;
-  letter-spacing: -0.035em;
+  font-family: var(--wn-font-display);
+  font-optical-sizing: auto;
+  font-weight: 650;
+  letter-spacing: -0.03em;
   line-height: var(--wn-leading-tight);
 }
 
 .wn-body-muted {
   color: rgba(30, 36, 35, 0.66);
+}
+
+/* Winkelnu branded gradient surfaces */
+.wn-bg-brand-warm {
+  background: var(--wn-gradient-brand-warm);
+}
+
+.wn-bg-brand-sage {
+  background: var(--wn-gradient-brand-sage);
+}
+
+.wn-bg-brand-dark {
+  background: var(--wn-gradient-evening);
+}
+
+.wn-editorial-petrol {
+  background: var(--wn-gradient-card-petrol);
+}
+
+.wn-editorial-peach {
+  background: var(--wn-gradient-card-peach);
+}
+
+.wn-editorial-cream {
+  background: var(--wn-gradient-card-cream);
+}
+
+.wn-editorial-sage {
+  background: var(--wn-gradient-card-sage);
 }
 
 .wn-surface {
@@ -209,8 +299,10 @@ textarea {
   border: 1px solid transparent;
   border-radius: var(--wn-radius-pill);
   padding: 0.75rem 1.25rem;
+  font-family: var(--wn-font-sans);
   font-size: var(--wn-text-sm);
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   line-height: 1;
   cursor: pointer;
   transition:
@@ -282,7 +374,7 @@ textarea {
   border-radius: var(--wn-radius-pill);
   padding: 0.3rem 0.65rem;
   font-size: var(--wn-text-xs);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
 }
 
