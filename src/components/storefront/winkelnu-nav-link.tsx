@@ -22,6 +22,8 @@ function isSectionActive(pathname: string, section: WinkelnuNavSection): boolean
       return pathname === '/koopgidsen' || (pathname.startsWith('/koopgidsen/') && !pathname.startsWith('/koopgidsen/categorie/'))
     case 'categories':
       return pathname.startsWith('/koopgidsen/categorie/') || pathname.startsWith('/collecties/')
+    default:
+      return false
   }
 }
 
