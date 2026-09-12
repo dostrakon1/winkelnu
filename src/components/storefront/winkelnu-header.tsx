@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
 import { WinkelnuBrand } from './winkelnu-brand'
+import { WinkelnuCategoryMenu } from './winkelnu-category-menu'
 import { WinkelnuNavLink } from './winkelnu-nav-link'
 
 function SearchIcon({ className = '' }: { className?: string }) {
@@ -33,7 +34,7 @@ export function WinkelnuHeader() {
       </a>
 
       <div className="wn-container py-3.5">
-        <div className="flex items-center justify-between gap-5">
+        <div className="relative flex items-center justify-between gap-5">
           <WinkelnuBrand inverse size="header" />
 
           <nav className="hidden items-center gap-5 lg:flex xl:gap-6" aria-label="Hoofdnavigatie">
@@ -44,7 +45,7 @@ export function WinkelnuHeader() {
               </>
             ) : null}
             <WinkelnuNavLink href="/koopgidsen" label="Koopgidsen" section="guides" />
-            <WinkelnuNavLink href="/#categorieen" label="Categorieën" section="categories" />
+            <WinkelnuCategoryMenu />
           </nav>
 
           {catalogEnabled ? (
@@ -90,7 +91,7 @@ export function WinkelnuHeader() {
                 <span className="hidden sm:inline">Menu</span>
               </summary>
 
-              <div className="absolute right-0 z-50 mt-3 w-[min(21rem,calc(100vw-2rem))] rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-cream)] p-3 text-[var(--wn-ink)] shadow-[var(--wn-shadow-lg)]">
+              <div className="absolute right-0 z-50 mt-3 max-h-[calc(100vh-6rem)] w-[min(21rem,calc(100vw-2rem))] overflow-y-auto overscroll-contain rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-cream)] p-3 text-[var(--wn-ink)] shadow-[var(--wn-shadow-lg)]">
                 <nav className="flex flex-col gap-1" aria-label="Mobiele navigatie">
                   {catalogEnabled ? (
                     <>
@@ -99,7 +100,7 @@ export function WinkelnuHeader() {
                     </>
                   ) : null}
                   <WinkelnuNavLink href="/koopgidsen" label="Koopgidsen" section="guides" mobile />
-                  <WinkelnuNavLink href="/#categorieen" label="Categorieën" section="categories" mobile />
+                  <WinkelnuCategoryMenu mobile />
                 </nav>
 
                 <div className="mt-2 border-t border-[var(--wn-border)] pt-2">
