@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
+import { EditorialFeatureCard, getEditorialTone } from '@/components/storefront/editorial-design'
 import { Breadcrumbs, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
 import { WinkelnuSurfaceMotif } from '@/components/storefront/winkelnu-surface-motif'
 import { getCategoryImage } from '@/content/category-images'
@@ -75,38 +76,43 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
 
       <section className="wn-container wn-section">
         <div className="max-w-3xl">
-          <p className="wn-eyebrow">Keuzehulp</p>
-          <h2 className="wn-heading mt-3 text-3xl">Waar let je op?</h2>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--wn-warm)]">✦ Keuzehulp</p>
+          <h2 className="mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>Waar let je op?</h2>
           <p className="wn-body-muted mt-4 leading-7">Gebruik deze vier punten als eerste filter. Zo vergelijk je producten op wat voor deze rubriek echt relevant is.</p>
         </div>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {category.topics.map((topic, index) => (
-            <div key={topic} className="wn-surface p-5">
-              <span className="text-xs font-bold text-[var(--wn-petrol)]">0{index + 1}</span>
-              <h3 className="mt-2 font-semibold">{topic}</h3>
-            </div>
+            <EditorialFeatureCard
+              key={topic}
+              tone={getEditorialTone(index)}
+              eyebrow="Eerste filter"
+              number={String(index + 1).padStart(2, '0')}
+              title={topic}
+              className="min-h-[13rem]"
+            />
           ))}
         </div>
       </section>
 
-      <section className="border-y border-[var(--wn-border)] bg-[var(--wn-petrol-soft)]">
+      <section className="border-y border-[var(--wn-border)] bg-[#fff8ef]">
         <div className="wn-container wn-section">
           <div className="max-w-3xl">
-            <p className="wn-eyebrow">Ontdek de rubriek</p>
-            <h2 className="wn-heading mt-3 text-3xl">Populaire onderwerpen</h2>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--wn-warm)]">✦ Ontdek de rubriek</p>
+            <h2 className="mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>Populaire onderwerpen</h2>
             <p className="wn-body-muted mt-4 leading-7">Dit zijn de belangrijkste productgroepen die binnen {category.title.toLowerCase()} op Winkelnu worden opgebouwd.</p>
           </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {category.subcategories.map((subcategory) => (
-              <Link
+          <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {category.subcategories.map((subcategory, index) => (
+              <EditorialFeatureCard
                 key={subcategory.title}
+                tone={getEditorialTone(index + 1)}
+                eyebrow="Onderwerp"
+                number={String(index + 1).padStart(2, '0')}
+                title={subcategory.title}
+                description={subcategory.description}
                 href={buildTopicSearchHref(subcategory.title)}
-                className="wn-surface wn-card-interactive group block p-6 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)]"
-              >
-                <h3 className="font-semibold text-[var(--wn-petrol-deep)] group-hover:text-[var(--wn-petrol)]">{subcategory.title}</h3>
-                <p className="wn-body-muted mt-2 text-sm leading-6">{subcategory.description}</p>
-                <span className="mt-4 inline-flex text-sm font-bold text-[var(--wn-petrol)] group-hover:underline">Bekijk dit onderwerp →</span>
-              </Link>
+                cta="Bekijk dit onderwerp →"
+              />
             ))}
           </div>
         </div>
@@ -153,10 +159,10 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
 
       <section className="border-y border-[var(--wn-border)] bg-[var(--wn-surface)]">
         <div className="wn-container wn-section">
-          <p className="wn-eyebrow">Verdiep je keuze</p>
-          <h2 className="wn-heading mt-3 text-3xl">Keuzehulpen in deze rubriek</h2>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--wn-warm)]">✦ Verdiep je keuze</p>
+          <h2 className="mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>Keuzehulpen in deze rubriek</h2>
           {guides.length > 0 ? (
-            <div className="mt-8 grid gap-5 md:grid-cols-2">{guides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}</div>
+            <div className="mt-9 grid gap-5 md:grid-cols-2">{guides.map((guide, index) => <GuideCard key={guide.slug} guide={guide} tone={getEditorialTone(index)} />)}</div>
           ) : (
             <div className="wn-surface mt-8 max-w-3xl p-6 sm:p-7">
               <p className="font-semibold text-[var(--wn-petrol-deep)]">De eerste keuzehulpen voor deze rubriek zijn in voorbereiding.</p>
