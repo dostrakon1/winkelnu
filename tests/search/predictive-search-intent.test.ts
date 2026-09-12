@@ -28,6 +28,25 @@ describe('predictive search intent engine', () => {
     expect(result.suggestions.some((item) => item.href === '/koopgidsen/laptop-kopen')).toBe(true)
   })
 
+  it('removes qualitative preference language from the catalog product term', () => {
+    const result = analyzePredictiveSearch('lichte laptop met lange accuduur voor studie', index)
+
+    expect(result.productTerm).toBe('laptop')
+    expect(result.intents.some((intent) => intent.key === 'study')).toBe(true)
+  })
+
+  it('removes measurable constraints from the product term without discarding the product noun', () => {
+    const result = analyzePredictiveSearch('laptop maximaal 1,5 kg met minimaal 16 GB RAM', index)
+
+    expect(result.productTerm).toBe('laptop')
+  })
+
+  it('keeps the airfryer noun while separating capacity and drawer requirements', () => {
+    const result = analyzePredictiveSearch('grote airfryer met twee lades', index)
+
+    expect(result.productTerm).toBe('airfryer')
+  })
+
   it('understands handbagage as travel context instead of part of the product name', () => {
     const result = analyzePredictiveSearch('koffer handbagage', index)
 
