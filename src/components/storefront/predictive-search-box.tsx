@@ -1,12 +1,13 @@
 'use client'
 
 import { useId, useMemo, useState } from 'react'
-import type { KeyboardEvent } from 'react'
+import type { FormEvent, KeyboardEvent } from 'react'
 import Link from 'next/link'
 import {
   analyzePredictiveSearch,
   type PredictiveSearchIndexItem,
 } from '@/application/search/predictive-search-core'
+import { sendSearchFeedback } from '@/components/analytics/search-feedback-client'
 
 type Props = {
   defaultValue?: string
@@ -34,6 +35,20 @@ export function PredictiveSearchBox({ defaultValue = '', index }: Props) {
     })
   }
 
+  function trackPredictiveClick(indexPosition: number) {
+    const suggestion = suggestions[indexPosition]
+    const query = value.trim()
+    if (!suggestion || !query) return
+
+    sendSearchFeedback({
+      eventType: 'predictive_clicked',
+      query,
+      targetKind: suggestion.kind,
+      targetKey: suggestion.href,
+      targetPosition: indexPosition + 1,
+    })
+  }
+
   function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === 'ArrowDown') {
       event.preventDefault()
@@ -54,12 +69,30 @@ export function PredictiveSearchBox({ defaultValue = '', index }: Props) {
     }
     if (event.key === 'Enter' && showPanel && activeIndex >= 0 && suggestions[activeIndex]) {
       event.preventDefault()
+      trackPredictiveClick(activeIndex)
       window.location.assign(suggestions[activeIndex].href)
     }
   }
 
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    const previousQuery = defaultValue.trim()
+    const nextQuery = value.trim()
+    if (!nextQuery) {
+      event.preventDefault()
+      return
+    }
+
+    if (previousQuery && previousQuery.toLocaleLowerCase('nl-NL') !== nextQuery.toLocaleLowerCase('nl-NL')) {
+      sendSearchFeedback({
+        eventType: 'search_refined',
+        query: nextQuery,
+        previousQuery,
+      })
+    }
+  }
+
   return (
-    <form action="/zoeken" method="get" role="search" className="mx-auto mt-9 max-w-5xl">
+    <form action="/zoeken" method="get" role="search" className="mx-auto mt-9 max-w-5xl" onSubmit={onSubmit}>
       <div className="relative">
         <div className="flex items-center gap-2 rounded-[2rem] bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.20)] sm:p-3">
           <span className="hidden pl-3 text-2xl text-[var(--wn-petrol)] sm:block" aria-hidden="true">⌕</span>
@@ -128,6 +161,7 @@ export function PredictiveSearchBox({ defaultValue = '', index }: Props) {
                     href={suggestion.href}
                     onMouseDown={(event) => event.preventDefault()}
                     onMouseEnter={() => setActiveIndex(indexPosition)}
+                    onClick={() => trackPredictiveClick(indexPosition)}
                     className={`flex items-start justify-between gap-4 rounded-[1.15rem] px-4 py-3.5 transition ${activeIndex === indexPosition ? 'bg-[var(--wn-petrol-soft)]' : 'hover:bg-[color:rgba(18,59,58,0.045)]'}`}
                   >
                     <div className="min-w-0">
