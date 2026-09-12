@@ -68,7 +68,7 @@ function FeaturedCategoryTile({
     <Link
       href={`/koopgidsen/categorie/${slug}`}
       onClick={onNavigate}
-      className="group/tile relative min-h-32 overflow-hidden rounded-[1.15rem] border border-white/60 bg-[var(--wn-petrol-soft)] shadow-[var(--wn-shadow-xs)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--wn-warm)]"
+      className="group/tile relative min-h-32 overflow-hidden rounded-[1.15rem] border border-white/60 bg-[var(--wn-petrol-soft)] shadow-[var(--wn-shadow-xs)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)]"
     >
       {image ? (
         <Image
@@ -96,7 +96,7 @@ function GiftsTile({ onNavigate }: { onNavigate: () => void }) {
     <Link
       href="/collecties/cadeaus-feest"
       onClick={onNavigate}
-      className="group/gifts relative col-span-2 min-h-36 overflow-hidden rounded-[1.25rem] border border-[rgba(233,120,61,0.32)] bg-[var(--wn-petrol-deep)] shadow-[var(--wn-shadow-sm)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--wn-warm)]"
+      className="group/gifts relative col-span-2 min-h-36 overflow-hidden rounded-[1.25rem] border border-[rgba(233,120,61,0.32)] bg-[var(--wn-petrol-deep)] shadow-[var(--wn-shadow-sm)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--wn-warm)]"
     >
       {image ? (
         <Image
@@ -112,7 +112,7 @@ function GiftsTile({ onNavigate }: { onNavigate: () => void }) {
       <span className="absolute inset-y-0 left-0 flex max-w-[65%] flex-col justify-center p-5 text-[var(--wn-cream)]">
         <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#ffb889]">✦ Uitgelichte collectie</span>
         <span className="wn-display mt-2 text-2xl font-semibold leading-none">Cadeaus & feest</span>
-        <span className="mt-2 text-xs leading-5 text-[#f4e7d8]/78">Feestelijke inspiratie voor ieder moment.</span>
+        <span className="mt-2 text-xs leading-5 text-[#f4e7d8]/75">Feestelijke inspiratie voor ieder moment.</span>
       </span>
     </Link>
   )
@@ -226,7 +226,7 @@ export function WinkelnuCategoryMenu({ mobile = false }: { mobile?: boolean }) {
             </div>
           </div>
 
-          <aside className="border-l border-[var(--wn-border)] bg-[image:var(--wn-gradient-sage)] p-5 xl:p-6" aria-label="Uitgelichte categorieën">
+          <aside className="border-l border-[var(--wn-border)] bg-[image:var(--wn-gradient-brand-sage)] p-5 xl:p-6" aria-label="Uitgelichte categorieën">
             <div className="flex items-center justify-between gap-3">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--wn-petrol)]">Visueel ontdekken</p>
               <span className="text-[10px] font-medium text-[var(--wn-text-muted)]">Uitgelicht</span>
