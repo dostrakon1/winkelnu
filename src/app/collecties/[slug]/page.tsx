@@ -2,10 +2,12 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { SeasonalCollectionPage } from '@/components/storefront/seasonal-collection-page'
 import { Breadcrumbs, EditorialIntro, EditorialShell } from '@/components/storefront/editorial-shell'
 import { categories, getCategoryContent } from '@/content/categories'
 import { getCategoryImage } from '@/content/category-images'
 import { editorialCollections, getEditorialCollection } from '@/content/collections'
+import { getSeasonalCampaignByCollectionSlug } from '@/content/seasonal-campaigns'
 
 const festiveThemeVariants = [
   {
@@ -58,6 +60,11 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   const { slug } = await params
   const collection = getEditorialCollection(slug)
   if (!collection) notFound()
+
+  const seasonalCampaign = getSeasonalCampaignByCollectionSlug(collection.slug)
+  if (seasonalCampaign) {
+    return <SeasonalCollectionPage collection={collection} campaign={seasonalCampaign} />
+  }
 
   if (collection.slug === 'cadeaus-feest') {
     const image = getCategoryImage(collection.slug, collection.title)
