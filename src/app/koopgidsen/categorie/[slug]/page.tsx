@@ -65,7 +65,7 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
           </div>
 
           {image ? (
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)]">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)] shadow-[var(--wn-shadow-sm)]">
               <Image src={image.src} alt={image.alt} fill priority sizes="(max-width: 1023px) 100vw, 45vw" className="object-cover" style={{ objectPosition: image.position }} />
             </div>
           ) : (
@@ -77,7 +77,7 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
       <section className="wn-container wn-section">
         <div className="max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--wn-warm)]">✦ Keuzehulp</p>
-          <h2 className="mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>Waar let je op?</h2>
+          <h2 className="wn-display mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)]">Waar let je op?</h2>
           <p className="wn-body-muted mt-4 leading-7">Gebruik deze vier punten als eerste filter. Zo vergelijk je producten op wat voor deze rubriek echt relevant is.</p>
         </div>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -94,11 +94,11 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
         </div>
       </section>
 
-      <section className="border-y border-[var(--wn-border)] bg-[#fff8ef]">
+      <section className="wn-bg-brand-warm border-y border-[var(--wn-border)]">
         <div className="wn-container wn-section">
           <div className="max-w-3xl">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--wn-warm)]">✦ Ontdek de rubriek</p>
-            <h2 className="mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>Populaire onderwerpen</h2>
+            <h2 className="wn-display mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)]">Populaire onderwerpen</h2>
             <p className="wn-body-muted mt-4 leading-7">Dit zijn de belangrijkste productgroepen die binnen {category.title.toLowerCase()} op Winkelnu worden opgebouwd.</p>
           </div>
           <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -129,7 +129,7 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
                   <div className="flex gap-4">
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-sm font-bold text-[var(--wn-petrol)]">{index + 1}</span>
                     <div>
-                      <h3 className="font-semibold text-[var(--wn-petrol-deep)]">{tip.title}</h3>
+                      <h3 className="wn-ui-heading text-base text-[var(--wn-petrol-deep)]">{tip.title}</h3>
                       <p className="wn-body-muted mt-2 text-sm leading-7">{tip.description}</p>
                     </div>
                   </div>
@@ -157,10 +157,10 @@ export default async function EditorialCategoryPage({ params }: { params: Promis
         </div>
       </section>
 
-      <section className="border-y border-[var(--wn-border)] bg-[var(--wn-surface)]">
+      <section className="wn-bg-brand-sage border-y border-[var(--wn-border)]">
         <div className="wn-container wn-section">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--wn-warm)]">✦ Verdiep je keuze</p>
-          <h2 className="mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>Keuzehulpen in deze rubriek</h2>
+          <h2 className="wn-display mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--wn-petrol-deep)]">Keuzehulpen in deze rubriek</h2>
           {guides.length > 0 ? (
             <div className="mt-9 grid gap-5 md:grid-cols-2">{guides.map((guide, index) => <GuideCard key={guide.slug} guide={guide} tone={getEditorialTone(index)} />)}</div>
           ) : (
