@@ -38,6 +38,9 @@ export function GiftListItemCard({
   const actionContext = contextFields ?? (shareCode ? { shareCode } : {})
   const hasActionContext = Object.keys(actionContext).length > 0
   const typeLabel = isWinkelnuProduct ? 'Winkelnu-product' : item.itemType === 'external_link' ? 'Productlink' : 'Eigen wens'
+  const giftingAffiliateHref = productView?.bestOfferId
+    ? `/uit/${encodeURIComponent(productView.bestOfferId)}?from=${encodeURIComponent('/lootje-lijstje')}`
+    : undefined
 
   const hiddenContextFields = Object.entries(actionContext).map(([name, value]) => (
     <input key={name} type="hidden" name={name} value={value} />
@@ -77,9 +80,16 @@ export function GiftListItemCard({
       <div className="gift-wish-card-actions">
         {isWinkelnuProduct ? (
           productView ? (
-            <Link href={`/product/${encodeURIComponent(productView.slug)}`} className="gift-wish-link">
-              Bekijk op Winkelnu <span aria-hidden="true">→</span>
-            </Link>
+            <>
+              <Link href={`/product/${encodeURIComponent(productView.slug)}`} className="gift-wish-link">
+                Bekijk op Winkelnu <span aria-hidden="true">→</span>
+              </Link>
+              {giftingAffiliateHref ? (
+                <Link href={giftingAffiliateHref} rel="nofollow sponsored" className="gift-wish-link">
+                  Bekijk aanbieding <span aria-hidden="true">↗</span>
+                </Link>
+              ) : null}
+            </>
           ) : (
             <Link href={`/zoeken?q=${encodeURIComponent(item.title)}`} className="gift-wish-link">
               Zoek een alternatief <span aria-hidden="true">→</span>

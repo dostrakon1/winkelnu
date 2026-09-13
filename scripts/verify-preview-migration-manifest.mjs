@@ -34,6 +34,7 @@ const expected = [
   '0030_gifting_insights_foundation.sql',
   '0031_gifting_insights_lifecycle_rollups.sql',
   '0032_gifting_insights_interaction_funnel.sql',
+  '0033_gifting_insights_product_commercial.sql',
 ]
 
 const actual = (await readdir(resolve('supabase/migrations')))

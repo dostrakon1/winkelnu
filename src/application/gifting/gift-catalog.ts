@@ -15,6 +15,7 @@ export type GiftCatalogProductView = {
   priceCents?: number
   currency?: 'EUR'
   offerCount: number
+  bestOfferId?: string
 }
 
 function amountToCents(amount: string): number | undefined {
@@ -36,6 +37,7 @@ function fromListItem(item: CatalogProductListItem): GiftCatalogProductView {
     priceCents,
     currency: priceCents === undefined ? undefined : 'EUR',
     offerCount: item.offerCount,
+    bestOfferId: item.bestOffer?.offer.id,
   }
 }
 
@@ -51,6 +53,7 @@ function fromDetail(detail: CatalogProductDetail): GiftCatalogProductView {
     priceCents,
     currency: priceCents === undefined ? undefined : 'EUR',
     offerCount: detail.offers.length,
+    bestOfferId: bestOffer?.offer.id,
   }
 }
 
