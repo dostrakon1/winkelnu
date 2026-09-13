@@ -1,12 +1,17 @@
 type GiftListItemEditorProps = {
   action: (formData: FormData) => void | Promise<void>
-  shareCode: string
+  shareCode?: string
+  contextFields?: Record<string, string>
 }
 
-export function GiftListItemEditor({ action, shareCode }: GiftListItemEditorProps) {
+export function GiftListItemEditor({ action, shareCode, contextFields }: GiftListItemEditorProps) {
+  const hiddenFields = contextFields ?? (shareCode ? { shareCode } : {})
+
   return (
     <form action={action} className="space-y-5 rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-5 shadow-[var(--wn-shadow-xs)] sm:p-6">
-      <input type="hidden" name="shareCode" value={shareCode} />
+      {Object.entries(hiddenFields).map(([name, value]) => (
+        <input key={name} type="hidden" name={name} value={value} />
+      ))}
 
       <div>
         <p className="wn-eyebrow">Eigen wens of externe link</p>
