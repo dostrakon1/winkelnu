@@ -42,7 +42,7 @@ export function GiftGroupForm({ action }: GiftGroupFormProps) {
           </span>
           <div className="relative">
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-bold text-[var(--wn-text-muted)]">€</span>
-            <input name="budget" inputMode="decimal" className="wn-input pl-9" placeholder="25,00" />
+            <input name="budget" inputMode="decimal" className="wn-input gift-money-input" placeholder="25,00" />
           </div>
         </label>
 
