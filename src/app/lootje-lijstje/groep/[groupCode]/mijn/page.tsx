@@ -153,7 +153,7 @@ export default async function GiftGroupParticipantPage({
                 ) : (
                   <div className="rounded-[var(--wn-radius-xl)] border border-dashed border-[color:rgba(18,59,58,0.24)] bg-white/70 p-7 text-center">
                     <h3 className="wn-ui-heading text-lg">Je lijstje is nog leeg.</h3>
-                    <p className="wn-body-muted mt-2 text-sm">Voeg hieronder een Winkelnu-product, eigen wens of externe link toe.</p>
+                    <p className="wn-body-muted mt-2 text-sm">{editable ? 'Voeg hieronder een Winkelnu-product, eigen wens of externe link toe.' : 'De lijstjes zijn vergrendeld nadat de lootjes zijn getrokken.'}</p>
                   </div>
                 )}
               </section>
@@ -189,9 +189,17 @@ export default async function GiftGroupParticipantPage({
               </section>
 
               <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)] p-5 sm:p-6">
-                <span className="inline-flex rounded-full border border-[color:rgba(18,59,58,0.14)] bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[var(--wn-petrol)]">Nog niet getrokken</span>
-                <h2 className="wn-ui-heading mt-4 text-xl">Je lootje blijft nog geheim.</h2>
-                <p className="wn-body-muted mt-3 text-sm leading-6">De groep, jouw lijstje en je no-login hersteltoegang staan klaar. De echte trekking volgt in L5.</p>
+                <span className="inline-flex rounded-full border border-[color:rgba(18,59,58,0.14)] bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[var(--wn-petrol)]">
+                  {group.status === 'drawn' ? 'Lootjes getrokken ✓' : 'Nog niet getrokken'}
+                </span>
+                <h2 className="wn-ui-heading mt-4 text-xl">
+                  {group.status === 'drawn' ? 'Je lootje is veilig bepaald.' : 'Je lootje blijft nog geheim.'}
+                </h2>
+                <p className="wn-body-muted mt-3 text-sm leading-6">
+                  {group.status === 'drawn'
+                    ? 'De geheime verdeling staat vast. Winkelnu onthult in L6 uitsluitend jouw eigen ontvanger en diens lijstje.'
+                    : 'De groep, jouw lijstje en je no-login hersteltoegang staan klaar. Zodra de organisator trekt, wordt één geldige geheime verdeling opgeslagen.'}
+                </p>
               </section>
             </aside>
           </div>
