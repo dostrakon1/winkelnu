@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
 import { resolveSiteOrigin } from '@/config/sites'
+import { categories } from '@/content/categories'
 import { editorialCollections } from '@/content/collections'
-import { buyingGuides, editorialCategories } from '@/content/editorial-catalog'
+import { buyingGuides } from '@/content/editorial-catalog'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 // Live commerce product URLs remain runtime-generated and are excluded until release.
@@ -14,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const promotionalRoutes = ['/collecties/black-friday', '/collecties/cyber-monday']
   const editorialRoutes = [
     '/koopgidsen',
-    ...editorialCategories.map((category) => `/koopgidsen/categorie/${category.slug}`),
+    ...categories.map((category) => `/koopgidsen/categorie/${category.slug}`),
     ...buyingGuides.map((guide) => `/koopgidsen/${guide.slug}`),
     ...editorialCollections.map((collection) => `/collecties/${collection.slug}`),
   ]
