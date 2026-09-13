@@ -60,4 +60,14 @@ describe('Lootje & Lijstje premium onboarding contract', () => {
       expect(form).not.toContain('Dogan')
     }
   })
+
+  it('keeps currency prefixes visually separated from budget values', () => {
+    const groupForm = source('src/components/gifting/gift-group-form.tsx')
+    const listForm = source('src/components/gifting/gift-list-form.tsx')
+
+    expect(groupForm).toContain("style={{ paddingLeft: '2.75rem' }}")
+    expect(listForm.match(/style=\{\{ paddingLeft: '2\.75rem' \}\}/g)).toHaveLength(2)
+    expect(listForm).toContain('name="budgetMin"')
+    expect(listForm).toContain('name="budgetMax"')
+  })
 })
