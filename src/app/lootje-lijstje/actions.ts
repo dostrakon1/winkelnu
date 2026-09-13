@@ -14,6 +14,7 @@ import {
   updateStandaloneGiftListItem,
   updateWinkelnuProductGiftNote,
 } from '@/application/gifting/standalone-gift-lists'
+import type { GiftListItemFormState } from '@/domain/gifting/gift-list-item-form-state'
 import { GiftValidationError, validateGiftListInput, validateGiftListItemInput } from '@/domain/gifting/validation'
 
 function field(formData: FormData, name: string): string {
@@ -26,6 +27,19 @@ function message(error: unknown): string {
   if (error instanceof Error && error.message === 'GIFT_LIST_ITEM_LIMIT') return 'Je lijstje heeft het maximum van 100 wensen bereikt.'
   if (error instanceof Error && error.message === 'GIFT_LIST_ITEM_NOT_FOUND') return 'Deze wens bestaat niet meer.'
   return 'Dat ging niet goed. Probeer het nog een keer.'
+}
+
+function giftItemFormError(previousState: GiftListItemFormState, formData: FormData, error: unknown): GiftListItemFormState {
+  return {
+    error: message(error),
+    revision: previousState.revision + 1,
+    values: {
+      itemType: field(formData, 'itemType') === 'external_link' ? 'external_link' : 'text',
+      title: field(formData, 'title'),
+      externalUrl: field(formData, 'externalUrl'),
+      note: field(formData, 'note'),
+    },
+  }
 }
 
 function editPath(shareCode: string, key?: 'gemaakt' | 'opgeslagen' | 'toegevoegd' | 'bijgewerkt' | 'verwijderd', error?: string): string {
@@ -78,7 +92,10 @@ export async function updateGiftListAction(formData: FormData): Promise<void> {
   redirect(editPath(shareCode, 'opgeslagen'))
 }
 
-export async function addGiftListItemAction(formData: FormData): Promise<void> {
+export async function addGiftListItemAction(
+  previousState: GiftListItemFormState,
+  formData: FormData,
+): Promise<GiftListItemFormState> {
   requireGiftingEnabled()
   const shareCode = field(formData, 'shareCode')
   try {
@@ -90,7 +107,7 @@ export async function addGiftListItemAction(formData: FormData): Promise<void> {
     })
     await addStandaloneGiftListItem(shareCode, input)
   } catch (error) {
-    redirect(editPath(shareCode, undefined, message(error)))
+    return giftItemFormError(previousState, formData, error)
   }
 
   revalidatePath(`/lootje-lijstje/lijstje/${shareCode}`)
