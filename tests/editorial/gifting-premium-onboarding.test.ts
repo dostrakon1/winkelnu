@@ -48,4 +48,16 @@ describe('Lootje & Lijstje premium onboarding contract', () => {
     expect(joinForm).toContain('name="displayName"')
     expect(joinForm).toContain('Geen account, e-mail of telefoonnummer nodig.')
   })
+
+  it('uses neutral copy in every public name field', () => {
+    const groupForm = source('src/components/gifting/gift-group-form.tsx')
+    const joinForm = source('src/components/gifting/gift-group-join-form.tsx')
+    const listForm = source('src/components/gifting/gift-list-form.tsx')
+    const publicNameForms = [groupForm, joinForm, listForm]
+
+    for (const form of publicNameForms) {
+      expect(form).toContain('placeholder="Vul je naam in"')
+      expect(form).not.toContain('Dogan')
+    }
+  })
 })

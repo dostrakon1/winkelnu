@@ -13,11 +13,11 @@ export function GiftGroupJoinForm({ action, groupCode }: GiftGroupJoinFormProps)
 
       <label className="gift-premium-field mt-6">
         <span className="gift-premium-field-label"><span>Jouw naam</span></span>
-        <input name="displayName" required minLength={2} maxLength={80} className="wn-input" placeholder="Bijvoorbeeld Dogan" autoComplete="name" />
+        <input name="displayName" required minLength={2} maxLength={80} className="wn-input" placeholder="Vul je naam in" autoComplete="name" />
       </label>
 
       <div className="gift-premium-help mt-5">
-        Gebruikt iemand al dezelfde naam? Voeg dan een initiaal of andere herkenning toe, bijvoorbeeld “Dogan A.”.
+        Gebruikt iemand al dezelfde naam? Voeg dan een initiaal of andere korte herkenning toe.
       </div>
 
       <button type="submit" className="wn-button wn-button-primary mt-6 w-full">Ik doe mee →</button>
