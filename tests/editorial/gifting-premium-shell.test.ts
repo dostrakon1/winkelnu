@@ -31,7 +31,7 @@ describe('Lootje & Lijstje premium shell contract', () => {
 
     expect(header).toContain('Lootje &amp; Lijstje')
     expect(header).toContain('Naar Winkelnu')
-    expect(header).toContain("'/lootje-lijstje/lijstje/nieuw'")
-    expect(header).toContain("'/lootje-lijstje/groep/nieuw'")
+    expect(header).toContain('/lootje-lijstje/lijstje/nieuw')
+    expect(header).toContain('/lootje-lijstje/groep/nieuw')
   })
 })
