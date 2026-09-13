@@ -7,6 +7,7 @@ import {
   getOrganizerGiftGroupContext,
   getParticipantGiftGroupContext,
 } from '@/application/gifting/gift-groups'
+import { GiftGroupRecoveryLink } from '@/components/gifting/gift-group-recovery-link'
 import { GiftShareActions } from '@/components/gifting/gift-share-actions'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
@@ -37,7 +38,12 @@ export default async function GiftGroupOrganizerPage({
   searchParams,
 }: {
   params: Promise<{ groupCode: string }>
-  searchParams: Promise<{ gemaakt?: string | string[]; verwijderd?: string | string[]; fout?: string | string[] }>
+  searchParams: Promise<{
+    gemaakt?: string | string[]
+    verwijderd?: string | string[]
+    toegang?: string | string[]
+    fout?: string | string[]
+  }>
 }) {
   const { groupCode } = await params
   const query = await searchParams
@@ -56,7 +62,7 @@ export default async function GiftGroupOrganizerPage({
           <section className="mx-auto max-w-2xl rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-7 text-center shadow-[var(--wn-shadow-sm)] sm:p-10">
             <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xl text-[var(--wn-petrol)]" aria-hidden="true">◇</span>
             <h1 className="wn-heading mt-5 text-3xl">Beheer-toegang nodig.</h1>
-            <p className="wn-body-muted mt-4">Deze browser heeft geen organisatorrechten voor deze groep. Herstel-links voor organisator en deelnemers bouwen we bewust in L4.</p>
+            <p className="wn-body-muted mt-4">Deze browser heeft geen organisatorrechten voor deze groep. Open je bewaarde beheer-herstel-link om je toegang zonder account terug te zetten.</p>
             <Link href={`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}`} className="wn-button wn-button-primary mt-7">Naar de uitnodiging</Link>
           </section>
         </main>
@@ -68,7 +74,8 @@ export default async function GiftGroupOrganizerPage({
   const { group, participants } = context
   const invitePath = `/lootje-lijstje/groep/${encodeURIComponent(groupCode)}`
   const notification = first(query.fout)
-    ?? (first(query.gemaakt) ? 'Je groep is gemaakt. Deel nu de uitnodigingslink met de andere deelnemers.' : undefined)
+    ?? (first(query.toegang) === 'hersteld' ? 'Je beheer-toegang is hersteld op deze browser.' : undefined)
+    ?? (first(query.gemaakt) ? 'Je groep is gemaakt. Deel nu de uitnodigingslink met de andere deelnemers en bewaar je beheer-herstel-link.' : undefined)
     ?? (first(query.verwijderd) ? 'Deelnemer verwijderd uit de groep.' : undefined)
   const isError = Boolean(first(query.fout))
 
@@ -150,15 +157,17 @@ export default async function GiftGroupOrganizerPage({
             </div>
 
             <aside className="space-y-5 xl:sticky xl:top-28">
+              <GiftGroupRecoveryLink groupCode={groupCode} kind="organizer" />
+
               <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)] p-5 sm:p-6">
                 <span className="inline-flex rounded-full border border-[color:rgba(18,59,58,0.14)] bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[var(--wn-petrol)]">L5</span>
                 <h2 className="wn-ui-heading mt-4 text-xl">Lootjes trekken komt hier.</h2>
-                <p className="wn-body-muted mt-3 text-sm leading-6">L3 stopt bewust vóór de trekking. Deelnemers en hun lijstjes zijn nu de complete basis; uitsluitingen en de geheime trekking bouwen we later bovenop deze groep.</p>
+                <p className="wn-body-muted mt-3 text-sm leading-6">De groep, deelnemers en no-login hersteltoegang staan nu klaar. Uitsluitingen en de geheime trekking bouwen we in L5 bovenop deze basis.</p>
               </section>
 
               <section className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white p-5">
-                <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Privacygrens</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Als organisator zie je namen en hoeveel wensen iemand heeft. Je krijgt geen verborgen cadeaukeuzes of toekomstige lootjesmapping te zien.</p>
+                <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Twee rechten, bewust apart</p>
+                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Je beheer-herstel-link herstelt alleen organisatorrechten. Ben je zelf ook deelnemer, bewaar dan op je deelnemerspagina óók je persoonlijke deelnemers-herstel-link.</p>
               </section>
             </aside>
           </div>
