@@ -1,8 +1,10 @@
 import {
   giftOccasions,
+  type CreateGiftGroupInput,
   type CreateGiftListInput,
   type CreateGiftListItemInput,
   type GiftOccasion,
+  type JoinGiftGroupInput,
 } from './types'
 
 export class GiftValidationError extends Error {
@@ -14,6 +16,10 @@ export class GiftValidationError extends Error {
 
 export function normalizeGiftText(value: string): string {
   return value.replace(/\s+/g, ' ').trim()
+}
+
+export function normalizeGiftDisplayName(value: string): string {
+  return normalizeGiftText(value).toLocaleLowerCase('nl-NL')
 }
 
 export function validateGiftNote(value: string): string | undefined {
@@ -41,7 +47,7 @@ export function parseOptionalEuroAmount(value: string): number | undefined {
   return cents
 }
 
-function optionalDate(value: string): string | undefined {
+export function parseOptionalGiftDate(value: string): string | undefined {
   const normalized = value.trim()
   if (!normalized) return undefined
   if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
@@ -55,6 +61,14 @@ function optionalDate(value: string): string | undefined {
   return normalized
 }
 
+function validateDisplayName(raw: string): string {
+  const displayName = normalizeGiftText(raw)
+  if (displayName.length < 2 || displayName.length > 80) {
+    throw new GiftValidationError('Je naam moet tussen 2 en 80 tekens zijn.')
+  }
+  return displayName
+}
+
 export function validateGiftListInput(input: {
   displayName: string
   title?: string
@@ -63,16 +77,13 @@ export function validateGiftListInput(input: {
   budgetMax?: string
   eventDate?: string
 }): CreateGiftListInput {
-  const displayName = normalizeGiftText(input.displayName)
+  const displayName = validateDisplayName(input.displayName)
   const title = normalizeGiftText(input.title ?? '')
   const occasion = parseGiftOccasion(input.occasion)
   const budgetMinCents = parseOptionalEuroAmount(input.budgetMin ?? '')
   const budgetMaxCents = parseOptionalEuroAmount(input.budgetMax ?? '')
-  const eventDate = optionalDate(input.eventDate ?? '')
+  const eventDate = parseOptionalGiftDate(input.eventDate ?? '')
 
-  if (displayName.length < 2 || displayName.length > 80) {
-    throw new GiftValidationError('Je naam moet tussen 2 en 80 tekens zijn.')
-  }
   if (title.length > 100) throw new GiftValidationError('De titel mag maximaal 100 tekens zijn.')
   if (budgetMinCents !== undefined && budgetMaxCents !== undefined && budgetMinCents > budgetMaxCents) {
     throw new GiftValidationError('Het minimumbudget mag niet hoger zijn dan het maximumbudget.')
@@ -86,6 +97,30 @@ export function validateGiftListInput(input: {
     budgetMaxCents,
     eventDate,
   }
+}
+
+export function validateGiftGroupInput(input: {
+  name: string
+  occasion: string
+  organizerDisplayName: string
+  budget?: string
+  eventDate?: string
+}): CreateGiftGroupInput {
+  const name = normalizeGiftText(input.name)
+  const organizerDisplayName = validateDisplayName(input.organizerDisplayName)
+  const occasion = parseGiftOccasion(input.occasion)
+  const budgetCents = parseOptionalEuroAmount(input.budget ?? '')
+  const eventDate = parseOptionalGiftDate(input.eventDate ?? '')
+
+  if (name.length < 2 || name.length > 100) {
+    throw new GiftValidationError('De groepsnaam moet tussen 2 en 100 tekens zijn.')
+  }
+
+  return { name, occasion, organizerDisplayName, budgetCents, eventDate }
+}
+
+export function validateGiftGroupJoinInput(input: { displayName: string }): JoinGiftGroupInput {
+  return { displayName: validateDisplayName(input.displayName) }
 }
 
 export function validateGiftListItemInput(input: {
