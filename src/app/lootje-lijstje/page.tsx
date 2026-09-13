@@ -5,11 +5,11 @@ import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 
 export const metadata: Metadata = {
   title: 'Lootje & Lijstje',
-  description: 'Maak zonder account een verlanglijstje, voeg Winkelnu-producten toe, deel je wensen en regel later ook lootjes met vrienden, familie of collega’s.',
+  description: 'Maak zonder account een verlanglijstje of cadeaugroep, voeg Winkelnu-producten toe en deel alles eenvoudig met vrienden, familie of collega’s.',
   alternates: { canonical: '/lootje-lijstje' },
   openGraph: {
     title: 'Lootje & Lijstje | Winkelnu.nl',
-    description: 'Maak een verlanglijstje zonder account, voeg Winkelnu-producten of eigen wensen toe en deel het eenvoudig.',
+    description: 'Maak een lijstje of cadeaugroep zonder account en regel je wensen samen op één plek.',
     url: '/lootje-lijstje',
   },
 }
@@ -26,13 +26,11 @@ export default function GiftLandingPage() {
               <p className="wn-eyebrow">Lootje &amp; Lijstje</p>
               <h1 className="wn-heading mt-4 text-4xl leading-tight sm:text-6xl">Cadeaus regelen zonder gedoe.</h1>
               <p className="wn-body-muted mt-6 max-w-2xl text-lg leading-8 sm:text-xl">
-                Maak een verlanglijstje, kies producten uit Winkelnu of voeg je eigen wensen toe en deel alles eenvoudig met familie of vrienden.
+                Maak je eigen verlanglijstje óf start een groep. Iedereen kan zonder account meedoen en zijn wensen op één plek bijhouden.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/lootje-lijstje/lijstje/nieuw" className="wn-button wn-button-primary">Maak een lijstje →</Link>
-                <span className="inline-flex min-h-12 items-center rounded-full border border-[var(--wn-border)] bg-white/70 px-5 text-sm font-bold text-[var(--wn-text-muted)]">
-                  Lootjes trekken volgt in een volgende bouwstap
-                </span>
+                <Link href="/lootje-lijstje/groep/nieuw" className="wn-button wn-button-secondary">Maak een groep →</Link>
               </div>
             </div>
           </div>
@@ -49,10 +47,12 @@ export default function GiftLandingPage() {
             </article>
 
             <article className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)] p-6 sm:p-8">
-              <span className="inline-flex rounded-full border border-[color:rgba(18,59,58,0.14)] bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[var(--wn-petrol)]">Volgende fase</span>
+              <span className="inline-flex rounded-full border border-[color:rgba(18,59,58,0.14)] bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[var(--wn-petrol)]">Nieuw</span>
               <p className="wn-eyebrow mt-6">Lootje</p>
-              <h2 className="wn-heading mt-2 text-3xl">Trek straks lootjes met je groep.</h2>
-              <p className="wn-body-muted mt-4 leading-7">De technische basis is al voorbereid. Groepen, deelnemers en geheime trekkingen worden in de volgende fases bovenop dezelfde lichte no-login aanpak gebouwd.</p>
+              <h2 className="wn-heading mt-2 text-3xl">Maak een groep en nodig iedereen uit.</h2>
+              <p className="wn-body-muted mt-4 leading-7">Deel één uitnodigingslink via WhatsApp. Deelnemers vullen alleen hun naam in en krijgen binnen de groep hun eigen verlanglijstje.</p>
+              <Link href="/lootje-lijstje/groep/nieuw" className="wn-button wn-button-primary mt-6">Maak een groep</Link>
+              <p className="mt-4 text-xs font-semibold leading-5 text-[var(--wn-text-muted)]">De geheime herstel-links en echte trekking worden in de volgende bouwfases toegevoegd.</p>
             </article>
           </div>
         </section>
