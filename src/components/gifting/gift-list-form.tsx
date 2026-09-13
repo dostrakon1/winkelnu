@@ -75,7 +75,7 @@ export function GiftListForm({ action, submitLabel, shareCode, list }: GiftListF
               name="budgetMin"
               inputMode="decimal"
               defaultValue={amount(list?.budgetMinCents)}
-              className="wn-input pl-9"
+              className="wn-input gift-money-input"
               placeholder="10"
             />
           </div>
@@ -92,7 +92,7 @@ export function GiftListForm({ action, submitLabel, shareCode, list }: GiftListF
               name="budgetMax"
               inputMode="decimal"
               defaultValue={amount(list?.budgetMaxCents)}
-              className="wn-input pl-9"
+              className="wn-input gift-money-input"
               placeholder="50"
             />
           </div>
