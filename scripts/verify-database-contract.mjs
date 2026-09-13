@@ -24,6 +24,7 @@ const migrationPaths = [
   'supabase/migrations/0020_hierarchical_catalog_browsing.sql',
   'supabase/migrations/0021_search_feedback_learning_signals.sql',
   'supabase/migrations/0022_product_attribute_evidence.sql',
+  'supabase/migrations/0023_gifting_foundation.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -32,12 +33,16 @@ const requiredTables = [
   'merchants', 'categories', 'products', 'feed_sources', 'import_runs', 'offers', 'product_identifiers',
   'import_rejects', 'product_match_reviews', 'affiliate_click_events', 'affiliate_networks',
   'merchant_affiliate_integrations', 'feed_import_orchestration', 'operator_audit_events', 'operator_action_requests',
+  'gift_lists', 'gift_list_items', 'gift_groups', 'gift_group_participants', 'gift_group_exclusions',
+  'gift_group_assignments', 'gift_item_reservations',
 ]
 
 const requiredDataApiTables = [
   'merchants', 'categories', 'products', 'feed_sources', 'import_runs', 'offers', 'product_identifiers',
   'import_rejects', 'product_match_reviews', 'affiliate_click_events', 'affiliate_networks',
   'merchant_affiliate_integrations', 'feed_import_orchestration',
+  'gift_lists', 'gift_list_items', 'gift_groups', 'gift_group_participants', 'gift_group_exclusions',
+  'gift_group_assignments', 'gift_item_reservations',
 ]
 
 const requiredExternalKeyConflictTargets = ['merchants', 'categories', 'products', 'offers', 'import_runs']
@@ -65,6 +70,20 @@ const requiredColumns = [
   ['operator_action_requests', 'target_id'], ['operator_action_requests', 'status'],
   ['operator_action_requests', 'error_message'], ['operator_action_requests', 'created_at'],
   ['operator_action_requests', 'completed_at'],
+  ['gift_lists', 'external_key'], ['gift_lists', 'share_code_hash'], ['gift_lists', 'owner_token_hash'],
+  ['gift_lists', 'display_name'], ['gift_lists', 'occasion'], ['gift_lists', 'expires_at'],
+  ['gift_list_items', 'gift_list_id'], ['gift_list_items', 'item_type'], ['gift_list_items', 'product_external_key'],
+  ['gift_list_items', 'external_url'], ['gift_list_items', 'title'], ['gift_list_items', 'sort_order'],
+  ['gift_groups', 'external_key'], ['gift_groups', 'group_code_hash'], ['gift_groups', 'organizer_token_hash'],
+  ['gift_groups', 'status'], ['gift_groups', 'draw_version'], ['gift_groups', 'expires_at'],
+  ['gift_group_participants', 'group_id'], ['gift_group_participants', 'gift_list_id'],
+  ['gift_group_participants', 'participant_token_hash'], ['gift_group_participants', 'display_name'],
+  ['gift_group_exclusions', 'group_id'], ['gift_group_exclusions', 'participant_id'],
+  ['gift_group_exclusions', 'excluded_recipient_id'],
+  ['gift_group_assignments', 'group_id'], ['gift_group_assignments', 'draw_version'],
+  ['gift_group_assignments', 'giver_participant_id'], ['gift_group_assignments', 'recipient_participant_id'],
+  ['gift_item_reservations', 'group_id'], ['gift_item_reservations', 'gift_list_item_id'],
+  ['gift_item_reservations', 'reserved_by_participant_id'],
 ]
 
 const requiredFunctions = [
@@ -107,7 +126,7 @@ for (const table of requiredTables) {
 }
 
 for (const table of requiredDataApiTables) {
-  const revokeUntrusted = new RegExp(`revoke\\s+all\\s+on\\s+table\\s+${table}\\s+from\\s+anon\\s*,\\s*authenticated`, 'i')
+  const revokeUntrusted = new RegExp(`revoke\\s+all\\s+on\\s+table\\s+${table}\\s+from\\s+(?:public\\s*,\\s*)?anon\\s*,\\s*authenticated`, 'i')
   if (!revokeUntrusted.test(migrations)) failures.push(`Missing explicit Data API revoke for anon/authenticated: ${table}`)
 
   const serviceRoleGrant = new RegExp(`grant\\s+select\\s*,\\s*insert\\s*,\\s*update\\s*,\\s*delete\\s+on\\s+table\\s+${table}\\s+to\\s+service_role`, 'i')
