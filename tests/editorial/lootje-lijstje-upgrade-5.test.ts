@@ -40,4 +40,13 @@ describe('Lootje & Lijstje Upgrade 5 discoverability', () => {
     expect(spotlight).toContain('Privé trekking')
     expect(spotlight).toContain('Wensen direct bij de hand')
   })
+
+  it('keeps the collection placement context-aware and mobile friendly', () => {
+    const spotlight = read('src/components/storefront/gift-discovery-spotlight.tsx')
+
+    expect(spotlight).toContain("className={isCollection ? 'wn-container py-8 sm:py-10'")
+    expect(spotlight).toContain('{!isCollection ? (')
+    expect(spotlight).toContain('Bekijk ook Cadeaus &amp; feest →')
+    expect(spotlight).toContain('w-full justify-center sm:w-auto')
+  })
 })
