@@ -17,7 +17,7 @@ export function GiftDiscoverySpotlight({ placement = 'home' }: GiftDiscoverySpot
   return (
     <section
       id={isCollection ? 'lootje-lijstje' : undefined}
-      className={isCollection ? 'wn-container pt-8 sm:pt-10' : 'wn-container py-8 sm:py-11'}
+      className={isCollection ? 'wn-container py-8 sm:py-10' : 'wn-container py-8 sm:py-11'}
       aria-labelledby={headingId}
     >
       <div className="relative overflow-hidden rounded-[2rem] border border-[rgba(18,59,58,0.16)] bg-[#f7efe4] shadow-[var(--wn-shadow-md)]">
@@ -44,11 +44,11 @@ export function GiftDiscoverySpotlight({ placement = 'home' }: GiftDiscoverySpot
                 : 'Maak een verlanglijstje voor jezelf of regel een complete lootjesgroep. Deel via WhatsApp, trek privé de lootjes en ga daarna vanuit de wensen rechtstreeks verder naar Winkelnu.'}
             </p>
 
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/lootje-lijstje" className="wn-button wn-button-primary">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Link href="/lootje-lijstje" className="wn-button wn-button-primary w-full justify-center sm:w-auto">
                 Open Lootje &amp; Lijstje →
               </Link>
-              <Link href="/lootje-lijstje/groep/nieuw" className="wn-button wn-button-secondary">
+              <Link href="/lootje-lijstje/groep/nieuw" className="wn-button wn-button-secondary w-full justify-center sm:w-auto">
                 Start een groep
               </Link>
             </div>
@@ -76,9 +76,11 @@ export function GiftDiscoverySpotlight({ placement = 'home' }: GiftDiscoverySpot
                   </div>
                 ))}
               </div>
-              <Link href="/collecties/cadeaus-feest" className="mt-5 inline-flex min-h-11 items-center text-sm font-bold text-[#ffb889] hover:text-white hover:underline">
-                Bekijk ook Cadeaus &amp; feest →
-              </Link>
+              {!isCollection ? (
+                <Link href="/collecties/cadeaus-feest" className="mt-5 inline-flex min-h-11 items-center text-sm font-bold text-[#ffb889] hover:text-white hover:underline">
+                  Bekijk ook Cadeaus &amp; feest →
+                </Link>
+              ) : null}
             </div>
           </aside>
         </div>
