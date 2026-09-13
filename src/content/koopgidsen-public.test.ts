@@ -26,7 +26,7 @@ describe('public editorial catalog', () => {
     for (const guide of buyingGuides) expect(categorySlugs.has(guide.category), guide.slug).toBe(true)
 
     const imageBackedCategories = editorialCategories.filter((category) => getCategoryImage(category.slug))
-    expect(imageBackedCategories).toHaveLength(10)
+    expect(imageBackedCategories).toHaveLength(14)
     expect(getCategoryImage('persoonlijke-verzorging')?.src).toBe(
       '/images/categories/persoonlijke-verzorging-hero.webp',
     )
