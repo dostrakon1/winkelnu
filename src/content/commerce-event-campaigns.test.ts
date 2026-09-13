@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getBlackFridayCycle, getBlackFridayDateKey, getCyberMondayDateKey } from './commerce-event-campaigns'
+import { getBlackFridayCycle, getBlackFridayDateKey, getCommerceEventCampaigns, getCyberMondayDateKey } from './commerce-event-campaigns'
 
 describe('Black Friday and Cyber Monday calendar rules', () => {
   it('resolves the 2026 dates correctly', () => {
@@ -22,5 +22,11 @@ describe('Black Friday and Cyber Monday calendar rules', () => {
     expect(getCyberMondayDateKey(2027)).toBe('2027-11-29')
     expect(getBlackFridayDateKey(2028)).toBe('2028-11-24')
     expect(getCyberMondayDateKey(2028)).toBe('2028-11-27')
+  })
+
+  it('uses collection URLs as the canonical public campaign routes', () => {
+    const campaigns = getCommerceEventCampaigns(2026)
+    expect(campaigns.find((campaign) => campaign.kind === 'black-friday')?.href).toBe('/collecties/black-friday')
+    expect(campaigns.find((campaign) => campaign.kind === 'cyber-monday')?.href).toBe('/collecties/cyber-monday')
   })
 })

@@ -6,10 +6,17 @@ Black Friday en Cyber Monday vormen binnen Winkelnu één commerciële campagnef
 
 ## Publieke routes
 
-- `/black-friday`
-- `/cyber-monday`
+De canonieke publieke routes vallen onder de tijdelijke collectielaag:
 
-Beide routes blijven permanent beschikbaar en indexeerbaar. De campagnebalk, homepage-spotlight en megamenu-highlight worden alleen tijdens de actieve campagneperiode geactiveerd.
+- `/collecties/black-friday`
+- `/collecties/cyber-monday`
+
+De voormalige top-level routes blijven uitsluitend als permanente redirects bestaan:
+
+- `/black-friday` → `/collecties/black-friday`
+- `/cyber-monday` → `/collecties/cyber-monday`
+
+Zo blijven bestaande links bruikbaar, terwijl alle tijdelijke themacampagnes publiek onder `/collecties` gegroepeerd zijn. De canonieke collectiepagina's blijven permanent beschikbaar en indexeerbaar. De campagnebalk, homepage-spotlight en megamenu-highlight worden alleen tijdens de actieve campagneperiode geactiveerd.
 
 ## Datumregel
 
@@ -68,7 +75,8 @@ v1 bevat geen dummydeals en geen verzonnen prijzen. De pagina's sturen bezoekers
 
 ## Architectuurprincipes
 
-- Eén campagnefamilie, twee publieke SEO-routes.
+- Eén campagnefamilie, twee publieke SEO-routes onder `/collecties`.
+- Legacy top-level routes blijven als permanente redirects bestaan.
 - Automatische kalender als bron van waarheid met toekomstige override-mogelijkheid.
 - Commerce-events hebben tijdelijke presentatieprioriteit boven overlappende seizoenscampagnes.
 - Geen nieuwe microservice of aparte repository.
