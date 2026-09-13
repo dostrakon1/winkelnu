@@ -3,6 +3,11 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import {
+  drawGiftGroup,
+  GiftGroupDrawError,
+  setGiftGroupExclusionPair,
+} from '@/application/gifting/gift-group-draw'
+import {
   createGiftGroupOrganizerRecoveryPath,
   createGiftGroupParticipantRecoveryPath,
 } from '@/application/gifting/gift-group-recovery'
@@ -31,7 +36,11 @@ function field(formData: FormData, name: string): string {
 }
 
 function message(error: unknown): string {
-  if (error instanceof GiftValidationError || error instanceof GiftGroupAccessError) return error.message
+  if (
+    error instanceof GiftValidationError
+    || error instanceof GiftGroupAccessError
+    || error instanceof GiftGroupDrawError
+  ) return error.message
   if (error instanceof Error && error.message === 'GIFT_LIST_ITEM_LIMIT') return 'Je lijstje heeft het maximum van 100 wensen bereikt.'
   if (error instanceof Error && error.message === 'GIFT_LIST_ITEM_NOT_FOUND') return 'Deze wens bestaat niet meer.'
   return 'Dat ging niet goed. Probeer het nog een keer.'
@@ -51,6 +60,12 @@ function organizerPath(groupCode: string, key?: string, error?: string): string 
   if (error) params.set('fout', error)
   const suffix = params.toString()
   return `/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/beheer${suffix ? `?${suffix}` : ''}`
+}
+
+function revalidateGiftGroup(groupCode: string): void {
+  revalidatePath(`/lootje-lijstje/groep/${groupCode}`)
+  revalidatePath(`/lootje-lijstje/groep/${groupCode}/beheer`)
+  revalidatePath(`/lootje-lijstje/groep/${groupCode}/mijn`)
 }
 
 export async function createGiftGroupAction(formData: FormData): Promise<void> {
@@ -91,10 +106,70 @@ export async function removeGiftGroupParticipantAction(formData: FormData): Prom
   } catch (error) {
     redirect(organizerPath(groupCode, undefined, message(error)))
   }
-  revalidatePath(`/lootje-lijstje/groep/${groupCode}`)
-  revalidatePath(`/lootje-lijstje/groep/${groupCode}/beheer`)
-  revalidatePath(`/lootje-lijstje/groep/${groupCode}/mijn`)
+  revalidateGiftGroup(groupCode)
   redirect(organizerPath(groupCode, 'verwijderd'))
+}
+
+export async function addGiftGroupExclusionAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
+  const groupCode = field(formData, 'groupCode')
+  try {
+    await setGiftGroupExclusionPair(
+      groupCode,
+      field(formData, 'participantAId'),
+      field(formData, 'participantBId'),
+      true,
+    )
+  } catch (error) {
+    redirect(organizerPath(groupCode, undefined, message(error)))
+  }
+  revalidateGiftGroup(groupCode)
+  redirect(organizerPath(groupCode, 'uitsluiting'))
+}
+
+export async function removeGiftGroupExclusionAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
+  const groupCode = field(formData, 'groupCode')
+  try {
+    await setGiftGroupExclusionPair(
+      groupCode,
+      field(formData, 'participantAId'),
+      field(formData, 'participantBId'),
+      false,
+    )
+  } catch (error) {
+    redirect(organizerPath(groupCode, undefined, message(error)))
+  }
+  revalidateGiftGroup(groupCode)
+  redirect(organizerPath(groupCode, 'uitsluiting'))
+}
+
+export async function drawGiftGroupAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
+  const groupCode = field(formData, 'groupCode')
+  try {
+    await drawGiftGroup(groupCode)
+  } catch (error) {
+    redirect(organizerPath(groupCode, undefined, message(error)))
+  }
+  revalidateGiftGroup(groupCode)
+  redirect(organizerPath(groupCode, 'getrokken'))
+}
+
+export async function redrawGiftGroupAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
+  const groupCode = field(formData, 'groupCode')
+  if (field(formData, 'confirmation') !== 'OPNIEUW TREKKEN') {
+    redirect(organizerPath(groupCode, undefined, 'Typ exact OPNIEUW TREKKEN om de volledige trekking te vervangen.'))
+  }
+
+  try {
+    await drawGiftGroup(groupCode, { redraw: true })
+  } catch (error) {
+    redirect(organizerPath(groupCode, undefined, message(error)))
+  }
+  revalidateGiftGroup(groupCode)
+  redirect(organizerPath(groupCode, 'opnieuw'))
 }
 
 export async function addParticipantGiftListItemAction(formData: FormData): Promise<void> {
