@@ -2,8 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createGiftGroupAction } from '@/app/lootje-lijstje/groep/actions'
 import { GiftGroupForm } from '@/components/gifting/gift-group-form'
-import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
-import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 
 export const metadata: Metadata = {
   title: 'Lootjesgroep maken',
@@ -24,30 +22,58 @@ export default async function NewGiftGroupPage({
   const error = first(query.fout)
 
   return (
-    <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
-      <WinkelnuHeader />
+    <div className="min-h-screen text-[var(--gift-ink)]">
       <main id="inhoud">
-        <section className="border-b border-[var(--wn-border)] bg-[image:var(--wn-gradient-welcome)]">
-          <div className="wn-container py-12 sm:py-16">
-            <Link href="/lootje-lijstje" className="text-sm font-bold text-[var(--wn-petrol)] hover:underline">← Lootje &amp; Lijstje</Link>
-            <p className="wn-eyebrow mt-8">Lootje</p>
-            <h1 className="wn-heading mt-3 max-w-3xl text-4xl sm:text-5xl">Maak je groep klaar.</h1>
-            <p className="wn-body-muted mt-5 max-w-2xl text-lg leading-8">Eén uitnodigingslink, maximaal 50 deelnemers en geen accounts. Iedereen krijgt straks zijn eigen lijstje binnen dezelfde groep.</p>
+        <section className="gift-onboarding-hero">
+          <div className="gift-shell-container gift-onboarding-hero-inner">
+            <div>
+              <Link href="/lootje-lijstje" className="gift-onboarding-back">← Terug naar start</Link>
+              <p className="gift-kicker mt-6">Lootjesgroep · stap 1</p>
+              <h1 className="gift-onboarding-title">Maak de groep klaar.</h1>
+              <p className="gift-onboarding-lead">Een paar gegevens zijn genoeg. Daarna nodig je iedereen uit en maakt elke deelnemer zijn eigen verlanglijstje.</p>
+            </div>
+
+            <nav className="gift-progress" aria-label="Voortgang lootjesgroep">
+              <ol>
+                <li data-state="current"><span className="gift-progress-dot">1</span><span>Groep</span></li>
+                <li><span className="gift-progress-dot">2</span><span>Uitnodigen</span></li>
+                <li><span className="gift-progress-dot">3</span><span>Lijstjes</span></li>
+                <li><span className="gift-progress-dot">4</span><span>Lootjes</span></li>
+              </ol>
+            </nav>
           </div>
         </section>
 
-        <section className="wn-container py-10 sm:py-14">
-          {error ? (
-            <div role="alert" className="mx-auto mb-6 max-w-3xl rounded-xl border border-[#d9a99f] bg-[#fff3ef] p-4 text-sm font-semibold leading-6 text-[#7f2d23]">
-              {error}
+        <section className="gift-shell-container gift-onboarding-layout">
+          <div>
+            {error ? (
+              <div role="alert" className="mb-4 rounded-[1.1rem] border border-[#d9a99f] bg-[#fff3ef] p-4 text-sm font-semibold leading-6 text-[#7f2d23]">
+                {error}
+              </div>
+            ) : null}
+
+            <div className="gift-onboarding-card">
+              <GiftGroupForm action={createGiftGroupAction} />
             </div>
-          ) : null}
-          <div className="mx-auto max-w-3xl">
-            <GiftGroupForm action={createGiftGroupAction} />
           </div>
+
+          <aside className="gift-onboarding-aside" aria-label="Over je lootjesgroep">
+            <div className="gift-onboarding-aside-card">
+              <strong>Wat gebeurt hierna?</strong>
+              <ul>
+                <li>Je krijgt de beheerpagina.</li>
+                <li>Je deelt één uitnodigingslink.</li>
+                <li>Iedereen vult zijn eigen wensen in.</li>
+                <li>Jij start later de trekking.</li>
+              </ul>
+            </div>
+            <div className="gift-onboarding-aside-card" data-tone="warm">
+              <strong>Privé vanaf het begin</strong>
+              <p>Deelnemers krijgen hun eigen toegang. Als organisator beheer je de groep, maar na de trekking krijg je geen overzicht van alle geheime koppelingen.</p>
+            </div>
+          </aside>
         </section>
       </main>
-      <WinkelnuFooter />
     </div>
   )
 }
