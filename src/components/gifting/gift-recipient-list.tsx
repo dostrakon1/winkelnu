@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { GiftCatalogProductView } from '@/application/gifting/gift-catalog'
 import type { GiftListItem } from '@/domain/gifting/types'
 import { GiftListItemCard } from './gift-list-item-card'
@@ -27,7 +28,7 @@ export function GiftRecipientList({
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xl text-[var(--wn-petrol)]" aria-hidden="true">?</div>
         <h2 className="wn-heading mt-4 text-3xl">{recipientName} heeft nog geen wensen ingevuld.</h2>
         <p className="wn-body-muted mx-auto mt-3 max-w-xl leading-7">Geen probleem. Gebruik Winkelnu om zelf een cadeau te vinden dat binnen jullie budget past.</p>
-        <a href="/zoeken" className="wn-button wn-button-primary mt-6">Zoek een cadeau op Winkelnu →</a>
+        <Link href="/zoeken" className="wn-button wn-button-primary mt-6">Zoek een cadeau op Winkelnu →</Link>
       </section>
     )
   }
