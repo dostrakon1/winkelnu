@@ -4,6 +4,7 @@ import { isGiftingEnabled } from '@/application/gifting/gifting-release'
 import { GiftExperienceFooter } from '@/components/gifting/gift-experience-footer'
 import { GiftExperienceHeader } from '@/components/gifting/gift-experience-header'
 import './gift-experience.css'
+import './premium-onboarding.css'
 
 export const dynamic = 'force-dynamic'
 
