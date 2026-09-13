@@ -9,7 +9,7 @@ import { requireOperatorPermission } from '@/infrastructure/operations/operator-
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Lootje & Lijstje Health | Winkelnu.nl',
+  title: 'Lootje & Lijstje Health',
   robots: { index: false, follow: false, nocache: true },
 }
 
