@@ -1,0 +1,95 @@
+.theme {
+  --wn-warm: #35d8e8;
+  --wn-petrol: #07121a;
+  --wn-petrol-deep: #031014;
+}
+
+.theme :global(header) {
+  border-color: rgba(53, 216, 232, 0.18) !important;
+  background-color: #03050a !important;
+  background-image:
+    radial-gradient(circle at 83% 18%, rgba(53, 216, 232, 0.13), transparent 24%),
+    radial-gradient(circle at 18% 80%, rgba(33, 143, 165, 0.08), transparent 26%),
+    linear-gradient(rgba(53, 216, 232, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(53, 216, 232, 0.045) 1px, transparent 1px),
+    linear-gradient(108deg, #03050a 0%, #07111d 46%, #0a2632 100%) !important;
+  background-size: auto, auto, 30px 30px, 30px 30px, auto;
+  box-shadow: 0 12px 34px rgba(2, 10, 18, 0.28) !important;
+}
+
+.theme :global(header)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 72% 28%, rgba(174, 247, 255, 0.75) 0 1px, transparent 2px),
+    radial-gradient(circle at 39% 64%, rgba(53, 216, 232, 0.62) 0 1px, transparent 2px),
+    radial-gradient(circle at 91% 70%, rgba(255, 255, 255, 0.45) 0 1px, transparent 2px);
+  opacity: 0.7;
+}
+
+.theme :global(header)::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 0%, rgba(53, 216, 232, 0.22) 18%, #35d8e8 52%, rgba(53, 216, 232, 0.22) 82%, transparent 100%);
+  box-shadow: 0 0 18px rgba(53, 216, 232, 0.28);
+}
+
+.theme :global(header nav[aria-label='Hoofdnavigatie'] a:hover),
+.theme :global(header nav[aria-label='Hoofdnavigatie'] summary:hover) {
+  color: #baf8ff !important;
+}
+
+.theme :global(header form[action='/zoeken']) {
+  border-color: rgba(174, 247, 255, 0.28) !important;
+}
+
+.theme :global(header form[action='/zoeken']:focus-within) {
+  box-shadow:
+    0 0 0 2px rgba(53, 216, 232, 0.18),
+    0 8px 28px rgba(3, 16, 24, 0.2) !important;
+}
+
+.theme :global(header form[action='/zoeken'] svg) {
+  color: rgba(4, 25, 33, 0.62) !important;
+}
+
+.theme :global(header form[action='/zoeken'] > button[type='submit']) {
+  border: 1px solid rgba(53, 216, 232, 0.68) !important;
+  background: #07121a !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 0 0 1px rgba(53, 216, 232, 0.08),
+    0 8px 26px rgba(53, 216, 232, 0.13) !important;
+}
+
+.theme :global(header form[action='/zoeken'] > button[type='submit']:hover) {
+  border-color: #35d8e8 !important;
+  background: #0b2530 !important;
+  box-shadow:
+    0 0 0 1px rgba(53, 216, 232, 0.14),
+    0 10px 30px rgba(53, 216, 232, 0.18) !important;
+}
+
+.theme :global(header a[aria-label='Zoeken']),
+.theme :global(header details.relative > summary) {
+  border-color: rgba(53, 216, 232, 0.28) !important;
+  background: rgba(53, 216, 232, 0.07) !important;
+}
+
+.theme :global(header a[aria-label='Zoeken']:hover),
+.theme :global(header details.relative > summary:hover) {
+  border-color: rgba(53, 216, 232, 0.58) !important;
+  background: rgba(53, 216, 232, 0.14) !important;
+}
+
+@media (max-width: 1023px) {
+  .theme :global(header) {
+    background-size: auto, auto, 36px 36px, 36px 36px, auto;
+  }
+}

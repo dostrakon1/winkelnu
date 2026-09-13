@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { CyberMondayPage } from '@/components/storefront/cyber-monday-page'
 import { getCommerceEventCampaignByKind } from '@/content/commerce-event-campaigns'
 import { getAmsterdamDateKey } from '@/content/seasonal-campaigns'
+import styles from './cyber-monday-theme.module.css'
 
 export const metadata: Metadata = {
   title: 'Cyber Monday 2026 — slim online vergelijken | Winkelnu',
@@ -18,5 +19,10 @@ export default function CyberMondayCollectionPage() {
   const year = Number(getAmsterdamDateKey().slice(0, 4))
   const campaign = getCommerceEventCampaignByKind('cyber-monday', year)
   if (!campaign) return null
-  return <CyberMondayPage campaign={campaign} />
+
+  return (
+    <div className={styles.theme}>
+      <CyberMondayPage campaign={campaign} />
+    </div>
+  )
 }
