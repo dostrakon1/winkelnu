@@ -168,7 +168,7 @@ export function WinkelnuCategoryMenu({ mobile = false }: { mobile?: boolean }) {
             onClick={closeMenu}
             className="mt-2 flex min-h-12 items-center justify-between rounded-xl bg-[image:var(--wn-gradient-market)] px-3.5 text-sm font-bold text-white"
           >
-            <span>✦ Cadeaus & feest</span>
+            <span className="text-[#fffaf2]">✦ Cadeaus & feest</span>
             <ArrowIcon className="h-4 w-4 text-[#ffb889]" />
           </Link>
         </div>
