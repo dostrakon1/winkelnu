@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { ChristmasCollectionPage } from '@/components/storefront/christmas-collection-page'
 import { SeasonalCollectionPage } from '@/components/storefront/seasonal-collection-page'
 import { Breadcrumbs, EditorialIntro, EditorialShell } from '@/components/storefront/editorial-shell'
 import { categories, getCategoryContent } from '@/content/categories'
@@ -63,6 +64,9 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
 
   const seasonalCampaign = getSeasonalCampaignByCollectionSlug(collection.slug)
   if (seasonalCampaign) {
+    if (collection.slug === 'kerst') {
+      return <ChristmasCollectionPage collection={collection} campaign={seasonalCampaign} />
+    }
     return <SeasonalCollectionPage collection={collection} campaign={seasonalCampaign} />
   }
 
