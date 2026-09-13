@@ -88,6 +88,33 @@ $$;
 revoke all on function consume_gifting_rate_limit(text, text, integer, integer) from public, anon, authenticated;
 grant execute on function consume_gifting_rate_limit(text, text, integer, integer) to service_role;
 
+create or replace function normalize_gift_group_expiry()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.event_date is not null then
+    new.expires_at := ((new.event_date + 120)::timestamp at time zone 'UTC');
+  elsif tg_op = 'INSERT' then
+    new.expires_at := now() + interval '180 days';
+  elsif old.event_date is distinct from new.event_date then
+    new.expires_at := now() + interval '180 days';
+  end if;
+
+  return new;
+end;
+$$;
+
+revoke all on function normalize_gift_group_expiry() from public, anon, authenticated;
+grant execute on function normalize_gift_group_expiry() to service_role;
+
+drop trigger if exists gift_group_expiry_normalizer on gift_groups;
+create trigger gift_group_expiry_normalizer
+before insert or update of event_date on gift_groups
+for each row execute function normalize_gift_group_expiry();
+
 create or replace function refresh_gift_group_retention(p_group_id uuid)
 returns timestamptz
 language plpgsql
@@ -137,11 +164,20 @@ as $$
 declare
   v_group_id uuid;
 begin
-  v_group_id := coalesce(new.group_id, old.group_id);
+  if tg_op = 'DELETE' then
+    v_group_id := old.group_id;
+  else
+    v_group_id := new.group_id;
+  end if;
+
   if v_group_id is not null then
     perform refresh_gift_group_retention(v_group_id);
   end if;
-  return coalesce(new, old);
+
+  if tg_op = 'DELETE' then
+    return old;
+  end if;
+  return new;
 end;
 $$;
 
@@ -158,7 +194,11 @@ declare
   v_list_id uuid;
   v_group_id uuid;
 begin
-  v_list_id := coalesce(new.gift_list_id, old.gift_list_id);
+  if tg_op = 'DELETE' then
+    v_list_id := old.gift_list_id;
+  else
+    v_list_id := new.gift_list_id;
+  end if;
 
   select group_id
     into v_group_id
@@ -169,7 +209,10 @@ begin
     perform refresh_gift_group_retention(v_group_id);
   end if;
 
-  return coalesce(new, old);
+  if tg_op = 'DELETE' then
+    return old;
+  end if;
+  return new;
 end;
 $$;
 
