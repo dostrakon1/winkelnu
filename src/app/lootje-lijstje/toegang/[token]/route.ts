@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+import { recoverGiftGroupAccess } from '@/application/gifting/gift-group-recovery'
 import { isGiftingEnabled } from '@/application/gifting/gifting-release'
 import { recoverGiftListOwnerAccess } from '@/application/gifting/standalone-gift-lists'
 
@@ -15,6 +16,10 @@ function privateRedirect(url: URL): NextResponse {
   return privateHeaders(NextResponse.redirect(url, 303))
 }
 
+function invalidRedirect(request: NextRequest): NextResponse {
+  return privateRedirect(new URL('/lootje-lijstje?toegang=ongeldig', request.url))
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ token: string }> },
@@ -25,17 +30,27 @@ export async function GET(
 
   const { token } = await params
   const shareCode = request.nextUrl.searchParams.get('lijst') ?? ''
+  const groupCode = request.nextUrl.searchParams.get('groep') ?? ''
+
+  if (Boolean(shareCode) === Boolean(groupCode)) return invalidRedirect(request)
 
   try {
-    const list = await recoverGiftListOwnerAccess(token, shareCode)
-    if (!list) {
-      return privateRedirect(new URL('/lootje-lijstje?toegang=ongeldig', request.url))
+    if (shareCode) {
+      const list = await recoverGiftListOwnerAccess(token, shareCode)
+      if (!list) return invalidRedirect(request)
+      return privateRedirect(
+        new URL(`/lootje-lijstje/lijstje/${encodeURIComponent(shareCode)}/bewerken?toegang=hersteld`, request.url),
+      )
     }
 
+    const recovered = await recoverGiftGroupAccess(token, groupCode)
+    if (!recovered) return invalidRedirect(request)
+
+    const suffix = recovered === 'organizer' ? 'beheer' : 'mijn'
     return privateRedirect(
-      new URL(`/lootje-lijstje/lijstje/${encodeURIComponent(shareCode)}/bewerken?toegang=hersteld`, request.url),
+      new URL(`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/${suffix}?toegang=hersteld`, request.url),
     )
   } catch {
-    return privateRedirect(new URL('/lootje-lijstje?toegang=ongeldig', request.url))
+    return invalidRedirect(request)
   }
 }
