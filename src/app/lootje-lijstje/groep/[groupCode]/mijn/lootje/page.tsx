@@ -101,21 +101,21 @@ export default async function GiftGroupRevealPage({
             recipientName={context.recipient.displayName}
             budgetLabel={budgetLabel}
             dateLabel={dateLabel}
-          />
+          >
+            <GiftRecipientList
+              groupCode={groupCode}
+              recipientName={context.recipient.displayName}
+              items={context.recipientList.items}
+              productViews={productViews}
+              reservedItemIds={context.reservedItemIds}
+              reservationAction={setGiftItemReservationAction}
+            />
 
-          <GiftRecipientList
-            groupCode={groupCode}
-            recipientName={context.recipient.displayName}
-            items={context.recipientList.items}
-            productViews={productViews}
-            reservedItemIds={context.reservedItemIds}
-            reservationAction={setGiftItemReservationAction}
-          />
-
-          <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-6 shadow-[var(--wn-shadow-xs)] sm:p-7">
-            <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Dit blijft geheim</p>
-            <p className="wn-body-muted mt-2 text-sm leading-6">{context.recipient.displayName} kan niet zien dat jij deze persoon hebt getrokken en krijgt ook jouw “geregeld”-markeringen niet te zien. De organisator krijgt evenmin een overzicht van alle koppelingen.</p>
-          </section>
+            <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-6 shadow-[var(--wn-shadow-xs)] sm:p-7">
+              <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Dit blijft geheim</p>
+              <p className="wn-body-muted mt-2 text-sm leading-6">{context.recipient.displayName} kan niet zien dat jij deze persoon hebt getrokken en krijgt ook jouw “geregeld”-markeringen niet te zien. De organisator krijgt evenmin een overzicht van alle koppelingen.</p>
+            </section>
+          </GiftRevealCard>
         </div>
       </main>
       <WinkelnuFooter />

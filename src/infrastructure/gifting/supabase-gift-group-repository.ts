@@ -10,6 +10,7 @@ import type {
   GiftListWithItems,
 } from '@/domain/gifting/types'
 import { createSupabaseServerClient } from '@/infrastructure/supabase/server-client'
+import { retryTransientGiftingRead } from '@/infrastructure/gifting/transient-read'
 
 type GiftGroupRow = {
   id: string
@@ -212,15 +213,17 @@ export class SupabaseGiftGroupRepository {
   }
 
   async getGroupByCodeHash(groupCodeHash: string): Promise<GiftGroup | null> {
-    const db = createSupabaseServerClient()
-    const { data, error } = await db
-      .from('gift_groups')
-      .select('*')
-      .eq('group_code_hash', groupCodeHash)
-      .maybeSingle()
+    return retryTransientGiftingRead(async () => {
+      const db = createSupabaseServerClient()
+      const { data, error } = await db
+        .from('gift_groups')
+        .select('*')
+        .eq('group_code_hash', groupCodeHash)
+        .maybeSingle()
 
-    if (error) throw new Error(`Unable to read gift group: ${error.message}`)
-    return data ? mapGroup(data as GiftGroupRow) : null
+      if (error) throw new Error(`Unable to read gift group: ${error.message}`)
+      return data ? mapGroup(data as GiftGroupRow) : null
+    })
   }
 
   async joinGroup(input: {
@@ -275,74 +278,80 @@ export class SupabaseGiftGroupRepository {
   }
 
   async listParticipantSummaries(groupId: string): Promise<GiftGroupParticipantSummary[]> {
-    const db = createSupabaseServerClient()
-    const { data: participantRows, error } = await db
-      .from('gift_group_participants')
-      .select('*')
-      .eq('group_id', groupId)
-      .order('joined_at', { ascending: true })
+    return retryTransientGiftingRead(async () => {
+      const db = createSupabaseServerClient()
+      const { data: participantRows, error } = await db
+        .from('gift_group_participants')
+        .select('*')
+        .eq('group_id', groupId)
+        .order('joined_at', { ascending: true })
 
-    if (error) throw new Error(`Unable to list group participants: ${error.message}`)
-    const participants = ((participantRows ?? []) as GiftParticipantRow[]).map(mapParticipant)
-    const listIds = participants.map((participant) => participant.giftListId)
-    const wishCountByList = new Map<string, number>()
+      if (error) throw new Error(`Unable to list group participants: ${error.message}`)
+      const participants = ((participantRows ?? []) as GiftParticipantRow[]).map(mapParticipant)
+      const listIds = participants.map((participant) => participant.giftListId)
+      const wishCountByList = new Map<string, number>()
 
-    if (listIds.length > 0) {
-      const { data: itemRows, error: itemError } = await db
-        .from('gift_list_items')
-        .select('gift_list_id')
-        .in('gift_list_id', listIds)
-      if (itemError) throw new Error(`Unable to count participant wishes: ${itemError.message}`)
-      for (const row of itemRows ?? []) {
-        wishCountByList.set(row.gift_list_id, (wishCountByList.get(row.gift_list_id) ?? 0) + 1)
+      if (listIds.length > 0) {
+        const { data: itemRows, error: itemError } = await db
+          .from('gift_list_items')
+          .select('gift_list_id')
+          .in('gift_list_id', listIds)
+        if (itemError) throw new Error(`Unable to count participant wishes: ${itemError.message}`)
+        for (const row of itemRows ?? []) {
+          wishCountByList.set(row.gift_list_id, (wishCountByList.get(row.gift_list_id) ?? 0) + 1)
+        }
       }
-    }
 
-    return participants.map((participant) => ({
-      ...participant,
-      wishCount: wishCountByList.get(participant.giftListId) ?? 0,
-    }))
+      return participants.map((participant) => ({
+        ...participant,
+        wishCount: wishCountByList.get(participant.giftListId) ?? 0,
+      }))
+    })
   }
 
   async getParticipantForGroupByIds(groupId: string, participantIds: string[]): Promise<GiftGroupParticipant | null> {
     if (participantIds.length === 0) return null
-    const db = createSupabaseServerClient()
-    const { data, error } = await db
-      .from('gift_group_participants')
-      .select('*')
-      .eq('group_id', groupId)
-      .in('id', participantIds)
-      .limit(1)
-      .maybeSingle()
+    return retryTransientGiftingRead(async () => {
+      const db = createSupabaseServerClient()
+      const { data, error } = await db
+        .from('gift_group_participants')
+        .select('*')
+        .eq('group_id', groupId)
+        .in('id', participantIds)
+        .limit(1)
+        .maybeSingle()
 
-    if (error) throw new Error(`Unable to resolve current group participant: ${error.message}`)
-    return data ? mapParticipant(data as GiftParticipantRow) : null
+      if (error) throw new Error(`Unable to resolve current group participant: ${error.message}`)
+      return data ? mapParticipant(data as GiftParticipantRow) : null
+    })
   }
 
   async getParticipantList(participant: GiftGroupParticipant): Promise<GiftListWithItems> {
-    const db = createSupabaseServerClient()
-    const { data: listData, error: listError } = await db
-      .from('gift_lists')
-      .select('*')
-      .eq('id', participant.giftListId)
-      .single()
+    return retryTransientGiftingRead(async () => {
+      const db = createSupabaseServerClient()
+      const { data: listData, error: listError } = await db
+        .from('gift_lists')
+        .select('*')
+        .eq('id', participant.giftListId)
+        .single()
 
-    if (listError || !listData) {
-      throw new Error(`Unable to read participant gift list: ${listError?.message ?? 'missing row'}`)
-    }
+      if (listError || !listData) {
+        throw new Error(`Unable to read participant gift list: ${listError?.message ?? 'missing row'}`)
+      }
 
-    const { data: itemRows, error: itemError } = await db
-      .from('gift_list_items')
-      .select('*')
-      .eq('gift_list_id', participant.giftListId)
-      .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: true })
+      const { data: itemRows, error: itemError } = await db
+        .from('gift_list_items')
+        .select('*')
+        .eq('gift_list_id', participant.giftListId)
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: true })
 
-    if (itemError) throw new Error(`Unable to read participant gift list items: ${itemError.message}`)
-    return {
-      ...mapList(listData as GiftListRow),
-      items: ((itemRows ?? []) as GiftListItemRow[]).map(mapItem),
-    }
+      if (itemError) throw new Error(`Unable to read participant gift list items: ${itemError.message}`)
+      return {
+        ...mapList(listData as GiftListRow),
+        items: ((itemRows ?? []) as GiftListItemRow[]).map(mapItem),
+      }
+    })
   }
 
   async removeParticipant(groupId: string, participantId: string): Promise<boolean> {
