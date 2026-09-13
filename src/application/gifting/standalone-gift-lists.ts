@@ -7,6 +7,7 @@ import { enforceGiftingRateLimit, GiftingRateLimitError } from '@/application/gi
 import { validateGiftNote } from '@/domain/gifting/validation'
 import { createGiftExternalKey, createGiftRecoveryToken, createGiftShareCode, hashGiftCapability } from '@/infrastructure/gifting/gift-capabilities'
 import { SupabaseGiftRepository } from '@/infrastructure/gifting/supabase-gift-repository'
+import { retryTransientGiftingRead } from '@/infrastructure/gifting/transient-read'
 
 const RETENTION_DAYS = 180
 
@@ -54,7 +55,9 @@ export async function createStandaloneGiftList(input: CreateGiftListInput): Prom
 export async function getSharedGiftList(shareCode: string): Promise<GiftListWithItems | null> {
   if (!shareCode || shareCode.length > 120) return null
   const repository = new SupabaseGiftRepository()
-  const list = await repository.getListByShareCodeHash(hashGiftCapability(shareCode))
+  const list = await retryTransientGiftingRead(
+    () => repository.getListByShareCodeHash(hashGiftCapability(shareCode)),
+  )
   return list && isActive(list) ? list : null
 }
 
@@ -152,8 +155,8 @@ export async function recoverGiftListOwnerAccess(token: string, shareCode: strin
 
   const repository = new SupabaseGiftRepository()
   const [tokenList, sharedList] = await Promise.all([
-    repository.getListByOwnerTokenHash(hashGiftCapability(token)),
-    repository.getListByShareCodeHash(hashGiftCapability(shareCode)),
+    retryTransientGiftingRead(() => repository.getListByOwnerTokenHash(hashGiftCapability(token))),
+    retryTransientGiftingRead(() => repository.getListByShareCodeHash(hashGiftCapability(shareCode))),
   ])
 
   if (!tokenList || !sharedList || tokenList.id !== sharedList.id || !isActive(sharedList)) return null

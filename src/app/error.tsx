@@ -1,8 +1,12 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
-export default function ErrorPage({ reset }: { reset: () => void }) {
+export default function ErrorPage() {
+  const pathname = usePathname()
+  const isGiftingRoute = pathname.startsWith('/lootje-lijstje')
+
   return (
     <main className="min-h-screen bg-[var(--wn-cream)] px-4 py-10 text-[var(--wn-ink)] sm:px-6">
       <div className="mx-auto max-w-3xl">
@@ -13,11 +17,13 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
             <p className="wn-eyebrow">Er ging iets mis</p>
             <h1 className="wn-heading mt-3 text-3xl sm:text-4xl">Deze informatie kon niet worden geladen.</h1>
             <p className="wn-body-muted mt-4 leading-7">
-              Probeer het opnieuw. Blijft het probleem bestaan, ga dan terug naar Winkelnu en start een nieuwe zoekopdracht.
+              Probeer de pagina opnieuw te laden. Blijft het probleem bestaan, ga dan veilig terug en probeer het later nog een keer.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <button type="button" onClick={reset} className="wn-button wn-button-primary">Opnieuw proberen</button>
-              <Link href="/zoeken" className="wn-button wn-button-secondary">Naar producten</Link>
+              <button type="button" onClick={() => window.location.reload()} className="wn-button wn-button-primary">Nogmaals laden</button>
+              <Link href={isGiftingRoute ? '/lootje-lijstje' : '/zoeken'} className="wn-button wn-button-secondary">
+                {isGiftingRoute ? 'Naar Lootje & Lijstje' : 'Naar producten'}
+              </Link>
             </div>
           </div>
         </section>

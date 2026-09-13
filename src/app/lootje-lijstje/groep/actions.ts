@@ -27,6 +27,7 @@ import {
   updateParticipantWinkelnuProductNote,
 } from '@/application/gifting/gift-groups'
 import { requireGiftingEnabled } from '@/application/gifting/gifting-release'
+import type { GiftListItemFormState } from '@/domain/gifting/gift-list-item-form-state'
 import {
   GiftValidationError,
   validateGiftGroupInput,
@@ -49,6 +50,19 @@ function message(error: unknown): string {
   if (error instanceof Error && error.message === 'GIFT_LIST_ITEM_LIMIT') return 'Je lijstje heeft het maximum van 100 wensen bereikt.'
   if (error instanceof Error && error.message === 'GIFT_LIST_ITEM_NOT_FOUND') return 'Deze wens bestaat niet meer.'
   return 'Dat ging niet goed. Probeer het nog een keer.'
+}
+
+function giftItemFormError(previousState: GiftListItemFormState, formData: FormData, error: unknown): GiftListItemFormState {
+  return {
+    error: message(error),
+    revision: previousState.revision + 1,
+    values: {
+      itemType: field(formData, 'itemType') === 'external_link' ? 'external_link' : 'text',
+      title: field(formData, 'title'),
+      externalUrl: field(formData, 'externalUrl'),
+      note: field(formData, 'note'),
+    },
+  }
 }
 
 function participantPath(groupCode: string, key?: string, error?: string): string {
@@ -186,7 +200,10 @@ export async function redrawGiftGroupAction(formData: FormData): Promise<void> {
   redirect(organizerPath(groupCode, 'opnieuw'))
 }
 
-export async function addParticipantGiftListItemAction(formData: FormData): Promise<void> {
+export async function addParticipantGiftListItemAction(
+  previousState: GiftListItemFormState,
+  formData: FormData,
+): Promise<GiftListItemFormState> {
   requireGiftingEnabled()
   const groupCode = field(formData, 'groupCode')
   try {
@@ -198,7 +215,7 @@ export async function addParticipantGiftListItemAction(formData: FormData): Prom
     })
     await addParticipantGiftListItem(groupCode, input)
   } catch (error) {
-    redirect(participantPath(groupCode, undefined, message(error)))
+    return giftItemFormError(previousState, formData, error)
   }
   revalidatePath(`/lootje-lijstje/groep/${groupCode}/mijn`)
   revalidatePath(`/lootje-lijstje/groep/${groupCode}/beheer`)
