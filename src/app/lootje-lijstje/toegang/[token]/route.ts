@@ -1,9 +1,9 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+import { isGiftingEnabled } from '@/application/gifting/gifting-release'
 import { recoverGiftListOwnerAccess } from '@/application/gifting/standalone-gift-lists'
 
-function privateRedirect(url: URL): NextResponse {
-  const response = NextResponse.redirect(url, 303)
+function privateHeaders(response: NextResponse): NextResponse {
   response.headers.set('Cache-Control', 'no-store, max-age=0')
   response.headers.set('Pragma', 'no-cache')
   response.headers.set('Referrer-Policy', 'no-referrer')
@@ -11,10 +11,18 @@ function privateRedirect(url: URL): NextResponse {
   return response
 }
 
+function privateRedirect(url: URL): NextResponse {
+  return privateHeaders(NextResponse.redirect(url, 303))
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ token: string }> },
 ) {
+  if (!isGiftingEnabled()) {
+    return privateHeaders(new NextResponse('Not found', { status: 404 }))
+  }
+
   const { token } = await params
   const shareCode = request.nextUrl.searchParams.get('lijst') ?? ''
 
