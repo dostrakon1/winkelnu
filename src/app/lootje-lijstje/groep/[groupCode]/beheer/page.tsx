@@ -1,12 +1,20 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { removeGiftGroupParticipantAction } from '@/app/lootje-lijstje/groep/actions'
+import {
+  addGiftGroupExclusionAction,
+  drawGiftGroupAction,
+  redrawGiftGroupAction,
+  removeGiftGroupExclusionAction,
+  removeGiftGroupParticipantAction,
+} from '@/app/lootje-lijstje/groep/actions'
+import { getGiftGroupDrawContext } from '@/application/gifting/gift-group-draw'
 import {
   getGiftGroupInvite,
-  getOrganizerGiftGroupContext,
   getParticipantGiftGroupContext,
 } from '@/application/gifting/gift-groups'
+import { GiftDrawConfirmation } from '@/components/gifting/gift-draw-confirmation'
+import { GiftGroupExclusions } from '@/components/gifting/gift-group-exclusions'
 import { GiftGroupRecoveryLink } from '@/components/gifting/gift-group-recovery-link'
 import { GiftShareActions } from '@/components/gifting/gift-share-actions'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
@@ -41,20 +49,23 @@ export default async function GiftGroupOrganizerPage({
   searchParams: Promise<{
     gemaakt?: string | string[]
     verwijderd?: string | string[]
+    uitsluiting?: string | string[]
+    getrokken?: string | string[]
+    opnieuw?: string | string[]
     toegang?: string | string[]
     fout?: string | string[]
   }>
 }) {
   const { groupCode } = await params
   const query = await searchParams
-  const [invite, context, participantContext] = await Promise.all([
+  const [invite, drawContext, participantContext] = await Promise.all([
     getGiftGroupInvite(groupCode),
-    getOrganizerGiftGroupContext(groupCode),
+    getGiftGroupDrawContext(groupCode),
     getParticipantGiftGroupContext(groupCode),
   ])
   if (!invite) notFound()
 
-  if (!context) {
+  if (!drawContext) {
     return (
       <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
         <WinkelnuHeader />
@@ -71,13 +82,17 @@ export default async function GiftGroupOrganizerPage({
     )
   }
 
-  const { group, participants } = context
+  const { group, participants, exclusionPairs } = drawContext
   const invitePath = `/lootje-lijstje/groep/${encodeURIComponent(groupCode)}`
   const notification = first(query.fout)
     ?? (first(query.toegang) === 'hersteld' ? 'Je beheer-toegang is hersteld op deze browser.' : undefined)
     ?? (first(query.gemaakt) ? 'Je groep is gemaakt. Deel nu de uitnodigingslink met de andere deelnemers en bewaar je beheer-herstel-link.' : undefined)
     ?? (first(query.verwijderd) ? 'Deelnemer verwijderd uit de groep.' : undefined)
+    ?? (first(query.uitsluiting) ? 'Uitsluitingen bijgewerkt.' : undefined)
+    ?? (first(query.getrokken) ? 'De lootjes zijn veilig getrokken. De geheime verdeling staat vast.' : undefined)
+    ?? (first(query.opnieuw) ? 'De volledige trekking is vervangen door een nieuwe geldige verdeling.' : undefined)
   const isError = Boolean(first(query.fout))
+  const draft = group.status === 'draft'
 
   return (
     <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
@@ -93,6 +108,7 @@ export default async function GiftGroupOrganizerPage({
                   <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{occasionLabels[group.occasion]}</span>
                   <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{participants.length === 1 ? '1 deelnemer' : `${participants.length} deelnemers`}</span>
                   {group.budgetCents !== undefined ? <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">Budget {money(group.budgetCents)}</span> : null}
+                  {group.status === 'drawn' ? <span className="rounded-full border border-[color:rgba(18,59,58,0.18)] bg-[var(--wn-petrol-soft)] px-3 py-1.5 text-[var(--wn-petrol-deep)]">Lootjes getrokken</span> : null}
                 </div>
               </div>
               {participantContext ? <Link href={`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/mijn`} className="wn-button wn-button-secondary">Mijn deelnemerspagina →</Link> : null}
@@ -111,15 +127,21 @@ export default async function GiftGroupOrganizerPage({
             <div className="space-y-8">
               <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-6 shadow-[var(--wn-shadow-xs)] sm:p-8">
                 <p className="wn-eyebrow">Uitnodigen</p>
-                <h2 className="wn-heading mt-2 text-3xl">Stuur één link naar iedereen.</h2>
-                <p className="wn-body-muted mt-3 leading-7">De uitnodigingslink geeft alleen toegang tot de join-pagina. Hij geeft geen organisatorrechten en onthult straks ook geen lootjes.</p>
-                <div className="mt-6">
-                  <GiftShareActions
-                    sharePath={invitePath}
-                    title={`Je bent uitgenodigd voor ${group.name} via Winkelnu Lootje & Lijstje.`}
-                    copyLabel="Kopieer uitnodigingslink"
-                  />
-                </div>
+                <h2 className="wn-heading mt-2 text-3xl">{draft ? 'Stuur één link naar iedereen.' : 'De deelname is gesloten.'}</h2>
+                {draft ? (
+                  <>
+                    <p className="wn-body-muted mt-3 leading-7">De uitnodigingslink geeft alleen toegang tot de join-pagina. Hij geeft geen organisatorrechten en onthult geen lootjes.</p>
+                    <div className="mt-6">
+                      <GiftShareActions
+                        sharePath={invitePath}
+                        title={`Je bent uitgenodigd voor ${group.name} via Winkelnu Lootje & Lijstje.`}
+                        copyLabel="Kopieer uitnodigingslink"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <p className="wn-body-muted mt-3 leading-7">Na de trekking kunnen deelnemers en uitsluitingen niet stilletjes worden gewijzigd. Zo blijft de opgeslagen verdeling betrouwbaar.</p>
+                )}
               </section>
 
               <section>
@@ -139,11 +161,13 @@ export default async function GiftGroupOrganizerPage({
                           </div>
                           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-sm font-black text-[var(--wn-petrol)]" aria-hidden="true">{participant.wishCount}</span>
                         </div>
-                        <form action={removeGiftGroupParticipantAction} className="mt-4 border-t border-[var(--wn-border)] pt-3">
-                          <input type="hidden" name="groupCode" value={groupCode} />
-                          <input type="hidden" name="participantId" value={participant.id} />
-                          <button type="submit" className="inline-flex min-h-10 items-center text-sm font-semibold text-[var(--wn-text-muted)] hover:text-[var(--wn-petrol-deep)]">Verwijder deelnemer</button>
-                        </form>
+                        {draft ? (
+                          <form action={removeGiftGroupParticipantAction} className="mt-4 border-t border-[var(--wn-border)] pt-3">
+                            <input type="hidden" name="groupCode" value={groupCode} />
+                            <input type="hidden" name="participantId" value={participant.id} />
+                            <button type="submit" className="inline-flex min-h-10 items-center text-sm font-semibold text-[var(--wn-text-muted)] hover:text-[var(--wn-petrol-deep)]">Verwijder deelnemer</button>
+                          </form>
+                        ) : null}
                       </article>
                     ))}
                   </div>
@@ -154,20 +178,32 @@ export default async function GiftGroupOrganizerPage({
                   </div>
                 )}
               </section>
+
+              <GiftGroupExclusions
+                groupCode={groupCode}
+                status={group.status}
+                participants={participants}
+                pairs={exclusionPairs}
+                addAction={addGiftGroupExclusionAction}
+                removeAction={removeGiftGroupExclusionAction}
+              />
             </div>
 
             <aside className="space-y-5 xl:sticky xl:top-28">
+              <GiftDrawConfirmation
+                groupCode={groupCode}
+                status={group.status}
+                participantCount={participants.length}
+                drawVersion={group.drawVersion}
+                drawAction={drawGiftGroupAction}
+                redrawAction={redrawGiftGroupAction}
+              />
+
               <GiftGroupRecoveryLink groupCode={groupCode} kind="organizer" />
 
-              <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)] p-5 sm:p-6">
-                <span className="inline-flex rounded-full border border-[color:rgba(18,59,58,0.14)] bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[var(--wn-petrol)]">L5</span>
-                <h2 className="wn-ui-heading mt-4 text-xl">Lootjes trekken komt hier.</h2>
-                <p className="wn-body-muted mt-3 text-sm leading-6">De groep, deelnemers en no-login hersteltoegang staan nu klaar. Uitsluitingen en de geheime trekking bouwen we in L5 bovenop deze basis.</p>
-              </section>
-
               <section className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white p-5">
-                <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Twee rechten, bewust apart</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Je beheer-herstel-link herstelt alleen organisatorrechten. Ben je zelf ook deelnemer, bewaar dan op je deelnemerspagina óók je persoonlijke deelnemers-herstel-link.</p>
+                <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">De trekking blijft geheim</p>
+                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Ook als organisator krijg je de volledige giver→recipient-mapping niet te zien. L5 kan de verdeling alleen maken en veilig vervangen; individuele onthulling volgt in L6.</p>
               </section>
             </aside>
           </div>

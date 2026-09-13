@@ -72,6 +72,24 @@ export type GiftGroupParticipantSummary = GiftGroupParticipant & {
   wishCount: number
 }
 
+export type GiftGroupExclusion = {
+  id: string
+  groupId: string
+  participantId: string
+  excludedRecipientId: string
+  createdAt: string
+}
+
+export type GiftGroupExclusionPair = {
+  participantAId: string
+  participantBId: string
+}
+
+export type GiftDrawAssignment = {
+  giverParticipantId: string
+  recipientParticipantId: string
+}
+
 export type CreateGiftListInput = {
   displayName: string
   title?: string
