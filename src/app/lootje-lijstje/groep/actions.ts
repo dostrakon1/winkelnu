@@ -3,6 +3,10 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import {
+  createGiftGroupOrganizerRecoveryPath,
+  createGiftGroupParticipantRecoveryPath,
+} from '@/application/gifting/gift-group-recovery'
+import {
   addParticipantGiftListItem,
   addWinkelnuProductToParticipantList,
   createGiftGroup,
@@ -174,4 +178,28 @@ export async function deleteParticipantGiftListItemAction(formData: FormData): P
   revalidatePath(`/lootje-lijstje/groep/${groupCode}/mijn`)
   revalidatePath(`/lootje-lijstje/groep/${groupCode}/beheer`)
   redirect(participantPath(groupCode, 'verwijderd'))
+}
+
+export async function createGiftGroupOrganizerRecoveryLinkAction(
+  _previousState: string | null,
+  formData: FormData,
+): Promise<string | null> {
+  requireGiftingEnabled()
+  try {
+    return await createGiftGroupOrganizerRecoveryPath(field(formData, 'groupCode'))
+  } catch {
+    return null
+  }
+}
+
+export async function createGiftGroupParticipantRecoveryLinkAction(
+  _previousState: string | null,
+  formData: FormData,
+): Promise<string | null> {
+  requireGiftingEnabled()
+  try {
+    return await createGiftGroupParticipantRecoveryPath(field(formData, 'groupCode'))
+  } catch {
+    return null
+  }
 }

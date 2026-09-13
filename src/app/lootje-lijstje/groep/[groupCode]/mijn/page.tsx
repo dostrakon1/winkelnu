@@ -16,6 +16,7 @@ import {
   resolveGiftCatalogProductViews,
   searchGiftCatalogProducts,
 } from '@/application/gifting/gift-catalog'
+import { GiftGroupRecoveryLink } from '@/components/gifting/gift-group-recovery-link'
 import { GiftListItemCard } from '@/components/gifting/gift-list-item-card'
 import { GiftListItemEditor } from '@/components/gifting/gift-list-item-editor'
 import { GiftProductPicker } from '@/components/gifting/gift-product-picker'
@@ -54,6 +55,7 @@ export default async function GiftGroupParticipantPage({
     toegevoegd?: string | string[]
     bijgewerkt?: string | string[]
     verwijderd?: string | string[]
+    toegang?: string | string[]
     fout?: string | string[]
   }>
 }) {
@@ -73,7 +75,7 @@ export default async function GiftGroupParticipantPage({
           <section className="mx-auto max-w-2xl rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-7 text-center shadow-[var(--wn-shadow-sm)] sm:p-10">
             <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xl text-[var(--wn-petrol)]" aria-hidden="true">◇</span>
             <h1 className="wn-heading mt-5 text-3xl">Deelnemerstoegang nodig.</h1>
-            <p className="wn-body-muted mt-4">Doe via de uitnodigingspagina mee op dit apparaat. Herstel van deelnemerstoegang zonder account voegen we in L4 toe.</p>
+            <p className="wn-body-muted mt-4">Deze browser herkent jouw deelnemer niet. Open je bewaarde persoonlijke herstel-link om zonder account je eigen groepspagina en lijstje terug te zetten.</p>
             <Link href={`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}`} className="wn-button wn-button-primary mt-7">Naar de uitnodiging</Link>
           </section>
         </main>
@@ -89,7 +91,8 @@ export default async function GiftGroupParticipantPage({
     productQuery && productQuery.length >= 2 ? searchGiftCatalogProducts(productQuery) : Promise.resolve([]),
   ])
   const notification = first(query.fout)
-    ?? (first(query.deelname) ? `Je doet mee als ${participant.displayName}. Maak nu je lijstje compleet.` : undefined)
+    ?? (first(query.toegang) === 'hersteld' ? 'Je deelnemers-toegang is hersteld op deze browser.' : undefined)
+    ?? (first(query.deelname) ? `Je doet mee als ${participant.displayName}. Maak nu je lijstje compleet en bewaar je persoonlijke herstel-link.` : undefined)
     ?? (first(query.toegevoegd) ? 'Wens toegevoegd.' : undefined)
     ?? (first(query.bijgewerkt) ? 'Wens bijgewerkt.' : undefined)
     ?? (first(query.verwijderd) ? 'Wens verwijderd.' : undefined)
@@ -170,6 +173,8 @@ export default async function GiftGroupParticipantPage({
             </div>
 
             <aside className="space-y-5 xl:sticky xl:top-28">
+              <GiftGroupRecoveryLink groupCode={groupCode} kind="participant" />
+
               <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-5 shadow-[var(--wn-shadow-xs)] sm:p-6">
                 <p className="wn-eyebrow">Deelnemers</p>
                 <h2 className="wn-ui-heading mt-2 text-xl">{participants.length === 1 ? '1 persoon doet mee' : `${participants.length} mensen doen mee`}</h2>
@@ -186,7 +191,7 @@ export default async function GiftGroupParticipantPage({
               <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)] p-5 sm:p-6">
                 <span className="inline-flex rounded-full border border-[color:rgba(18,59,58,0.14)] bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[var(--wn-petrol)]">Nog niet getrokken</span>
                 <h2 className="wn-ui-heading mt-4 text-xl">Je lootje blijft nog geheim.</h2>
-                <p className="wn-body-muted mt-3 text-sm leading-6">In L3 bouwen we alleen de groep en de deelnemerslijst. De geheime toegang wordt in L4 afgemaakt en de echte trekking volgt in L5.</p>
+                <p className="wn-body-muted mt-3 text-sm leading-6">De groep, jouw lijstje en je no-login hersteltoegang staan klaar. De echte trekking volgt in L5.</p>
               </section>
             </aside>
           </div>
