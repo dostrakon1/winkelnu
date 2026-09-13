@@ -1,5 +1,6 @@
 import type { EditorialCollection } from '@/content/collections/types'
 import type { SeasonalCampaign } from '@/content/seasonal-campaigns'
+import { GenericSeasonalCollectionPage } from './generic-seasonal-collection-page'
 import { HalloweenCollectionPage } from './halloween-collection-page'
 
 export function SeasonalCollectionPage({
@@ -9,7 +10,9 @@ export function SeasonalCollectionPage({
   collection: EditorialCollection
   campaign: SeasonalCampaign
 }) {
-  // Kerst en Sinterklaas worden al vóór deze fallback apart gerouteerd.
-  // De enige resterende Seasonal Campaign is op dit moment Halloween.
-  return <HalloweenCollectionPage collection={collection} campaign={campaign} />
+  if (collection.slug === 'halloween') {
+    return <HalloweenCollectionPage collection={collection} campaign={campaign} />
+  }
+
+  return <GenericSeasonalCollectionPage collection={collection} campaign={campaign} />
 }
