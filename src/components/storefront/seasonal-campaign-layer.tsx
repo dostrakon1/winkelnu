@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useSyncExternalStore } from 'react'
 import { getCategoryImage } from '@/content/category-images'
-import { getActiveSeasonalCampaign, seasonalCampaigns, type SeasonalCampaign } from '@/content/seasonal-campaigns'
+import { getActivePromotionalCampaign, getPromotionalCampaignBySlug, type PromotionalCampaign } from '@/content/promotional-campaigns'
 
 function subscribeToCampaignClock(callback: () => void) {
   const interval = window.setInterval(callback, 60 * 60 * 1000)
@@ -12,16 +12,16 @@ function subscribeToCampaignClock(callback: () => void) {
 }
 
 function getCampaignSnapshot() {
-  return getActiveSeasonalCampaign()?.slug ?? ''
+  return getActivePromotionalCampaign()?.slug ?? ''
 }
 
 function getServerCampaignSnapshot() {
   return ''
 }
 
-function useActiveSeasonalCampaign(): SeasonalCampaign | undefined {
+function useActiveSeasonalCampaign(): PromotionalCampaign | undefined {
   const slug = useSyncExternalStore(subscribeToCampaignClock, getCampaignSnapshot, getServerCampaignSnapshot)
-  return seasonalCampaigns.find((campaign) => campaign.slug === slug)
+  return slug ? getPromotionalCampaignBySlug(slug) : undefined
 }
 
 function ArrowIcon({ className = '' }: { className?: string }) {
