@@ -20,8 +20,8 @@ import type { Category } from '@/domain/catalog/types'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
 export const metadata: Metadata = {
-  title: 'Zoeken met Winkelnu Zoekkompas',
-  description: 'Zoek slim door producten, categorieën, subcategorieën, koopgidsen en collecties op Winkelnu.',
+  title: 'Producten ontdekken & vergelijken | Winkelnu',
+  description: 'Zoek op product, merk of categorie en ontdek via Winkelnu sneller wat bij je past.',
   alternates: { canonical: '/zoeken' },
   robots: { index: false, follow: true },
 }
@@ -111,7 +111,6 @@ export default async function SearchPage({
   const rootCategories = categories
     .filter((category) => !category.parentId)
     .sort((a, b) => a.name.localeCompare(b.name, 'nl-NL'))
-  const childCount = categories.length - rootCategories.length
   const facets = buildCatalogSearchFacets(facetItems)
   const selectedCategory = query.categorySlug
     ? categories.find((category) => category.slug === query.categorySlug)
@@ -137,6 +136,8 @@ export default async function SearchPage({
     query.sort !== 'relevance' ? { label: `Sortering: ${SORT_LABELS[query.sort]}`, href: filterHref(raw, { sort: undefined }) } : null,
   ].filter((filter): filter is { label: string; href: string } => Boolean(filter))
 
+  const advancedFilterCount = Math.max(0, activeFilters.length - Number(Boolean(query.term)))
+
   const interpreted = Boolean(
     query.term
       && (prediction.correctedTerm
@@ -157,37 +158,42 @@ export default async function SearchPage({
     <main className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
       <WinkelnuHeader />
 
-      <section className="relative border-b border-white/10 bg-[var(--wn-petrol)] text-white">
-        <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-          <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)] opacity-40" />
+      <section className="relative overflow-hidden border-b border-white/10 bg-[var(--wn-petrol-deep)] text-white">
+        <div className="absolute inset-0" aria-hidden="true">
+          <div className="absolute inset-0 bg-[image:var(--wn-gradient-glow)] opacity-55" />
+          <div className="absolute -left-24 top-16 h-72 w-72 rounded-full border border-white/8" />
+          <div className="absolute -right-12 -top-16 h-80 w-80 rounded-full bg-[rgba(233,120,61,0.10)] blur-3xl" />
+          <div className="absolute bottom-0 left-1/2 h-px w-[72%] -translate-x-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         </div>
         <div className="wn-container relative z-10 py-14 sm:py-20 lg:py-24">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/65">Winkelnu Zoekkompas</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#ffb889]">Producten ontdekken & vergelijken</p>
             <h1 className="mt-4 text-4xl font-black tracking-[-0.04em] sm:text-6xl lg:text-7xl">Waar ben je naar op zoek?</h1>
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/72 sm:text-lg">
-              Eén zoekveld voor producten, categorieën en keuzehulp. Winkelnu probeert eerst te begrijpen wat je bedoelt en rangschikt daarna alles wat je echt verder kan helpen.
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/74 sm:text-lg">
+              Zoek op product, merk of categorie — of beschrijf gewoon wat je nodig hebt. Winkelnu helpt je van eerste idee naar een betere keuze.
             </p>
           </div>
 
           <PredictiveSearchBox defaultValue={query.term} index={predictiveIndex} />
 
           <div className="mx-auto mt-6 flex max-w-4xl flex-wrap items-center justify-center gap-2 text-sm">
-            <span className="text-white/55">Probeer:</span>
+            <span className="text-white/55">Populair om te ontdekken:</span>
             {suggestedSearches.map((term) => (
               <Link
                 key={term}
                 href={`/zoeken?q=${encodeURIComponent(term)}`}
-                className="rounded-full border border-white/15 bg-white/8 px-3 py-2 font-semibold text-white/85 transition hover:bg-white/15"
+                className="rounded-full border border-white/15 bg-white/8 px-3 py-2 font-semibold text-white/88 transition hover:-translate-y-0.5 hover:border-[#ffb889]/50 hover:bg-white/14 motion-reduce:transform-none"
               >
                 {term}
               </Link>
             ))}
           </div>
 
-          <p className="mt-7 text-center text-xs leading-6 text-white/48 sm:text-sm">
-            Live voorspellingen draaien lokaal op {rootCategories.length} hoofdwerelden en {childCount} subcategorieën — zonder AI-model of database-call per toetsaanslag.
-          </p>
+          <div className="mx-auto mt-7 flex max-w-3xl flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-semibold text-white/52 sm:text-sm">
+            <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#ffb889]" />Zoek in je eigen woorden</span>
+            <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#ffb889]" />Verfijn alleen wanneer nodig</span>
+            <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#ffb889]" />Vergelijk concrete producten</span>
+          </div>
         </div>
       </section>
 
@@ -223,152 +229,204 @@ export default async function SearchPage({
         <UniversalSearchResults ranking={universalRanking} />
       ) : null}
 
-      <section className="wn-container py-8 sm:py-10">
-        <details open={hasAdvancedFilter} className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white/72 shadow-[var(--wn-shadow-xs)]">
-          <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 sm:px-6">
-            <div>
-              <span className="font-black text-[var(--wn-ink)]">Verfijn je zoekopdracht</span>
-              <span className="ml-2 text-sm text-[var(--wn-text-muted)]">categorie, producttype, merk en prijs</span>
-            </div>
-            <span className="rounded-full bg-[var(--wn-petrol-soft)] px-3 py-1.5 text-xs font-bold text-[var(--wn-petrol)]">{Math.max(0, activeFilters.length - Number(Boolean(query.term)))} actief</span>
-          </summary>
+      {searchIntent ? (
+        <section className="wn-container py-8 sm:py-10">
+          <details open={hasAdvancedFilter} className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white/72 shadow-[var(--wn-shadow-xs)]">
+            <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 sm:px-6">
+              <div>
+                <span className="font-black text-[var(--wn-ink)]">Verfijn je zoekopdracht</span>
+                <span className="ml-2 text-sm text-[var(--wn-text-muted)]">categorie, producttype, merk en prijs</span>
+              </div>
+              {advancedFilterCount > 0 ? (
+                <span className="rounded-full bg-[var(--wn-petrol-soft)] px-3 py-1.5 text-xs font-bold text-[var(--wn-petrol)]">{advancedFilterCount} actief</span>
+              ) : null}
+            </summary>
 
-          <form action="/zoeken" method="get" className="grid gap-4 border-t border-[var(--wn-border)] p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-6">
-            {query.term ? <input type="hidden" name="q" value={query.term} /> : null}
+            <form action="/zoeken" method="get" className="grid gap-4 border-t border-[var(--wn-border)] p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-6">
+              {query.term ? <input type="hidden" name="q" value={query.term} /> : null}
 
-            <label className="sm:col-span-2 lg:col-span-2">
-              <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Categorie</span>
-              <select name="categorie" defaultValue={query.categorySlug ?? ''} className="wn-input mt-1 text-base sm:text-sm">
-                <option value="">Alle categorieën</option>
-                {rootCategories.map((root) => (
-                  <optgroup key={root.id} label={root.name}>
-                    <option value={root.slug}>{root.name} — alles</option>
-                    {childrenFor(categories, root.id).map((child) => (
-                      <option key={child.id} value={child.slug}>↳ {child.name}</option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Producttype</span>
-              <select name="type" defaultValue={query.productType ?? ''} className="wn-input mt-1 text-base sm:text-sm">
-                <option value="">Alle producttypen</option>
-                {query.productType && !facets.productTypes.some((option) => option.value === query.productType) ? (
-                  <option value={query.productType}>{selectedProductTypeLabel}</option>
-                ) : null}
-                {facets.productTypes.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label} ({option.count})</option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Merk</span>
-              <select name="merk" defaultValue={query.brand ?? ''} className="wn-input mt-1 text-base sm:text-sm">
-                <option value="">Alle merken</option>
-                {query.brand && !facets.brands.some((option) => option.value.toLocaleLowerCase('nl-NL') === query.brand?.toLocaleLowerCase('nl-NL')) ? (
-                  <option value={query.brand}>{query.brand}</option>
-                ) : null}
-                {facets.brands.map((option) => (
-                  <option key={option.value.toLocaleLowerCase('nl-NL')} value={option.value}>{option.label} ({option.count})</option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Per pagina</span>
-              <select name="perPagina" defaultValue={String(query.pageSize)} className="wn-input mt-1 text-base sm:text-sm">
-                <option value="12">12 producten</option>
-                <option value="24">24 producten</option>
-                <option value="48">48 producten</option>
-              </select>
-            </label>
-
-            <label>
-              <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Sorteren</span>
-              <select name="sort" defaultValue={query.sort} className="wn-input mt-1 text-base sm:text-sm">
-                <option value="relevance">Relevantie</option>
-                <option value="price_asc" disabled={!facets.hasCommercialData}>Laagste bekende prijs</option>
-                <option value="price_desc" disabled={!facets.hasCommercialData}>Hoogste bekende prijs</option>
-                <option value="title_asc">Naam A–Z</option>
-              </select>
-            </label>
-
-            <label>
-              <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Min. bekende prijs</span>
-              <input name="min" inputMode="decimal" defaultValue={query.minPrice} placeholder="0" disabled={!facets.hasCommercialData} className="wn-input mt-1 text-base disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm" />
-            </label>
-
-            <label>
-              <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Max. bekende prijs</span>
-              <input name="max" inputMode="decimal" defaultValue={query.maxPrice} placeholder="500" disabled={!facets.hasCommercialData} className="wn-input mt-1 text-base disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm" />
-            </label>
-
-            <div className="flex items-end sm:col-span-2">
-              <label className={`flex min-h-12 items-center gap-3 text-sm font-medium ${facets.hasCommercialData ? 'text-[color:rgba(30,36,35,0.72)]' : 'text-[var(--wn-text-muted)] opacity-60'}`}>
-                <input type="checkbox" name="voorraad" value="1" defaultChecked={query.inStockOnly} disabled={!facets.hasCommercialData} className="h-5 w-5 accent-[var(--wn-petrol)] disabled:cursor-not-allowed" />
-                Alleen op voorraad
+              <label className="sm:col-span-2 lg:col-span-2">
+                <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Categorie</span>
+                <select name="categorie" defaultValue={query.categorySlug ?? ''} className="wn-input mt-1 text-base sm:text-sm">
+                  <option value="">Alle categorieën</option>
+                  {rootCategories.map((root) => (
+                    <optgroup key={root.id} label={root.name}>
+                      <option value={root.slug}>{root.name} — alles</option>
+                      {childrenFor(categories, root.id).map((child) => (
+                        <option key={child.id} value={child.slug}>↳ {child.name}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
               </label>
-            </div>
 
-            {!facets.hasCommercialData && searchIntent ? (
-              <div className="rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] px-4 py-3 text-sm leading-6 text-[var(--wn-petrol-deep)] sm:col-span-2 lg:col-span-6">
-                <span className="font-semibold">Prijs & voorraad volgen.</span> Deze filters worden actief zodra Winkelnu gecontroleerde winkelprijzen en voorraad ontvangt. Zo tonen we geen schijnkeuzes zonder onderliggende data.
+              <label>
+                <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Producttype</span>
+                <select name="type" defaultValue={query.productType ?? ''} className="wn-input mt-1 text-base sm:text-sm">
+                  <option value="">Alle producttypen</option>
+                  {query.productType && !facets.productTypes.some((option) => option.value === query.productType) ? (
+                    <option value={query.productType}>{selectedProductTypeLabel}</option>
+                  ) : null}
+                  {facets.productTypes.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label} ({option.count})</option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Merk</span>
+                <select name="merk" defaultValue={query.brand ?? ''} className="wn-input mt-1 text-base sm:text-sm">
+                  <option value="">Alle merken</option>
+                  {query.brand && !facets.brands.some((option) => option.value.toLocaleLowerCase('nl-NL') === query.brand?.toLocaleLowerCase('nl-NL')) ? (
+                    <option value={query.brand}>{query.brand}</option>
+                  ) : null}
+                  {facets.brands.map((option) => (
+                    <option key={option.value.toLocaleLowerCase('nl-NL')} value={option.value}>{option.label} ({option.count})</option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Per pagina</span>
+                <select name="perPagina" defaultValue={String(query.pageSize)} className="wn-input mt-1 text-base sm:text-sm">
+                  <option value="12">12 producten</option>
+                  <option value="24">24 producten</option>
+                  <option value="48">48 producten</option>
+                </select>
+              </label>
+
+              <label>
+                <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Sorteren</span>
+                <select name="sort" defaultValue={query.sort} className="wn-input mt-1 text-base sm:text-sm">
+                  <option value="relevance">Relevantie</option>
+                  <option value="price_asc" disabled={!facets.hasCommercialData}>Laagste bekende prijs</option>
+                  <option value="price_desc" disabled={!facets.hasCommercialData}>Hoogste bekende prijs</option>
+                  <option value="title_asc">Naam A–Z</option>
+                </select>
+              </label>
+
+              <label>
+                <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Min. bekende prijs</span>
+                <input name="min" inputMode="decimal" defaultValue={query.minPrice} placeholder="0" disabled={!facets.hasCommercialData} className="wn-input mt-1 text-base disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm" />
+              </label>
+
+              <label>
+                <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Max. bekende prijs</span>
+                <input name="max" inputMode="decimal" defaultValue={query.maxPrice} placeholder="500" disabled={!facets.hasCommercialData} className="wn-input mt-1 text-base disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm" />
+              </label>
+
+              <div className="flex items-end sm:col-span-2">
+                <label className={`flex min-h-12 items-center gap-3 text-sm font-medium ${facets.hasCommercialData ? 'text-[color:rgba(30,36,35,0.72)]' : 'text-[var(--wn-text-muted)] opacity-60'}`}>
+                  <input type="checkbox" name="voorraad" value="1" defaultChecked={query.inStockOnly} disabled={!facets.hasCommercialData} className="h-5 w-5 accent-[var(--wn-petrol)] disabled:cursor-not-allowed" />
+                  Alleen op voorraad
+                </label>
               </div>
-            ) : null}
 
-            {hasCommercialFilter && !facets.hasCommercialData ? (
-              <div className="rounded-[var(--wn-radius-lg)] border border-[color:rgba(190,120,64,0.22)] bg-[color:rgba(248,226,200,0.45)] px-4 py-3 text-sm leading-6 text-[var(--wn-text-muted)] sm:col-span-2 lg:col-span-6">
-                In deze URL staan prijs- of voorraadfilters, maar er is momenteel geen gecontroleerde winkeldata om ze betrouwbaar toe te passen.
+              {!facets.hasCommercialData ? (
+                <div className="rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] px-4 py-3 text-sm leading-6 text-[var(--wn-petrol-deep)] sm:col-span-2 lg:col-span-6">
+                  <span className="font-semibold">Prijs & voorraad volgen.</span> Deze filters worden actief zodra Winkelnu gecontroleerde winkelprijzen en voorraad ontvangt. Zo tonen we geen schijnkeuzes zonder onderliggende data.
+                </div>
+              ) : null}
+
+              {hasCommercialFilter && !facets.hasCommercialData ? (
+                <div className="rounded-[var(--wn-radius-lg)] border border-[color:rgba(190,120,64,0.22)] bg-[color:rgba(248,226,200,0.45)] px-4 py-3 text-sm leading-6 text-[var(--wn-text-muted)] sm:col-span-2 lg:col-span-6">
+                  In deze URL staan prijs- of voorraadfilters, maar er is momenteel geen gecontroleerde winkeldata om ze betrouwbaar toe te passen.
+                </div>
+              ) : null}
+
+              <div className="flex flex-wrap gap-2 sm:col-span-2 lg:col-span-6">
+                <WinkelnuButton type="submit">Filters toepassen</WinkelnuButton>
+                <WinkelnuButton href={query.term ? `/zoeken?q=${encodeURIComponent(query.term)}` : '/zoeken'} variant="secondary">Filters wissen</WinkelnuButton>
               </div>
-            ) : null}
+            </form>
+          </details>
 
-            <div className="flex flex-wrap gap-2 sm:col-span-2 lg:col-span-6">
-              <WinkelnuButton type="submit">Filters toepassen</WinkelnuButton>
-              <WinkelnuButton href={query.term ? `/zoeken?q=${encodeURIComponent(query.term)}` : '/zoeken'} variant="secondary">Filters wissen</WinkelnuButton>
+          {activeFilters.length > 0 ? (
+            <div className="mt-5 flex flex-wrap items-center gap-2" aria-label="Actieve filters">
+              <span className="mr-1 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--wn-text-muted)]">Actief</span>
+              {activeFilters.map((filter) => (
+                <Link key={filter.label} href={filter.href} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[color:rgba(18,59,58,0.12)] bg-white/78 px-3 py-2 text-sm font-semibold text-[var(--wn-petrol-deep)] transition hover:border-[color:rgba(18,59,58,0.26)] hover:bg-white">
+                  {filter.label}<span aria-hidden="true" className="text-[var(--wn-text-muted)]">×</span>
+                </Link>
+              ))}
             </div>
-          </form>
-        </details>
-
-        {activeFilters.length > 0 ? (
-          <div className="mt-5 flex flex-wrap items-center gap-2" aria-label="Actieve filters">
-            <span className="mr-1 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--wn-text-muted)]">Actief</span>
-            {activeFilters.map((filter) => (
-              <Link key={filter.label} href={filter.href} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[color:rgba(18,59,58,0.12)] bg-white/78 px-3 py-2 text-sm font-semibold text-[var(--wn-petrol-deep)] transition hover:border-[color:rgba(18,59,58,0.26)] hover:bg-white">
-                {filter.label}<span aria-hidden="true" className="text-[var(--wn-text-muted)]">×</span>
-              </Link>
-            ))}
-          </div>
-        ) : null}
-      </section>
+          ) : null}
+        </section>
+      ) : null}
 
       {!searchIntent ? (
-        <section className="wn-container pb-16 sm:pb-20">
-          <SectionHeader
-            eyebrow="Ontdek zonder precies te weten wat je zoekt"
-            title="Begin bij een wereld. Verfijn daarna vanzelf."
-            description="Iedere hoofdcategorie bevat vijf vaste subcategorieën. Je kunt breed beginnen en steeds gerichter doorklikken zonder opnieuw te hoeven zoeken."
-          />
-          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {rootCategories.map((root) => (
-              <article key={root.id} className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-5 shadow-[var(--wn-shadow-xs)]">
-                <div className="flex items-center justify-between gap-4">
-                  <Link href={`/categorie/${root.slug}`} className="text-lg font-black tracking-[-0.02em] text-[var(--wn-petrol-deep)] hover:underline">{root.name}</Link>
-                  <Link href={`/zoeken?categorie=${encodeURIComponent(root.slug)}`} className="text-xs font-bold text-[var(--wn-petrol)] hover:underline">Zoek hierin →</Link>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {childrenFor(categories, root.id).map((child) => (
-                    <Link key={child.id} href={`/categorie/${child.slug}`} className="rounded-full bg-[var(--wn-petrol-soft)] px-3 py-2 text-xs font-semibold text-[var(--wn-petrol-deep)] transition hover:bg-white hover:shadow-[var(--wn-shadow-xs)]">
-                      {child.name}
+        <>
+          <section className="wn-container py-14 sm:py-18 lg:py-20">
+            <SectionHeader
+              eyebrow="Ontdek per categorie"
+              title="Nog niet precies weten wat je zoekt? Begin hier."
+              description="Kies een categorie die past bij wat je nodig hebt. Daarna kun je rustig verder verfijnen, zonder eerst een perfecte zoekterm te bedenken."
+            />
+            <div className="mt-9 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {rootCategories.map((root) => {
+                const children = childrenFor(categories, root.id)
+                return (
+                  <article key={root.id} className="group overflow-hidden rounded-[1.6rem] border border-[var(--wn-border)] bg-white shadow-[var(--wn-shadow-sm)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--wn-shadow-md)] motion-reduce:transform-none">
+                    <Link href={`/categorie/${root.slug}`} className="relative block min-h-48 overflow-hidden bg-[var(--wn-petrol-deep)]">
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0 bg-cover bg-center transition duration-500 group-hover:scale-[1.035] motion-reduce:transform-none"
+                        style={{ backgroundImage: `url('/images/categories/${root.slug}-hero.webp')` }}
+                      />
+                      <span aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,20,20,0.12)_0%,rgba(7,20,20,0.84)_100%)]" />
+                      <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-6">
+                        <span>
+                          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#ffb889]">Categorie</span>
+                          <span className="mt-1 block text-2xl font-black tracking-[-0.03em] text-white">{root.name}</span>
+                        </span>
+                        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/12 text-lg text-white backdrop-blur-sm transition group-hover:bg-[var(--wn-warm)]">→</span>
+                      </span>
                     </Link>
+                    <div className="p-5 sm:p-6">
+                      <p className="text-sm leading-6 text-[var(--wn-text-muted)]">Ontdek populaire richtingen binnen {root.name.toLocaleLowerCase('nl-NL')} en kies daarna steeds gerichter.</p>
+                      {children.length > 0 ? (
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {children.slice(0, 5).map((child) => (
+                            <Link key={child.id} href={`/categorie/${child.slug}`} className="rounded-full bg-[var(--wn-petrol-soft)] px-3 py-2 text-xs font-semibold text-[var(--wn-petrol-deep)] transition hover:bg-white hover:shadow-[var(--wn-shadow-xs)]">
+                              {child.name}
+                            </Link>
+                          ))}
+                        </div>
+                      ) : null}
+                      <Link href={`/zoeken?categorie=${encodeURIComponent(root.slug)}`} className="mt-5 inline-flex min-h-10 items-center text-sm font-bold text-[var(--wn-petrol)] hover:underline">Bekijk producten in {root.name} →</Link>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          </section>
+
+          <section className="wn-bg-brand-dark text-[var(--wn-cream)]">
+            <div className="wn-container wn-section relative overflow-hidden">
+              <span aria-hidden="true" className="absolute -right-20 -top-20 h-72 w-72 rounded-full border border-white/8 bg-[rgba(233,120,61,0.05)]" />
+              <div className="relative z-10 grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#ffb889]">Van idee naar keuze</p>
+                  <h2 className="wn-display mt-3 text-4xl font-semibold leading-tight tracking-[-0.035em] text-[#fff7ec] sm:text-5xl">Zoeken hoeft niet te beginnen met de perfecte zoekterm.</h2>
+                  <p className="mt-5 max-w-xl text-sm leading-7 text-[#f4e7d8]/74 sm:text-base">Begin breed, vertel wat je nodig hebt en verfijn pas wanneer dat helpt. Winkelnu houdt de route naar concrete producten zo overzichtelijk mogelijk.</p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {[
+                    ['01', 'Beschrijf', 'Typ een product, merk, categorie of gewoon wat je wilt oplossen.'],
+                    ['02', 'Verfijn', 'Gebruik categorie, merk en andere filters alleen als ze je echt verder helpen.'],
+                    ['03', 'Vergelijk', 'Bekijk concrete producten naast elkaar en kies daarna pas je winkel.'],
+                  ].map(([number, title, description]) => (
+                    <article key={number} className="rounded-[1.35rem] border border-white/10 bg-white/6 p-5 backdrop-blur-sm">
+                      <span className="text-xs font-black tracking-[0.18em] text-[#ffb889]">{number}</span>
+                      <h3 className="mt-4 text-lg font-black text-white">{title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-white/62">{description}</p>
+                    </article>
                   ))}
                 </div>
-              </article>
-            ))}
-          </div>
-        </section>
+              </div>
+            </div>
+          </section>
+        </>
       ) : (
         <section className="wn-container pb-16 sm:pb-20">
           <SectionHeader
