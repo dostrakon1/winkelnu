@@ -25,13 +25,15 @@ describe('Lootje & Lijstje post-acceptance hardening', () => {
     expect(errorPage).toContain("'/lootje-lijstje'")
   })
 
-  it('removes implementation jargon from the standalone and participant screens', () => {
+  it('removes implementation jargon from user-facing gifting screens', () => {
     const standalonePage = source('src/app/lootje-lijstje/lijstje/[shareCode]/bewerken/page.tsx')
     const participantPage = source('src/app/lootje-lijstje/groep/[groupCode]/mijn/page.tsx')
+    const organizerPage = source('src/app/lootje-lijstje/groep/[groupCode]/beheer/page.tsx')
 
     expect(standalonePage).not.toContain('productidentiteit')
     expect(standalonePage).not.toContain('veilige fallback')
     expect(participantPage).not.toContain('no-login hersteltoegang')
     expect(participantPage).not.toContain('geldige geheime verdeling opgeslagen')
+    expect(organizerPage).not.toContain('giver→recipient')
   })
 })
