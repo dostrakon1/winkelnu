@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { resolveGiftCatalogProductViews } from '@/application/gifting/gift-catalog'
 import { getSharedGiftList } from '@/application/gifting/standalone-gift-lists'
 import { GiftListItemCard } from '@/components/gifting/gift-list-item-card'
+import { GiftingInsightBeacon } from '@/components/gifting/gifting-insight-beacon'
 
 export const metadata: Metadata = {
   title: 'Gedeeld verlanglijstje',
@@ -50,6 +51,7 @@ export default async function SharedGiftListPage({ params }: { params: Promise<{
 
   return (
     <div className="min-h-screen text-[var(--gift-ink)]">
+      <GiftingInsightBeacon eventType="shared_list_viewed" sourceSurface="shared_list" />
       <main id="inhoud">
         <section className="gift-shared-list-hero">
           <div className="gift-shell-container gift-shared-list-hero-inner">
