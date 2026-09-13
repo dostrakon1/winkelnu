@@ -5,12 +5,13 @@ import { headers } from 'next/headers'
 import { giftSessionSecret } from '@/application/gifting/gifting-release'
 import { createSupabaseServerClient } from '@/infrastructure/supabase/server-client'
 
-export type GiftingRateLimitAction = 'create-list' | 'create-group' | 'join-group'
+export type GiftingRateLimitAction = 'create-list' | 'create-group' | 'join-group' | 'record-insight'
 
 const LIMITS: Record<GiftingRateLimitAction, { limit: number; windowSeconds: number }> = {
   'create-list': { limit: 12, windowSeconds: 60 * 60 },
   'create-group': { limit: 8, windowSeconds: 60 * 60 },
   'join-group': { limit: 60, windowSeconds: 60 * 60 },
+  'record-insight': { limit: 600, windowSeconds: 60 * 60 },
 }
 
 export class GiftingRateLimitError extends Error {
