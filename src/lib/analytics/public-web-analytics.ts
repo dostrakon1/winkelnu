@@ -5,7 +5,7 @@ export type PublicWebAnalyticsEvent = {
   [key: string]: unknown
 }
 
-const BLOCKED_PREFIXES = ['/intern', '/api', '/uit'] as const
+const BLOCKED_PREFIXES = ['/intern', '/api', '/uit', '/lootje-lijstje'] as const
 
 export function isPublicAnalyticsPath(pathname: string | null | undefined): boolean {
   if (!pathname || !pathname.startsWith('/')) return false
