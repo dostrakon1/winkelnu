@@ -8,7 +8,7 @@ export default function Loading() {
 
       <section className="relative overflow-hidden border-b border-[rgba(18,59,58,0.10)] bg-[image:var(--wn-gradient-welcome)]">
         <div aria-hidden="true" className="pointer-events-none absolute -right-24 top-8 h-72 w-72 rounded-full border border-[rgba(18,59,58,0.06)]" />
-        <div className="wn-container relative py-14 sm:py-18" aria-hidden="true">
+        <div className="wn-container relative py-14 sm:py-16" aria-hidden="true">
           <div className="h-3 w-28 animate-pulse rounded-full bg-[rgba(233,120,61,0.18)]" />
           <div className="mt-5 h-12 w-full max-w-2xl animate-pulse rounded-2xl bg-[rgba(18,59,58,0.10)] sm:h-16" />
           <div className="mt-5 h-5 w-full max-w-3xl animate-pulse rounded-full bg-[rgba(18,59,58,0.07)]" />
