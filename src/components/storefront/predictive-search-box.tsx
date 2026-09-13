@@ -92,7 +92,18 @@ export function PredictiveSearchBox({ defaultValue = '', index }: Props) {
   }
 
   return (
-    <form action="/zoeken" method="get" role="search" className="mx-auto mt-9 max-w-5xl" onSubmit={onSubmit}>
+    <>
+      <style>{`
+        section:has(form[data-wn-predictive-search]) {
+          overflow: visible;
+          z-index: 20;
+        }
+
+        section:has(form[data-wn-predictive-search]) > div[aria-hidden='true']:first-child {
+          overflow: hidden;
+        }
+      `}</style>
+      <form action="/zoeken" method="get" role="search" data-wn-predictive-search className="mx-auto mt-9 max-w-5xl" onSubmit={onSubmit}>
       <div className="relative">
         <div className="flex items-center gap-2 rounded-[2rem] bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.20)] sm:p-3">
           <span className="hidden pl-3 text-2xl text-[var(--wn-petrol)] sm:block" aria-hidden="true">⌕</span>
@@ -192,5 +203,6 @@ export function PredictiveSearchBox({ defaultValue = '', index }: Props) {
         ) : null}
       </div>
     </form>
+    </>
   )
 }
