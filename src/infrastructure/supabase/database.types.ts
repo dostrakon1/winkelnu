@@ -251,6 +251,353 @@ export type Database = {
           },
         ]
       }
+      gift_group_assignments: {
+        Row: {
+          created_at: string
+          draw_version: number
+          giver_participant_id: string
+          group_id: string
+          id: string
+          recipient_participant_id: string
+        }
+        Insert: {
+          created_at?: string
+          draw_version: number
+          giver_participant_id: string
+          group_id: string
+          id?: string
+          recipient_participant_id: string
+        }
+        Update: {
+          created_at?: string
+          draw_version?: number
+          giver_participant_id?: string
+          group_id?: string
+          id?: string
+          recipient_participant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_group_assignments_giver_participant_id_fkey"
+            columns: ["giver_participant_id"]
+            isOneToOne: false
+            referencedRelation: "gift_group_participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_group_assignments_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "gift_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_group_assignments_recipient_participant_id_fkey"
+            columns: ["recipient_participant_id"]
+            isOneToOne: false
+            referencedRelation: "gift_group_participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gift_group_exclusions: {
+        Row: {
+          created_at: string
+          excluded_recipient_id: string
+          group_id: string
+          id: string
+          participant_id: string
+        }
+        Insert: {
+          created_at?: string
+          excluded_recipient_id: string
+          group_id: string
+          id?: string
+          participant_id: string
+        }
+        Update: {
+          created_at?: string
+          excluded_recipient_id?: string
+          group_id?: string
+          id?: string
+          participant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_group_exclusions_excluded_recipient_id_fkey"
+            columns: ["excluded_recipient_id"]
+            isOneToOne: false
+            referencedRelation: "gift_group_participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_group_exclusions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "gift_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_group_exclusions_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "gift_group_participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gift_group_participants: {
+        Row: {
+          created_at: string
+          display_name: string
+          external_key: string
+          gift_list_id: string
+          group_id: string
+          id: string
+          joined_at: string
+          participant_token_hash: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          external_key: string
+          gift_list_id: string
+          group_id: string
+          id?: string
+          joined_at?: string
+          participant_token_hash: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          external_key?: string
+          gift_list_id?: string
+          group_id?: string
+          id?: string
+          joined_at?: string
+          participant_token_hash?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_group_participants_gift_list_id_fkey"
+            columns: ["gift_list_id"]
+            isOneToOne: true
+            referencedRelation: "gift_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_group_participants_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "gift_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gift_groups: {
+        Row: {
+          budget_cents: number | null
+          created_at: string
+          draw_version: number
+          event_date: string | null
+          expires_at: string
+          external_key: string
+          group_code_hash: string
+          id: string
+          name: string
+          occasion: string
+          organizer_token_hash: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          budget_cents?: number | null
+          created_at?: string
+          draw_version?: number
+          event_date?: string | null
+          expires_at: string
+          external_key: string
+          group_code_hash: string
+          id?: string
+          name: string
+          occasion: string
+          organizer_token_hash: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          budget_cents?: number | null
+          created_at?: string
+          draw_version?: number
+          event_date?: string | null
+          expires_at?: string
+          external_key?: string
+          group_code_hash?: string
+          id?: string
+          name?: string
+          occasion?: string
+          organizer_token_hash?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gift_item_reservations: {
+        Row: {
+          created_at: string
+          gift_list_item_id: string
+          group_id: string
+          id: string
+          reserved_by_participant_id: string
+        }
+        Insert: {
+          created_at?: string
+          gift_list_item_id: string
+          group_id: string
+          id?: string
+          reserved_by_participant_id: string
+        }
+        Update: {
+          created_at?: string
+          gift_list_item_id?: string
+          group_id?: string
+          id?: string
+          reserved_by_participant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_item_reservations_gift_list_item_id_fkey"
+            columns: ["gift_list_item_id"]
+            isOneToOne: false
+            referencedRelation: "gift_list_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_item_reservations_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "gift_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_item_reservations_reserved_by_participant_id_fkey"
+            columns: ["reserved_by_participant_id"]
+            isOneToOne: false
+            referencedRelation: "gift_group_participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gift_list_items: {
+        Row: {
+          created_at: string
+          currency_snapshot: string | null
+          external_url: string | null
+          gift_list_id: string
+          id: string
+          image_url_snapshot: string | null
+          item_type: string
+          note: string | null
+          price_cents_snapshot: number | null
+          product_external_key: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency_snapshot?: string | null
+          external_url?: string | null
+          gift_list_id: string
+          id?: string
+          image_url_snapshot?: string | null
+          item_type: string
+          note?: string | null
+          price_cents_snapshot?: number | null
+          product_external_key?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency_snapshot?: string | null
+          external_url?: string | null
+          gift_list_id?: string
+          id?: string
+          image_url_snapshot?: string | null
+          item_type?: string
+          note?: string | null
+          price_cents_snapshot?: number | null
+          product_external_key?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_list_items_gift_list_id_fkey"
+            columns: ["gift_list_id"]
+            isOneToOne: false
+            referencedRelation: "gift_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gift_lists: {
+        Row: {
+          budget_max_cents: number | null
+          budget_min_cents: number | null
+          created_at: string
+          display_name: string
+          event_date: string | null
+          expires_at: string
+          external_key: string
+          id: string
+          occasion: string
+          owner_token_hash: string | null
+          share_code_hash: string
+          status: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          budget_max_cents?: number | null
+          budget_min_cents?: number | null
+          created_at?: string
+          display_name: string
+          event_date?: string | null
+          expires_at: string
+          external_key: string
+          id?: string
+          occasion: string
+          owner_token_hash?: string | null
+          share_code_hash: string
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          budget_max_cents?: number | null
+          budget_min_cents?: number | null
+          created_at?: string
+          display_name?: string
+          event_date?: string | null
+          expires_at?: string
+          external_key?: string
+          id?: string
+          occasion?: string
+          owner_token_hash?: string | null
+          share_code_hash?: string
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       import_rejects: {
         Row: {
           id: string
@@ -728,9 +1075,11 @@ export type Database = {
           primary_gtin: string | null
           primary_image_url: string | null
           slug: string
+          specifications: Json
           status: string
           title: string
           updated_at: string
+          visual_kind: string | null
         }
         Insert: {
           brand?: string | null
@@ -743,9 +1092,11 @@ export type Database = {
           primary_gtin?: string | null
           primary_image_url?: string | null
           slug: string
+          specifications?: Json
           status?: string
           title: string
           updated_at?: string
+          visual_kind?: string | null
         }
         Update: {
           brand?: string | null
@@ -758,9 +1109,11 @@ export type Database = {
           primary_gtin?: string | null
           primary_image_url?: string | null
           slug?: string
+          specifications?: Json
           status?: string
           title?: string
           updated_at?: string
+          visual_kind?: string | null
         }
         Relationships: [
           {
@@ -772,9 +1125,73 @@ export type Database = {
           },
         ]
       }
+      search_feedback_events: {
+        Row: {
+          best_match_count: number | null
+          category_slug: string | null
+          corrected_query: string | null
+          created_at: string
+          event_type: string
+          id: string
+          intent_keys: string[]
+          previous_query_normalized: string | null
+          product_term: string | null
+          query_normalized: string
+          target_key: string | null
+          target_kind: string | null
+          target_position: number | null
+          zero_results: boolean
+        }
+        Insert: {
+          best_match_count?: number | null
+          category_slug?: string | null
+          corrected_query?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          intent_keys?: string[]
+          previous_query_normalized?: string | null
+          product_term?: string | null
+          query_normalized: string
+          target_key?: string | null
+          target_kind?: string | null
+          target_position?: number | null
+          zero_results?: boolean
+        }
+        Update: {
+          best_match_count?: number | null
+          category_slug?: string | null
+          corrected_query?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          intent_keys?: string[]
+          previous_query_normalized?: string | null
+          product_term?: string | null
+          query_normalized?: string
+          target_key?: string | null
+          target_kind?: string | null
+          target_position?: number | null
+          zero_results?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      search_feedback_query_summary: {
+        Row: {
+          best_match_clicks: number | null
+          last_seen_at: string | null
+          opportunity_score: number | null
+          predictive_clicks: number | null
+          product_clicks: number | null
+          query_normalized: string | null
+          refinements: number | null
+          searches: number | null
+          zero_result_searches: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       catalog_ranked_products: {
@@ -812,8 +1229,10 @@ export type Database = {
           product_image_url: string
           product_mpn: string
           product_slug: string
+          product_specifications: Json
           product_title: string
           product_url: string
+          product_visual_kind: string
           relevance: number
           shipping_cost: number
           source_updated_at: string

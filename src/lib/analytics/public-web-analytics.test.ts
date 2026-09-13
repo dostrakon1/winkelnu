@@ -15,7 +15,7 @@ describe('public web analytics privacy boundary', () => {
     expect(isProductionAnalyticsHost('localhost')).toBe(false)
   })
 
-  it('blocks internal, API and affiliate redirect routes', () => {
+  it('blocks internal, API, affiliate redirect and gifting routes', () => {
     expect(isPublicAnalyticsPath('/')).toBe(true)
     expect(isPublicAnalyticsPath('/zoeken')).toBe(true)
     expect(isPublicAnalyticsPath('/product/example')).toBe(true)
@@ -23,6 +23,9 @@ describe('public web analytics privacy boundary', () => {
     expect(isPublicAnalyticsPath('/intern/operations')).toBe(false)
     expect(isPublicAnalyticsPath('/api/health')).toBe(false)
     expect(isPublicAnalyticsPath('/uit/offer-123')).toBe(false)
+    expect(isPublicAnalyticsPath('/lootje-lijstje')).toBe(false)
+    expect(isPublicAnalyticsPath('/lootje-lijstje/toegang/geheim-token')).toBe(false)
+    expect(isPublicAnalyticsPath('/lootje-lijstje/lijstje/deelcode/bewerken')).toBe(false)
   })
 
   it('removes every query parameter and fragment before sending', () => {
@@ -42,6 +45,12 @@ describe('public web analytics privacy boundary', () => {
       sanitizePublicWebAnalyticsEvent({
         type: 'pageview',
         url: 'https://winkelnu.nl/intern/operations?tab=feeds',
+      }),
+    ).toBeNull()
+    expect(
+      sanitizePublicWebAnalyticsEvent({
+        type: 'pageview',
+        url: 'https://winkelnu.nl/lootje-lijstje/toegang/secret?lijst=private-share-code',
       }),
     ).toBeNull()
     expect(sanitizePublicWebAnalyticsEvent({ type: 'pageview', url: 'not-a-url' })).toBeNull()
