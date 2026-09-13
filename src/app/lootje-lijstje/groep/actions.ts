@@ -51,6 +51,7 @@ function organizerPath(groupCode: string, key?: string, error?: string): string 
 
 export async function createGiftGroupAction(formData: FormData): Promise<void> {
   requireGiftingEnabled()
+  let groupCode: string
   try {
     const input = validateGiftGroupInput({
       name: field(formData, 'name'),
@@ -59,11 +60,11 @@ export async function createGiftGroupAction(formData: FormData): Promise<void> {
       budget: field(formData, 'budget'),
       eventDate: field(formData, 'eventDate'),
     })
-    const { groupCode } = await createGiftGroup(input)
-    redirect(organizerPath(groupCode, 'gemaakt'))
+    ;({ groupCode } = await createGiftGroup(input))
   } catch (error) {
     redirect(`/lootje-lijstje/groep/nieuw?fout=${encodeURIComponent(message(error))}`)
   }
+  redirect(organizerPath(groupCode, 'gemaakt'))
 }
 
 export async function joinGiftGroupAction(formData: FormData): Promise<void> {
