@@ -27,6 +27,7 @@ const migrationPaths = [
   'supabase/migrations/0023_gifting_foundation.sql',
   'supabase/migrations/0024_gifting_fk_indexes.sql',
   'supabase/migrations/0025_gifting_product_slug_snapshot.sql',
+  'supabase/migrations/0026_gifting_group_participant_guard.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -101,6 +102,7 @@ const requiredFunctions = [
   'operator_retry_feed',
   'operator_pause_feed',
   'operator_resume_feed',
+  'enforce_gift_group_participant_structure',
 ]
 
 const requiredSecurityPatterns = [
@@ -116,6 +118,8 @@ const requiredSecurityPatterns = [
   ['operator action retention policy', /retain\s+records\s+for\s+at\s+least\s+90\s+days/i],
   ['service-role public schema usage', /grant\s+usage\s+on\s+schema\s+public\s+to\s+service_role/i],
   ['catalog ranking RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+catalog_ranked_products\([\s\S]*?\)\s+from\s+anon\s*,\s*authenticated/i],
+  ['gift participant guard untrusted revoke', /revoke\s+all\s+on\s+function\s+enforce_gift_group_participant_structure\(\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
+  ['gift participant guard trigger', /create\s+trigger\s+gift_group_participant_structure_guard[\s\S]*?before\s+insert\s+or\s+update\s+or\s+delete\s+on\s+gift_group_participants/i],
 ]
 
 const failures = []
