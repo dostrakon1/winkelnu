@@ -89,6 +89,11 @@ export async function hasGiftAccessGrant(kind: GiftGrantKind, entityId: string):
   return payload.grants.some((grant) => grant.kind === kind && grant.entityId === entityId)
 }
 
+export async function giftAccessGrantEntityIds(kind: GiftGrantKind): Promise<string[]> {
+  const payload = await currentPayload()
+  return payload.grants.filter((grant) => grant.kind === kind).map((grant) => grant.entityId)
+}
+
 export async function addGiftAccessGrant(grant: GiftAccessGrant): Promise<void> {
   const store = await cookies()
   const payload = decodePayload(store.get(COOKIE_NAME)?.value)

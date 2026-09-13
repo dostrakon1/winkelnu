@@ -5,6 +5,7 @@ export const giftListItemTypes = ['winkelnu_product', 'external_link', 'text'] a
 export type GiftListItemType = (typeof giftListItemTypes)[number]
 
 export type GiftListStatus = 'active' | 'archived'
+export type GiftGroupStatus = 'draft' | 'drawn' | 'closed'
 
 export type GiftList = {
   id: string
@@ -42,6 +43,35 @@ export type GiftListWithItems = GiftList & {
   items: GiftListItem[]
 }
 
+export type GiftGroup = {
+  id: string
+  externalKey: string
+  name: string
+  occasion: GiftOccasion
+  budgetCents?: number
+  eventDate?: string
+  status: GiftGroupStatus
+  drawVersion: number
+  expiresAt: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type GiftGroupParticipant = {
+  id: string
+  externalKey: string
+  groupId: string
+  giftListId: string
+  displayName: string
+  joinedAt: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type GiftGroupParticipantSummary = GiftGroupParticipant & {
+  wishCount: number
+}
+
 export type CreateGiftListInput = {
   displayName: string
   title?: string
@@ -69,4 +99,16 @@ export type CreateWinkelnuGiftListItemInput = {
   priceCentsSnapshot?: number
   currencySnapshot?: 'EUR'
   note?: string
+}
+
+export type CreateGiftGroupInput = {
+  name: string
+  occasion: GiftOccasion
+  organizerDisplayName: string
+  budgetCents?: number
+  eventDate?: string
+}
+
+export type JoinGiftGroupInput = {
+  displayName: string
 }

@@ -1,0 +1,170 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { removeGiftGroupParticipantAction } from '@/app/lootje-lijstje/groep/actions'
+import {
+  getGiftGroupInvite,
+  getOrganizerGiftGroupContext,
+  getParticipantGiftGroupContext,
+} from '@/application/gifting/gift-groups'
+import { GiftShareActions } from '@/components/gifting/gift-share-actions'
+import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
+import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
+
+export const metadata: Metadata = {
+  title: 'Lootjesgroep beheren',
+  description: 'Privé beheerpagina voor een Lootje & Lijstje-groep.',
+  robots: { index: false, follow: false },
+}
+
+const occasionLabels = {
+  sinterklaas: 'Sinterklaas',
+  kerst: 'Kerst / Secret Santa',
+  verjaardag: 'Verjaardag / feestje',
+  anders: 'Cadeaumoment',
+} as const
+
+function first(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value
+}
+
+function money(cents: number): string {
+  return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(cents / 100)
+}
+
+export default async function GiftGroupOrganizerPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ groupCode: string }>
+  searchParams: Promise<{ gemaakt?: string | string[]; verwijderd?: string | string[]; fout?: string | string[] }>
+}) {
+  const { groupCode } = await params
+  const query = await searchParams
+  const [invite, context, participantContext] = await Promise.all([
+    getGiftGroupInvite(groupCode),
+    getOrganizerGiftGroupContext(groupCode),
+    getParticipantGiftGroupContext(groupCode),
+  ])
+  if (!invite) notFound()
+
+  if (!context) {
+    return (
+      <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
+        <WinkelnuHeader />
+        <main id="inhoud" className="wn-container py-14 sm:py-20">
+          <section className="mx-auto max-w-2xl rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-7 text-center shadow-[var(--wn-shadow-sm)] sm:p-10">
+            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xl text-[var(--wn-petrol)]" aria-hidden="true">◇</span>
+            <h1 className="wn-heading mt-5 text-3xl">Beheer-toegang nodig.</h1>
+            <p className="wn-body-muted mt-4">Deze browser heeft geen organisatorrechten voor deze groep. Herstel-links voor organisator en deelnemers bouwen we bewust in L4.</p>
+            <Link href={`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}`} className="wn-button wn-button-primary mt-7">Naar de uitnodiging</Link>
+          </section>
+        </main>
+        <WinkelnuFooter />
+      </div>
+    )
+  }
+
+  const { group, participants } = context
+  const invitePath = `/lootje-lijstje/groep/${encodeURIComponent(groupCode)}`
+  const notification = first(query.fout)
+    ?? (first(query.gemaakt) ? 'Je groep is gemaakt. Deel nu de uitnodigingslink met de andere deelnemers.' : undefined)
+    ?? (first(query.verwijderd) ? 'Deelnemer verwijderd uit de groep.' : undefined)
+  const isError = Boolean(first(query.fout))
+
+  return (
+    <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
+      <WinkelnuHeader />
+      <main id="inhoud">
+        <section className="border-b border-[var(--wn-border)] bg-[image:var(--wn-gradient-welcome)]">
+          <div className="wn-container py-10 sm:py-14">
+            <p className="wn-eyebrow">Groep beheren</p>
+            <div className="mt-3 flex flex-wrap items-start justify-between gap-5">
+              <div>
+                <h1 className="wn-heading text-4xl sm:text-5xl">{group.name}</h1>
+                <div className="mt-4 flex flex-wrap gap-2 text-sm font-semibold text-[var(--wn-text-muted)]">
+                  <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{occasionLabels[group.occasion]}</span>
+                  <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{participants.length === 1 ? '1 deelnemer' : `${participants.length} deelnemers`}</span>
+                  {group.budgetCents !== undefined ? <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">Budget {money(group.budgetCents)}</span> : null}
+                </div>
+              </div>
+              {participantContext ? <Link href={`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/mijn`} className="wn-button wn-button-secondary">Mijn deelnemerspagina →</Link> : null}
+            </div>
+          </div>
+        </section>
+
+        <div className="wn-container py-8 sm:py-12">
+          {notification ? (
+            <div role={isError ? 'alert' : 'status'} className={`mb-6 rounded-xl border p-4 text-sm font-semibold leading-6 ${isError ? 'border-[#d9a99f] bg-[#fff3ef] text-[#7f2d23]' : 'border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] text-[var(--wn-petrol-deep)]'}`}>
+              {notification}
+            </div>
+          ) : null}
+
+          <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
+            <div className="space-y-8">
+              <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-6 shadow-[var(--wn-shadow-xs)] sm:p-8">
+                <p className="wn-eyebrow">Uitnodigen</p>
+                <h2 className="wn-heading mt-2 text-3xl">Stuur één link naar iedereen.</h2>
+                <p className="wn-body-muted mt-3 leading-7">De uitnodigingslink geeft alleen toegang tot de join-pagina. Hij geeft geen organisatorrechten en onthult straks ook geen lootjes.</p>
+                <div className="mt-6">
+                  <GiftShareActions
+                    sharePath={invitePath}
+                    title={`Je bent uitgenodigd voor ${group.name} via Winkelnu Lootje & Lijstje.`}
+                    copyLabel="Kopieer uitnodigingslink"
+                  />
+                </div>
+              </section>
+
+              <section>
+                <div className="mb-5">
+                  <p className="wn-eyebrow">Deelnemers</p>
+                  <h2 className="wn-heading mt-2 text-3xl">Wie doen er mee?</h2>
+                </div>
+
+                {participants.length > 0 ? (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {participants.map((participant) => (
+                      <article key={participant.id} className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white p-5 shadow-[var(--wn-shadow-xs)]">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h3 className="wn-ui-heading text-lg">{participant.displayName}</h3>
+                            <p className="mt-2 text-sm text-[var(--wn-text-muted)]">{participant.wishCount === 1 ? '1 wens op het lijstje' : `${participant.wishCount} wensen op het lijstje`}</p>
+                          </div>
+                          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-sm font-black text-[var(--wn-petrol)]" aria-hidden="true">{participant.wishCount}</span>
+                        </div>
+                        <form action={removeGiftGroupParticipantAction} className="mt-4 border-t border-[var(--wn-border)] pt-3">
+                          <input type="hidden" name="groupCode" value={groupCode} />
+                          <input type="hidden" name="participantId" value={participant.id} />
+                          <button type="submit" className="inline-flex min-h-10 items-center text-sm font-semibold text-[var(--wn-text-muted)] hover:text-[var(--wn-petrol-deep)]">Verwijder deelnemer</button>
+                        </form>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-[var(--wn-radius-xl)] border border-dashed border-[color:rgba(18,59,58,0.24)] bg-white/70 p-7 text-center">
+                    <h3 className="wn-ui-heading text-lg">Nog niemand in de groep.</h3>
+                    <p className="wn-body-muted mt-2 text-sm">Deel de uitnodigingslink om deelnemers toe te voegen.</p>
+                  </div>
+                )}
+              </section>
+            </div>
+
+            <aside className="space-y-5 xl:sticky xl:top-28">
+              <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)] p-5 sm:p-6">
+                <span className="inline-flex rounded-full border border-[color:rgba(18,59,58,0.14)] bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[var(--wn-petrol)]">L5</span>
+                <h2 className="wn-ui-heading mt-4 text-xl">Lootjes trekken komt hier.</h2>
+                <p className="wn-body-muted mt-3 text-sm leading-6">L3 stopt bewust vóór de trekking. Deelnemers en hun lijstjes zijn nu de complete basis; uitsluitingen en de geheime trekking bouwen we later bovenop deze groep.</p>
+              </section>
+
+              <section className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white p-5">
+                <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Privacygrens</p>
+                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Als organisator zie je namen en hoeveel wensen iemand heeft. Je krijgt geen verborgen cadeaukeuzes of toekomstige lootjesmapping te zien.</p>
+              </section>
+            </aside>
+          </div>
+        </div>
+      </main>
+      <WinkelnuFooter />
+    </div>
+  )
+}

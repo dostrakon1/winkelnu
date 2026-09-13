@@ -10,6 +10,7 @@ type GiftListItemCardProps = {
   updateProductNoteAction?: (formData: FormData) => void | Promise<void>
   deleteAction?: (formData: FormData) => void | Promise<void>
   shareCode?: string
+  contextFields?: Record<string, string>
 }
 
 function money(cents: number): string {
@@ -28,11 +29,18 @@ export function GiftListItemCard({
   updateProductNoteAction,
   deleteAction,
   shareCode,
+  contextFields,
 }: GiftListItemCardProps) {
   const isWinkelnuProduct = item.itemType === 'winkelnu_product'
   const currentPrice = productView?.priceCents
   const snapshotPrice = item.priceCentsSnapshot
   const displayTitle = productView?.title ?? item.title
+  const actionContext = contextFields ?? (shareCode ? { shareCode } : {})
+  const hasActionContext = Object.keys(actionContext).length > 0
+
+  const hiddenContextFields = Object.entries(actionContext).map(([name, value]) => (
+    <input key={name} type="hidden" name={name} value={value} />
+  ))
 
   return (
     <article className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white p-5 shadow-[var(--wn-shadow-xs)]">
@@ -93,11 +101,11 @@ export function GiftListItemCard({
           <span className="text-xs font-semibold text-[var(--wn-text-muted)]">Niet meer in de huidige Winkelnu-catalogus.</span>
         ) : null}
 
-        {editable && !isWinkelnuProduct && updateAction && shareCode ? (
+        {editable && !isWinkelnuProduct && updateAction && hasActionContext ? (
           <details className="w-full border-t border-[var(--wn-border)] pt-3">
             <summary className="cursor-pointer text-sm font-bold text-[var(--wn-petrol)] hover:underline">Wens bewerken</summary>
             <form action={updateAction} className="mt-4 space-y-4">
-              <input type="hidden" name="shareCode" value={shareCode} />
+              {hiddenContextFields}
               <input type="hidden" name="itemId" value={item.id} />
               <label className="block">
                 <span className="mb-1.5 block text-xs font-bold text-[var(--wn-petrol-deep)]">Type</span>
@@ -123,11 +131,11 @@ export function GiftListItemCard({
           </details>
         ) : null}
 
-        {editable && isWinkelnuProduct && updateProductNoteAction && shareCode ? (
+        {editable && isWinkelnuProduct && updateProductNoteAction && hasActionContext ? (
           <details className="w-full border-t border-[var(--wn-border)] pt-3">
             <summary className="cursor-pointer text-sm font-bold text-[var(--wn-petrol)] hover:underline">Toelichting bewerken</summary>
             <form action={updateProductNoteAction} className="mt-4 space-y-4">
-              <input type="hidden" name="shareCode" value={shareCode} />
+              {hiddenContextFields}
               <input type="hidden" name="itemId" value={item.id} />
               <label className="block">
                 <span className="mb-1.5 block text-xs font-bold text-[var(--wn-petrol-deep)]">Toelichting</span>
@@ -145,9 +153,9 @@ export function GiftListItemCard({
           </details>
         ) : null}
 
-        {editable && deleteAction && shareCode ? (
+        {editable && deleteAction && hasActionContext ? (
           <form action={deleteAction} className="ml-auto">
-            <input type="hidden" name="shareCode" value={shareCode} />
+            {hiddenContextFields}
             <input type="hidden" name="itemId" value={item.id} />
             <button
               type="submit"

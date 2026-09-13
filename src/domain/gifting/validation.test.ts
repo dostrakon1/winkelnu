@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import {
   GiftValidationError,
+  normalizeGiftDisplayName,
   parseOptionalEuroAmount,
+  validateGiftGroupInput,
+  validateGiftGroupJoinInput,
   validateGiftListInput,
   validateGiftListItemInput,
   validateGiftNote,
@@ -24,6 +27,34 @@ describe('gifting validation', () => {
       budgetMaxCents: 5000,
       eventDate: '2026-12-05',
     })
+  })
+
+  it('validates and normalizes L3 groups and participant names', () => {
+    expect(validateGiftGroupInput({
+      name: '  Familie   Akgun ',
+      organizerDisplayName: '  Dogan ',
+      occasion: 'kerst',
+      budget: '25,50',
+      eventDate: '2026-12-24',
+    })).toEqual({
+      name: 'Familie Akgun',
+      organizerDisplayName: 'Dogan',
+      occasion: 'kerst',
+      budgetCents: 2550,
+      eventDate: '2026-12-24',
+    })
+
+    expect(validateGiftGroupJoinInput({ displayName: '  Dogan   A. ' })).toEqual({ displayName: 'Dogan A.' })
+    expect(normalizeGiftDisplayName('  DOGAN   A. ')).toBe('dogan a.')
+  })
+
+  it('rejects invalid group and participant names', () => {
+    expect(() => validateGiftGroupInput({
+      name: 'x',
+      organizerDisplayName: 'Dogan',
+      occasion: 'sinterklaas',
+    })).toThrow(GiftValidationError)
+    expect(() => validateGiftGroupJoinInput({ displayName: 'x' })).toThrow(GiftValidationError)
   })
 
   it('rejects an inverted budget range', () => {
