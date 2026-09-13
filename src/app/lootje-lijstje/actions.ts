@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { requireGiftingEnabled } from '@/application/gifting/gifting-release'
 import {
   addStandaloneGiftListItem,
   createGiftListRecoveryPath,
@@ -34,6 +35,7 @@ function editPath(shareCode: string, key?: 'gemaakt' | 'opgeslagen' | 'toegevoeg
 }
 
 export async function createGiftListAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
   let shareCode: string
   try {
     const input = validateGiftListInput({
@@ -53,6 +55,7 @@ export async function createGiftListAction(formData: FormData): Promise<void> {
 }
 
 export async function updateGiftListAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
   const shareCode = field(formData, 'shareCode')
   try {
     const input = validateGiftListInput({
@@ -74,6 +77,7 @@ export async function updateGiftListAction(formData: FormData): Promise<void> {
 }
 
 export async function addGiftListItemAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
   const shareCode = field(formData, 'shareCode')
   try {
     const input = validateGiftListItemInput({
@@ -93,6 +97,7 @@ export async function addGiftListItemAction(formData: FormData): Promise<void> {
 }
 
 export async function updateGiftListItemAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
   const shareCode = field(formData, 'shareCode')
   const itemId = field(formData, 'itemId')
   try {
@@ -113,6 +118,7 @@ export async function updateGiftListItemAction(formData: FormData): Promise<void
 }
 
 export async function deleteGiftListItemAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
   const shareCode = field(formData, 'shareCode')
   const itemId = field(formData, 'itemId')
   try {
@@ -127,6 +133,7 @@ export async function deleteGiftListItemAction(formData: FormData): Promise<void
 }
 
 export async function createRecoveryLinkAction(_previousState: string | null, formData: FormData): Promise<string | null> {
+  requireGiftingEnabled()
   const shareCode = field(formData, 'shareCode')
   try {
     return await createGiftListRecoveryPath(shareCode)
