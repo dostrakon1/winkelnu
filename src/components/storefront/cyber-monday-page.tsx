@@ -221,7 +221,7 @@ export function CyberMondayPage({ campaign }: { campaign: CommerceEventCampaign 
             <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#4be6f2]">Deal weekend finale</p>
-                <h2 id="cyber-timeline-title" className="mt-3 text-4xl font-black uppercase leading-[0.95] tracking-[-0.055em] text-white sm:text-5xl">Van Black Friday naar maandag.</h2>
+                <h2 id="cyber-timeline-title" className="mt-3 text-4xl font-black uppercase leading-[0.95] tracking-[-0.055em] text-white sm:text-5xl">Van dealweek naar maandag.</h2>
               </div>
               <p className="max-w-2xl text-base leading-7 text-white/52">Cyber Monday staat niet los van Black Friday. Zie het als het laatste controlemoment na het weekend, niet als een nieuwe reden om opnieuw te beginnen.</p>
             </div>
@@ -229,8 +229,8 @@ export function CyberMondayPage({ campaign }: { campaign: CommerceEventCampaign 
             <div className="relative mt-10 grid gap-3 lg:grid-cols-4">
               <span aria-hidden="true" className="absolute left-[7%] right-[7%] top-[3.15rem] hidden h-[2px] bg-[linear-gradient(90deg,rgba(53,216,232,0.15),#35d8e8,rgba(53,216,232,0.15))] lg:block" />
               {[
+                ['Black Friday Week', cycle.blackFridayWeekStartsOn, 'Maak je shortlist definitief.'],
                 ['Black Friday', cycle.blackFridayOn, 'Start van het belangrijkste dealweekend.'],
-                ['Zaterdag', cycle.blackFridayWeekendEndsOn, 'Controleer je shortlist opnieuw.'],
                 ['Weekendcheck', cycle.blackFridayWeekendEndsOn, 'Vergelijk voorwaarden en totaalprijs.'],
                 ['Cyber Monday', cycle.cyberMondayOn, 'De digitale finale van het weekend.'],
               ].map(([label, date, description], index) => (
