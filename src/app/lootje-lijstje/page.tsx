@@ -5,11 +5,11 @@ import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 
 export const metadata: Metadata = {
   title: 'Lootje & Lijstje',
-  description: 'Maak zonder account een verlanglijstje, deel je wensen en regel later ook lootjes met vrienden, familie of collega’s.',
+  description: 'Maak zonder account een verlanglijstje, voeg Winkelnu-producten toe, deel je wensen en regel later ook lootjes met vrienden, familie of collega’s.',
   alternates: { canonical: '/lootje-lijstje' },
   openGraph: {
     title: 'Lootje & Lijstje | Winkelnu.nl',
-    description: 'Maak een verlanglijstje zonder account en deel het eenvoudig. Lootjes trekken wordt hier stap voor stap aan toegevoegd.',
+    description: 'Maak een verlanglijstje zonder account, voeg Winkelnu-producten of eigen wensen toe en deel het eenvoudig.',
     url: '/lootje-lijstje',
   },
 }
@@ -26,7 +26,7 @@ export default function GiftLandingPage() {
               <p className="wn-eyebrow">Lootje &amp; Lijstje</p>
               <h1 className="wn-heading mt-4 text-4xl leading-tight sm:text-6xl">Cadeaus regelen zonder gedoe.</h1>
               <p className="wn-body-muted mt-6 max-w-2xl text-lg leading-8 sm:text-xl">
-                Maak een verlanglijstje, deel je wensen met familie of vrienden en vind straks vanuit hetzelfde plekje een passend cadeau op Winkelnu.
+                Maak een verlanglijstje, kies producten uit Winkelnu of voeg je eigen wensen toe en deel alles eenvoudig met familie of vrienden.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/lootje-lijstje/lijstje/nieuw" className="wn-button wn-button-primary">Maak een lijstje →</Link>
@@ -44,7 +44,7 @@ export default function GiftLandingPage() {
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xl text-[var(--wn-petrol)]" aria-hidden="true">✦</span>
               <p className="wn-eyebrow mt-6">Lijstje</p>
               <h2 className="wn-heading mt-2 text-3xl">Zet je wensen op één plek.</h2>
-              <p className="wn-body-muted mt-4 leading-7">Schrijf zelf een wens op of voeg een productlink toe. Geen account, wachtwoord of e-mailadres nodig.</p>
+              <p className="wn-body-muted mt-4 leading-7">Zoek een product in Winkelnu, schrijf zelf een wens op of voeg een externe productlink toe. Geen account, wachtwoord of e-mailadres nodig.</p>
               <Link href="/lootje-lijstje/lijstje/nieuw" className="wn-button wn-button-primary mt-6">Start mijn lijstje</Link>
             </article>
 
@@ -64,7 +64,7 @@ export default function GiftLandingPage() {
             <div className="mt-8 grid gap-5 md:grid-cols-3">
               {[
                 ['01', 'Maak je lijstje', 'Vul je naam, gelegenheid en eventueel een budget of datum in.'],
-                ['02', 'Voeg wensen toe', 'Schrijf zelf iets op of plak een veilige productlink. Winkelnu-producten volgen in de volgende stap.'],
+                ['02', 'Voeg wensen toe', 'Zoek in de Winkelnu-catalogus of voeg zelf een wens of veilige externe productlink toe.'],
                 ['03', 'Deel de link', 'Stuur de alleen-lezen lijst via WhatsApp of kopieer de link. Jij behoudt apart de beheer-toegang.'],
               ].map(([number, title, text]) => (
                 <article key={number} className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-[var(--wn-cream)] p-5">
