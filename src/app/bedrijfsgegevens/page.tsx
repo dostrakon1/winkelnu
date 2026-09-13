@@ -25,7 +25,7 @@ export default function BusinessDetailsPage() {
       <WinkelnuHeader />
 
       <section className="border-b border-[rgba(18,59,58,0.10)] bg-[linear-gradient(135deg,#0b2b2a_0%,#123b3a_58%,#194946_100%)] text-[var(--wn-cream)]">
-        <div className="wn-container py-14 sm:py-18 lg:py-20">
+        <div className="wn-container py-14 sm:py-16 lg:py-20">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#ffb889]">✦ Bedrijfsgegevens</p>
           <h1 className="wn-display mt-4 max-w-3xl text-4xl font-semibold tracking-[-0.04em] text-[#fff7ec] sm:text-5xl lg:text-6xl">
             Duidelijk wie Winkelnu exploiteert.
