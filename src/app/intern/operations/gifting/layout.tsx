@@ -9,6 +9,7 @@ export default function GiftingInsightsLayout({ children }: { children: React.Re
           <Link href="/intern/operations/gifting" className="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 hover:border-violet-700 hover:text-violet-200">Lifecycle</Link>
           <Link href="/intern/operations/gifting/funnel" className="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 hover:border-violet-700 hover:text-violet-200">Funnel &amp; interacties</Link>
           <Link href="/intern/operations/gifting/products" className="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 hover:border-violet-700 hover:text-violet-200">Product &amp; commercie</Link>
+          <Link href="/intern/operations/gifting/health" className="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 hover:border-violet-700 hover:text-violet-200">Health &amp; retention</Link>
         </nav>
       </div>
       {children}
