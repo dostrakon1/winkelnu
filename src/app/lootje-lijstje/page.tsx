@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { GiftingInsightBeacon } from '@/components/gifting/gifting-insight-beacon'
 
 export const metadata: Metadata = {
   title: 'Lootje & Lijstje',
@@ -38,6 +39,7 @@ export default async function GiftLandingPage({
 
   return (
     <div className="min-h-screen text-[var(--gift-ink)]">
+      <GiftingInsightBeacon eventType="gifting_landing_viewed" sourceSurface="landing" />
       <main id="inhoud">
         <section className="gift-landing-hero">
           <div className="gift-shell-container">
