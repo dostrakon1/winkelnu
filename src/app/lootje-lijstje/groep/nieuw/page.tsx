@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createGiftGroupAction } from '@/app/lootje-lijstje/groep/actions'
 import { GiftGroupForm } from '@/components/gifting/gift-group-form'
+import { GiftingInsightBeacon } from '@/components/gifting/gifting-insight-beacon'
 
 export const metadata: Metadata = {
   title: 'Lootjesgroep maken',
@@ -23,6 +24,7 @@ export default async function NewGiftGroupPage({
 
   return (
     <div className="min-h-screen text-[var(--gift-ink)]">
+      <GiftingInsightBeacon eventType="group_create_form_viewed" sourceSurface="group_create" />
       <main id="inhoud">
         <section className="gift-onboarding-hero">
           <div className="gift-shell-container gift-onboarding-hero-inner">
