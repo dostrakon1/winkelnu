@@ -73,7 +73,11 @@ export default function BusinessDetailsPage() {
               <p className="mt-3 text-sm leading-7 text-[rgba(13,46,45,0.72)]">
                 Voor vragen over Winkelnu kun je rechtstreeks contact opnemen via e-mail.
               </p>
-              <a href={`mailto:${operator.email}?subject=Winkelnu.nl`} className="mt-5 inline-flex min-h-11 items-center rounded-full bg-[var(--wn-petrol-deep)] px-5 text-sm font-bold text-white transition hover:bg-[var(--wn-petrol)]">
+              <a
+                href={`mailto:${operator.email}?subject=Winkelnu.nl`}
+                className="mt-5 inline-flex min-h-11 items-center rounded-full bg-[var(--wn-petrol-deep)] px-5 text-sm font-bold transition hover:bg-[var(--wn-petrol)]"
+                style={{ color: '#fff7ec' }}
+              >
                 {operator.email}
               </a>
             </section>
