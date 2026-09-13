@@ -9,20 +9,6 @@ export class SupabaseGiftDeletionRepository {
       .from('gift_lists')
       .delete()
       .eq('id', listId)
-      .is('owner_token_hash', null, { foreignTable: undefined })
-      .select('id')
-      .maybeSingle()
-
-    if (error) throw new Error(`Unable to delete standalone gift list: ${error.message}`)
-    return Boolean(data)
-  }
-
-  async deleteStandaloneListById(listId: string): Promise<boolean> {
-    const db = createSupabaseServerClient()
-    const { data, error } = await db
-      .from('gift_lists')
-      .delete()
-      .eq('id', listId)
       .not('owner_token_hash', 'is', null)
       .select('id')
       .maybeSingle()
