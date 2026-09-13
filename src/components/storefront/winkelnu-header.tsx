@@ -32,19 +32,27 @@ export function WinkelnuHeader({ theme = 'default' }: { theme?: WinkelnuHeaderTh
     <header
       className={`relative sticky top-0 z-50 border-b text-white shadow-[0_10px_30px_rgba(7,20,20,0.13)] ${
         isBlackFriday
-          ? 'border-[#f0a168]/18 bg-[linear-gradient(100deg,#050908_0%,#0b1b19_42%,#17302d_72%,#3c1f12_100%)]'
+          ? 'border-white/10 bg-[linear-gradient(100deg,#030303_0%,#080b0a_48%,#121816_76%,#27100c_100%)]'
           : 'border-white/10 bg-[image:var(--wn-gradient-market)]'
       }`}
     >
       <SeasonalCampaignBar />
 
       {isBlackFriday ? (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <span className="absolute -left-10 top-1/2 h-24 w-40 -translate-y-1/2 rounded-full bg-[#ef7338]/8 blur-3xl" />
-          <span className="absolute right-[18%] top-3 h-1.5 w-1.5 rounded-full bg-[#ffd2ad] shadow-[0_0_22px_8px_rgba(239,115,56,0.22)]" />
-          <span className="absolute right-[43%] bottom-3 h-1 w-1 rounded-full bg-[#f4bd85] shadow-[0_0_18px_7px_rgba(244,189,133,0.18)]" />
-          <span className="absolute left-[41%] top-5 h-1 w-1 rounded-full bg-white/70 shadow-[0_0_16px_6px_rgba(255,255,255,0.12)]" />
-        </div>
+        <>
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+            <span className="absolute -left-12 top-1/2 h-28 w-56 -translate-y-1/2 rounded-full bg-[#ef4d35]/10 blur-3xl" />
+            <span className="absolute right-[13%] top-2 h-1.5 w-1.5 rounded-full bg-[#ffb188] shadow-[0_0_24px_9px_rgba(239,77,53,0.24)]" />
+            <span className="absolute right-[36%] bottom-3 h-1 w-1 rounded-full bg-[#f6c09c] shadow-[0_0_18px_7px_rgba(246,192,156,0.16)]" />
+            <span className="absolute left-[39%] top-4 h-1 w-1 rounded-full bg-white/70 shadow-[0_0_16px_6px_rgba(255,255,255,0.11)]" />
+            <span className="absolute -right-16 -top-12 h-36 w-64 rotate-[-12deg] border border-white/5 bg-white/[0.015]" />
+          </div>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px] opacity-90"
+            style={{ backgroundImage: 'repeating-linear-gradient(135deg,#ef4d35 0 12px,#111 12px 24px)' }}
+          />
+        </>
       ) : null}
 
       <a
@@ -75,7 +83,7 @@ export function WinkelnuHeader({ theme = 'default' }: { theme?: WinkelnuHeaderTh
               method="get"
               className={`hidden min-w-[15rem] max-w-sm flex-1 items-center rounded-full p-1.5 lg:flex xl:max-w-md ${
                 isBlackFriday
-                  ? 'border border-[#f0a168]/28 bg-[#fffaf2] shadow-[0_8px_28px_rgba(0,0,0,0.18)]'
+                  ? 'border border-white/15 bg-[#fffaf2] shadow-[0_8px_30px_rgba(0,0,0,0.28)]'
                   : 'border border-white/24 bg-[rgba(255,250,242,0.96)] shadow-[0_8px_24px_rgba(0,0,0,0.10)]'
               }`}
             >
@@ -92,9 +100,9 @@ export function WinkelnuHeader({ theme = 'default' }: { theme?: WinkelnuHeaderTh
               />
               <button
                 type="submit"
-                className={`min-h-10 rounded-full px-4 py-2 text-xs font-bold text-white transition hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-petrol-deep)] motion-reduce:transform-none ${
+                className={`min-h-10 rounded-full px-4 py-2 text-xs font-extrabold uppercase tracking-[0.06em] text-white transition hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-petrol-deep)] motion-reduce:transform-none ${
                   isBlackFriday
-                    ? 'bg-[#ef7338] shadow-[0_6px_18px_rgba(239,115,56,0.30)] hover:bg-[#f1844c]'
+                    ? 'bg-[#ef4d35] shadow-[0_7px_20px_rgba(239,77,53,0.34)] hover:bg-[#f36249]'
                     : 'bg-[var(--wn-warm)] shadow-[0_6px_16px_rgba(159,72,35,0.20)] hover:bg-[#f1844c]'
                 }`}
               >
@@ -110,7 +118,7 @@ export function WinkelnuHeader({ theme = 'default' }: { theme?: WinkelnuHeaderTh
                 aria-label="Zoeken"
                 className={`inline-flex h-11 w-11 items-center justify-center rounded-full border text-white transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-warm)] ${
                   isBlackFriday
-                    ? 'border-[#f0a168]/28 bg-white/8 hover:bg-[#ef7338]/20'
+                    ? 'border-white/15 bg-white/[0.055] hover:border-[#ef4d35]/55 hover:bg-[#ef4d35]/18'
                     : 'border-white/18 bg-white/10 hover:bg-white/16'
                 }`}
               >
@@ -122,7 +130,7 @@ export function WinkelnuHeader({ theme = 'default' }: { theme?: WinkelnuHeaderTh
               <summary
                 className={`flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-semibold text-white transition marker:content-none ${
                   isBlackFriday
-                    ? 'border-[#f0a168]/28 bg-white/8 hover:bg-[#ef7338]/20'
+                    ? 'border-white/15 bg-white/[0.055] hover:border-[#ef4d35]/55 hover:bg-[#ef4d35]/18'
                     : 'border-white/18 bg-white/10 hover:bg-white/16'
                 }`}
               >
