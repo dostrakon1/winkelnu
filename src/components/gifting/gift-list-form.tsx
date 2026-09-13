@@ -36,7 +36,7 @@ export function GiftListForm({ action, submitLabel, shareCode, list }: GiftListF
             defaultValue={list?.displayName}
             autoComplete="name"
             className="wn-input"
-            placeholder="Bijvoorbeeld Dogan"
+            placeholder="Vul je naam in"
           />
         </label>
 
