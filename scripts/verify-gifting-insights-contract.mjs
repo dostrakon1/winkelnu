@@ -1,12 +1,13 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-const migration = await readFile(resolve('supabase/migrations/0030_gifting_insights_foundation.sql'), 'utf8')
+const foundation = await readFile(resolve('supabase/migrations/0030_gifting_insights_foundation.sql'), 'utf8')
+const lifecycle = await readFile(resolve('supabase/migrations/0031_gifting_insights_lifecycle_rollups.sql'), 'utf8')
 const authorization = await readFile(resolve('src/application/auth/operator-authorization.ts'), 'utf8')
 const dashboard = await readFile(resolve('src/app/intern/operations/gifting/page.tsx'), 'utf8')
 const repository = await readFile(resolve('src/infrastructure/gifting/supabase-gifting-insights-repository.ts'), 'utf8')
 
-const requiredMigrationPatterns = [
+const requiredFoundationPatterns = [
   ['insight event table', /create\s+table\s+gifting_insight_events\b/i],
   ['daily metric table', /create\s+table\s+gifting_daily_metrics\b/i],
   ['event RLS', /alter\s+table\s+gifting_insight_events\s+enable\s+row\s+level\s+security/i],
@@ -24,15 +25,44 @@ const requiredMigrationPatterns = [
   ['delete-safe list link', /list_id\s+uuid\s+references\s+gift_lists\(id\)\s+on\s+delete\s+set\s+null/i],
 ]
 
+const requiredLifecyclePatterns = [
+  ['idempotent event recorder', /create\s+or\s+replace\s+function\s+record_gifting_insight_event\b[\s\S]*?on\s+conflict\s*\(event_key\)\s+do\s+nothing/i],
+  ['daily metric incrementer', /create\s+or\s+replace\s+function\s+increment_gifting_daily_metric\b/i],
+  ['participant lifecycle trigger', /create\s+trigger\s+gifting_participant_lifecycle_insight[\s\S]*?after\s+insert\s+or\s+delete\s+on\s+gift_group_participants/i],
+  ['standalone list create trigger', /create\s+trigger\s+gifting_standalone_list_created_insight[\s\S]*?after\s+insert\s+on\s+gift_lists/i],
+  ['standalone list delete trigger', /create\s+trigger\s+gifting_standalone_list_deleted_insight[\s\S]*?before\s+delete\s+on\s+gift_lists/i],
+  ['gift item lifecycle trigger', /create\s+trigger\s+gifting_item_lifecycle_insight[\s\S]*?after\s+insert\s+or\s+delete\s+on\s+gift_list_items/i],
+  ['draw lifecycle trigger', /create\s+trigger\s+gifting_draw_lifecycle_insight[\s\S]*?after\s+update\s+of\s+status\s*,\s*draw_version\s+on\s+gift_groups/i],
+  ['reservation lifecycle trigger', /create\s+trigger\s+gifting_reservation_lifecycle_insight[\s\S]*?after\s+insert\s+or\s+delete\s+on\s+gift_item_reservations/i],
+  ['group deletion trigger', /create\s+trigger\s+gifting_group_deleted_insight[\s\S]*?before\s+delete\s+on\s+gift_groups/i],
+  ['three participant milestone', /group_three_participants_reached/i],
+  ['historical backfill', /--\s*Backfill the current retained source records/i],
+  ['rollup-backed overview', /create\s+or\s+replace\s+function\s+gifting_insights_overview[\s\S]*?from\s+gifting_daily_metrics/i],
+  ['rollup-backed daily activity', /create\s+or\s+replace\s+function\s+gifting_insights_daily_activity[\s\S]*?join\s+gifting_daily_metrics/i],
+  ['90-day raw event cleanup', /where\s+occurred_at\s*<\s*now\(\)\s*-\s*interval\s+'90 days'/i],
+  ['daily cleanup cron', /cron\.schedule\([\s\S]*?'winkelnu-gifting-insight-retention'[\s\S]*?'23 3 \* \* \*'/i],
+  ['analytics must not block core flow', /exception\s+when\s+others\s+then[\s\S]*?GIFTING_INSIGHT_CAPTURE_FAILED/i],
+]
+
 const failures = []
-for (const [label, pattern] of requiredMigrationPatterns) {
-  if (!pattern.test(migration)) failures.push(`Missing GI1 migration contract: ${label}`)
+for (const [label, pattern] of requiredFoundationPatterns) {
+  if (!pattern.test(foundation)) failures.push(`Missing GI1 migration contract: ${label}`)
+}
+for (const [label, pattern] of requiredLifecyclePatterns) {
+  if (!pattern.test(lifecycle)) failures.push(`Missing GI2 lifecycle contract: ${label}`)
 }
 
-const eventTableDeclaration = migration.match(/create\s+table\s+gifting_insight_events\s*\(([\s\S]*?)\n\);/i)?.[1] ?? ''
+const eventTableDeclaration = foundation.match(/create\s+table\s+gifting_insight_events\s*\(([\s\S]*?)\n\);/i)?.[1] ?? ''
 for (const forbidden of ['participant_id', 'display_name', 'email', 'share_code', 'token_hash', 'external_url', 'recipient_participant_id', 'giver_participant_id', 'ip_address', 'user_agent']) {
   if (new RegExp(`\\b${forbidden}\\b`, 'i').test(eventTableDeclaration)) {
     failures.push(`Insight event table must not contain sensitive field: ${forbidden}`)
+  }
+}
+
+const eventWrites = lifecycle.match(/insert\s+into\s+gifting_insight_events[\s\S]*?on\s+conflict\s*\(event_key\)\s+do\s+nothing/i)?.[0] ?? ''
+for (const forbidden of ['display_name', 'email', 'share_code', 'token_hash', 'external_url', 'recipient_participant_id', 'giver_participant_id', 'ip_address', 'user_agent']) {
+  if (new RegExp(`\\b${forbidden}\\b`, 'i').test(eventWrites)) {
+    failures.push(`GI2 event recorder must not write sensitive field: ${forbidden}`)
   }
 }
 
@@ -53,9 +83,9 @@ if (/display_name|share_code|token_hash|recipient_participant_id|giver_participa
 }
 
 if (failures.length > 0) {
-  console.error('Lootje & Lijstje Insights GI1 contract verification failed:')
+  console.error('Lootje & Lijstje Insights contract verification failed:')
   for (const failure of failures) console.error(`- ${failure}`)
   process.exit(1)
 }
 
-console.log(`Lootje & Lijstje Insights GI1 contract OK: ${requiredMigrationPatterns.length} database safeguards plus authorization and secret-field isolation verified.`)
+console.log(`Lootje & Lijstje Insights GI1+GI2 contract OK: ${requiredFoundationPatterns.length + requiredLifecyclePatterns.length} database/lifecycle safeguards plus authorization and secret-field isolation verified.`)
