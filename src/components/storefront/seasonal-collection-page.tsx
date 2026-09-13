@@ -1,6 +1,6 @@
 import type { EditorialCollection } from '@/content/collections/types'
 import type { SeasonalCampaign } from '@/content/seasonal-campaigns'
-import { GenericSeasonalCollectionPage } from './generic-seasonal-collection-page'
+import { SeasonalCollectionPage as GenericSeasonalCollectionPage } from './generic-seasonal-collection-page'
 import { HalloweenCollectionPage } from './halloween-collection-page'
 
 export function SeasonalCollectionPage({
