@@ -21,6 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
   const entries: MetadataRoute.Sitemap = [
     { url: baseUrl, changeFrequency: 'monthly', priority: 1 },
+    { url: `${baseUrl}/lootje-lijstje`, changeFrequency: 'monthly', priority: 0.8 },
     ...informationRoutes.map((path) => ({ url: `${baseUrl}${path}`, changeFrequency: 'monthly' as const, priority: 0.4 })),
     ...promotionalRoutes.map((path) => ({ url: `${baseUrl}${path}`, changeFrequency: 'weekly' as const, priority: 0.8 })),
     ...editorialRoutes.map((path) => ({ url: `${baseUrl}${path}`, changeFrequency: 'monthly' as const, priority: 0.7 })),
