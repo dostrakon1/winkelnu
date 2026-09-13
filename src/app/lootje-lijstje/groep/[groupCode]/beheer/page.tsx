@@ -14,6 +14,7 @@ import {
   getParticipantGiftGroupContext,
 } from '@/application/gifting/gift-groups'
 import { GiftDrawConfirmation } from '@/components/gifting/gift-draw-confirmation'
+import { GiftGroupDeletePanel } from '@/components/gifting/gift-group-delete-panel'
 import { GiftGroupExclusions } from '@/components/gifting/gift-group-exclusions'
 import { GiftGroupRecoveryLink } from '@/components/gifting/gift-group-recovery-link'
 import { GiftShareActions } from '@/components/gifting/gift-share-actions'
@@ -205,6 +206,8 @@ export default async function GiftGroupOrganizerPage({
                 <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">De trekking blijft geheim</p>
                 <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Ook als organisator krijg je de volledige giver→recipient-mapping niet te zien. Iedere deelnemer onthult uitsluitend zijn eigen ontvanger via de persoonlijke deelnemerspagina; ook “geregeld”-markeringen blijven privé.</p>
               </section>
+
+              <GiftGroupDeletePanel groupCode={groupCode} />
             </aside>
           </div>
         </div>
