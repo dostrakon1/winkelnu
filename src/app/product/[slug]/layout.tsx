@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   return createPageSocialMetadata({
     title: item.product.title,
-    description: item.product.description,
+    description: item.product.description ?? `Ontdek ${item.product.title} en vergelijk de bekende productinformatie op Winkelnu.`,
     url: `/product/${item.product.slug}`,
   })
 }
