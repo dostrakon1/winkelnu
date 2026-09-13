@@ -22,7 +22,7 @@ export function GiftGroupForm({ action }: GiftGroupFormProps) {
 
         <label className="gift-premium-field">
           <span className="gift-premium-field-label"><span>Jouw naam</span></span>
-          <input name="organizerDisplayName" required minLength={2} maxLength={80} className="wn-input" placeholder="Bijvoorbeeld Dogan" autoComplete="name" />
+          <input name="organizerDisplayName" required minLength={2} maxLength={80} className="wn-input" placeholder="Vul je naam in" autoComplete="name" />
         </label>
 
         <label className="gift-premium-field">
