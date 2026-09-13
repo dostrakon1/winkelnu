@@ -14,6 +14,13 @@ type GiftExclusionRow = {
   created_at: string
 }
 
+type RpcResponse = {
+  data: unknown
+  error: { message: string } | null
+}
+
+type RpcCall = (functionName: string, args: Record<string, unknown>) => Promise<RpcResponse>
+
 function mapExclusion(row: GiftExclusionRow): GiftGroupExclusion {
   return {
     id: row.id,
@@ -22,6 +29,13 @@ function mapExclusion(row: GiftExclusionRow): GiftGroupExclusion {
     excludedRecipientId: row.excluded_recipient_id,
     createdAt: row.created_at,
   }
+}
+
+function rpcCall(): RpcCall {
+  const db = createSupabaseServerClient()
+  // Migration 0027 is already present in the target schema. Keep the repository
+  // isolated from generated-type lag while the normal schema snapshot catches up.
+  return db.rpc.bind(db) as unknown as RpcCall
 }
 
 export class SupabaseGiftGroupDrawRepository {
@@ -43,8 +57,7 @@ export class SupabaseGiftGroupDrawRepository {
     participantBId: string,
     enabled: boolean,
   ): Promise<void> {
-    const db = createSupabaseServerClient()
-    const { error } = await db.rpc('set_gift_group_exclusion_pair', {
+    const { error } = await rpcCall()('set_gift_group_exclusion_pair', {
       p_group_id: groupId,
       p_participant_a: participantAId,
       p_participant_b: participantBId,
@@ -60,8 +73,7 @@ export class SupabaseGiftGroupDrawRepository {
     assignments: GiftDrawAssignment[]
     redraw: boolean
   }): Promise<number> {
-    const db = createSupabaseServerClient()
-    const { data, error } = await db.rpc('apply_gift_group_draw', {
+    const { data, error } = await rpcCall()('apply_gift_group_draw', {
       p_group_id: input.groupId,
       p_expected_draw_version: input.expectedDrawVersion,
       p_assignments: input.assignments.map((assignment) => ({
