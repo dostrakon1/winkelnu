@@ -5,6 +5,7 @@ import { GiftExperienceFooter } from '@/components/gifting/gift-experience-foote
 import { GiftExperienceHeader } from '@/components/gifting/gift-experience-header'
 import './gift-experience.css'
 import './premium-onboarding.css'
+import './premium-group-dashboard.css'
 
 export const dynamic = 'force-dynamic'
 
