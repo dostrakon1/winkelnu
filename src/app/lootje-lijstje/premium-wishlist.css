@@ -1,0 +1,986 @@
+.gift-wishlist-hero,
+.gift-shared-list-hero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--gift-line);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.gift-wishlist-hero::after,
+.gift-shared-list-hero::after {
+  content: '';
+  position: absolute;
+  right: -7rem;
+  top: -8rem;
+  width: 23rem;
+  height: 23rem;
+  border: 1px solid rgba(18, 59, 58, 0.06);
+  border-radius: 999px;
+  box-shadow: 0 0 0 4rem rgba(233, 120, 61, 0.025), 0 0 0 8rem rgba(18, 59, 58, 0.018);
+  pointer-events: none;
+}
+
+.gift-wishlist-hero-inner,
+.gift-shared-list-hero-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 2rem;
+  padding-block: clamp(2.6rem, 6vw, 4.5rem);
+}
+
+.gift-wishlist-role {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  border: 1px solid var(--gift-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.76);
+  padding: 0.38rem 0.72rem;
+  color: var(--gift-petrol);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.gift-wishlist-title,
+.gift-shared-list-title {
+  margin-top: 1rem;
+  max-width: 18ch;
+  color: var(--gift-ink);
+  font-family: var(--wn-font-display);
+  font-size: clamp(2.65rem, 6vw, 4.8rem);
+  font-weight: 650;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.gift-wishlist-lead,
+.gift-shared-list-lead {
+  margin-top: 1rem;
+  max-width: 43rem;
+  color: var(--gift-muted);
+  font-size: 0.98rem;
+  line-height: 1.72;
+}
+
+.gift-wishlist-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1.2rem;
+}
+
+.gift-wishlist-meta span {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  border: 1px solid var(--gift-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0.38rem 0.72rem;
+  color: var(--gift-muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.gift-wishlist-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.gift-wishlist-body,
+.gift-shared-list-body {
+  padding-block: clamp(1.7rem, 4vw, 3rem) clamp(4rem, 7vw, 6rem);
+}
+
+.gift-wishlist-notice {
+  margin-bottom: 1rem;
+  border: 1px solid rgba(18, 59, 58, 0.16);
+  border-radius: 1.1rem;
+  background: var(--gift-petrol-soft);
+  padding: 0.95rem 1rem;
+  color: var(--gift-petrol-deep);
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.gift-wishlist-notice.is-error {
+  border-color: #d9a99f;
+  background: #fff3ef;
+  color: #7f2d23;
+}
+
+.gift-wishlist-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1.15rem;
+  padding: 0.45rem;
+  border: 1px solid var(--gift-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: var(--gift-shadow-sm);
+}
+
+.gift-wishlist-nav a {
+  display: inline-flex;
+  min-height: 2.45rem;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  padding: 0.55rem 0.88rem;
+  color: var(--gift-muted);
+  font-size: 0.75rem;
+  font-weight: 850;
+}
+
+.gift-wishlist-nav a:hover {
+  background: var(--gift-petrol-soft);
+  color: var(--gift-petrol-deep);
+}
+
+.gift-wishlist-nav a span {
+  display: inline-grid;
+  min-width: 1.45rem;
+  min-height: 1.45rem;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--gift-warm-soft);
+  color: #9f4823;
+  font-size: 0.65rem;
+  font-weight: 900;
+}
+
+.gift-wishlist-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.gift-wishlist-main,
+.gift-wishlist-rail {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.gift-wishlist-rail {
+  position: sticky;
+  top: 6rem;
+}
+
+.gift-wishlist-panel {
+  border: 1px solid var(--gift-line);
+  border-radius: 1.55rem;
+  background: rgba(255, 255, 255, 0.86);
+  padding: clamp(1.2rem, 3vw, 1.7rem);
+  box-shadow: var(--gift-shadow-sm);
+  scroll-margin-top: 6.5rem;
+}
+
+.gift-wishlist-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.gift-wishlist-panel-head h2,
+.gift-shared-list-heading h2,
+.gift-shared-list-footer-cta h2,
+.gift-recipient-wishes-head h2,
+.gift-recipient-search-cta h3 {
+  margin-top: 0.42rem;
+  color: var(--gift-petrol-deep);
+  font-family: var(--wn-font-display);
+  font-size: clamp(1.65rem, 4vw, 2.25rem);
+  font-weight: 650;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+.gift-wishlist-panel-head p:not(.gift-kicker),
+.gift-shared-list-heading p:not(.gift-kicker),
+.gift-shared-list-footer-cta p:not(.gift-kicker),
+.gift-recipient-wishes-head p:not(.gift-kicker),
+.gift-recipient-search-cta p:not(.gift-kicker) {
+  margin-top: 0.55rem;
+  max-width: 42rem;
+  color: var(--gift-muted);
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+
+.gift-wishlist-count,
+.gift-product-picker-badge,
+.gift-own-wish-badge {
+  display: inline-flex;
+  min-height: 2rem;
+  flex: 0 0 auto;
+  align-items: center;
+  border: 1px solid var(--gift-line);
+  border-radius: 999px;
+  background: var(--gift-petrol-soft);
+  padding: 0.38rem 0.72rem;
+  color: var(--gift-petrol-deep);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.gift-wish-grid,
+.gift-product-results,
+.gift-recipient-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.gift-wish-card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--gift-line);
+  border-radius: 1.35rem;
+  background: white;
+  padding: 1.05rem;
+  box-shadow: 0 8px 24px rgba(13, 46, 45, 0.055);
+}
+
+.gift-wish-card[data-kind='winkelnu_product'] {
+  border-color: rgba(18, 59, 58, 0.18);
+}
+
+.gift-wish-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.gift-wish-card-icon {
+  display: grid;
+  width: 2.55rem;
+  height: 2.55rem;
+  place-items: center;
+  border-radius: 0.9rem;
+  background: var(--gift-petrol-soft);
+  color: var(--gift-petrol);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.gift-wish-card[data-kind='external_link'] .gift-wish-card-icon {
+  background: var(--gift-warm-soft);
+  color: #a64e27;
+}
+
+.gift-wish-card-type,
+.gift-product-result-brand,
+.gift-wish-card-brand {
+  color: var(--gift-muted);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.gift-wish-card-content {
+  padding-top: 1rem;
+}
+
+.gift-wish-card-content h3,
+.gift-product-result h3 {
+  margin-top: 0.3rem;
+  color: var(--gift-petrol-deep);
+  font-size: 1rem;
+  font-weight: 850;
+  line-height: 1.42;
+  text-wrap: balance;
+}
+
+.gift-wish-card-price,
+.gift-product-result-price {
+  margin-top: 0.65rem;
+  color: var(--gift-petrol-deep);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.gift-wish-card-note {
+  margin-top: 0.85rem;
+  border-radius: 1rem;
+  background: rgba(244, 238, 227, 0.72);
+  padding: 0.78rem 0.85rem;
+}
+
+.gift-wish-card-note span {
+  display: block;
+  color: var(--gift-muted);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gift-wish-card-note p {
+  margin-top: 0.28rem;
+  color: var(--gift-ink);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.gift-wish-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.gift-wish-link {
+  display: inline-flex;
+  min-height: 2.45rem;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  background: var(--gift-petrol-deep);
+  padding: 0.58rem 0.85rem;
+  color: white;
+  font-size: 0.74rem;
+  font-weight: 850;
+}
+
+.gift-wish-link:hover {
+  background: var(--gift-petrol);
+}
+
+.gift-wish-card-text-only,
+.gift-wish-card-unavailable {
+  color: var(--gift-muted);
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.gift-wish-editor {
+  margin-top: 0.9rem;
+  border-top: 1px solid var(--gift-line);
+  padding-top: 0.8rem;
+}
+
+.gift-wish-editor summary {
+  cursor: pointer;
+  color: var(--gift-petrol);
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.gift-wish-editor-form {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 0.9rem;
+}
+
+.gift-wish-editor-form label > span,
+.gift-product-result-form label > span,
+.gift-own-wish-fields label > span {
+  display: block;
+  margin-bottom: 0.38rem;
+  color: var(--gift-petrol-deep);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.gift-wish-card-delete {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--gift-line);
+  padding-top: 0.7rem;
+  text-align: right;
+}
+
+.gift-wish-card-delete button {
+  min-height: 2rem;
+  color: var(--gift-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.gift-wish-card-delete button:hover {
+  color: #8d3d28;
+  text-decoration: underline;
+}
+
+.gift-wishlist-empty,
+.gift-recipient-empty {
+  border: 1px dashed rgba(18, 59, 58, 0.24);
+  border-radius: 1.3rem;
+  background: rgba(255, 255, 255, 0.62);
+  padding: 2rem 1.25rem;
+  text-align: center;
+}
+
+.gift-wishlist-empty > span,
+.gift-recipient-empty > span {
+  display: grid;
+  width: 3.15rem;
+  height: 3.15rem;
+  margin-inline: auto;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--gift-warm-soft);
+  color: #a64e27;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.gift-wishlist-empty h3,
+.gift-wishlist-empty h2,
+.gift-recipient-empty h2 {
+  margin-top: 0.9rem;
+  color: var(--gift-petrol-deep);
+  font-family: var(--wn-font-display);
+  font-size: 1.7rem;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.gift-wishlist-empty p,
+.gift-recipient-empty p {
+  margin: 0.55rem auto 0;
+  max-width: 35rem;
+  color: var(--gift-muted);
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+
+.gift-product-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+}
+
+.gift-product-search label {
+  position: relative;
+}
+
+.gift-product-search .wn-input {
+  padding-left: 2.9rem;
+}
+
+.gift-product-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  z-index: 1;
+  translate: 0 -50%;
+  color: var(--gift-muted);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.gift-product-picker-hint,
+.gift-product-picker-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 1rem;
+  border-radius: 1.05rem;
+  background: rgba(223, 233, 228, 0.55);
+  padding: 0.95rem 1rem;
+  color: var(--gift-muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.gift-product-picker-hint > span,
+.gift-product-picker-empty > span {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 0.75rem;
+  background: white;
+  color: var(--gift-petrol);
+  font-weight: 900;
+}
+
+.gift-product-picker-empty {
+  border: 1px dashed rgba(18, 59, 58, 0.2);
+  background: rgba(244, 238, 227, 0.7);
+}
+
+.gift-product-picker-empty strong {
+  color: var(--gift-petrol-deep);
+}
+
+.gift-product-picker-empty p {
+  margin-top: 0.25rem;
+}
+
+.gift-product-results {
+  margin-top: 1rem;
+}
+
+.gift-product-result {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--gift-line);
+  border-radius: 1.25rem;
+  background: rgba(251, 247, 239, 0.72);
+  padding: 1rem;
+}
+
+.gift-product-result[data-added='true'] {
+  background: rgba(223, 233, 228, 0.58);
+}
+
+.gift-product-result-top {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.gift-product-result-mark {
+  display: grid;
+  width: 2.7rem;
+  height: 2.7rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 0.9rem;
+  background: var(--gift-petrol-deep);
+  color: white;
+  font-weight: 900;
+}
+
+.gift-product-result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  border-top: 1px solid var(--gift-line);
+  padding-top: 0.72rem;
+}
+
+.gift-product-result-meta a {
+  color: var(--gift-petrol);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.gift-product-result-meta span {
+  color: var(--gift-muted);
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.gift-product-result-form {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: auto;
+  padding-top: 0.9rem;
+}
+
+.gift-product-result-form small,
+.gift-own-wish-fields small {
+  color: var(--gift-muted);
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+
+.gift-own-wish-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.95rem;
+}
+
+.gift-own-wish-fields label > small {
+  display: block;
+  margin-top: 0.38rem;
+  line-height: 1.45;
+}
+
+.gift-own-wish-wide {
+  grid-column: 1 / -1;
+}
+
+.gift-own-wish-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--gift-line);
+  padding-top: 1rem;
+}
+
+.gift-own-wish-actions > span {
+  color: var(--gift-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.gift-wishlist-form-wrap {
+  border-top: 1px solid var(--gift-line);
+  padding-top: 1rem;
+}
+
+.gift-wishlist-side-card {
+  border: 1px solid var(--gift-line);
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.86);
+  padding: 1.1rem;
+  box-shadow: var(--gift-shadow-sm);
+}
+
+.gift-wishlist-side-card[data-tone='share'] {
+  background: var(--gift-petrol-deep);
+  color: white;
+}
+
+.gift-wishlist-side-card[data-tone='share'] .gift-kicker {
+  color: #ffb889;
+}
+
+.gift-wishlist-side-card h2 {
+  margin-top: 0.42rem;
+  font-family: var(--wn-font-display);
+  font-size: 1.45rem;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+.gift-wishlist-side-card[data-tone='share'] h2 {
+  color: white;
+}
+
+.gift-wishlist-side-card p:not(.gift-kicker) {
+  margin-top: 0.55rem;
+  color: var(--gift-muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.gift-wishlist-side-card[data-tone='share'] p:not(.gift-kicker) {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.gift-wishlist-side-card[data-tone='soft'] {
+  background: rgba(223, 233, 228, 0.62);
+}
+
+.gift-wishlist-side-icon {
+  display: grid;
+  width: 2.45rem;
+  height: 2.45rem;
+  place-items: center;
+  border-radius: 0.85rem;
+  background: white;
+  color: var(--gift-petrol);
+  font-weight: 900;
+}
+
+.gift-wishlist-access-card {
+  max-width: 40rem;
+  margin-inline: auto;
+  border: 1px solid var(--gift-line);
+  border-radius: 1.6rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: clamp(1.6rem, 5vw, 2.5rem);
+  text-align: center;
+  box-shadow: var(--gift-shadow-sm);
+}
+
+.gift-wishlist-access-icon {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  margin-inline: auto;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--gift-petrol-soft);
+  color: var(--gift-petrol);
+  font-weight: 900;
+}
+
+.gift-wishlist-access-card h1 {
+  margin-top: 0.5rem;
+  color: var(--gift-petrol-deep);
+  font-family: var(--wn-font-display);
+  font-size: 2rem;
+  font-weight: 650;
+  letter-spacing: -0.04em;
+}
+
+.gift-wishlist-access-card > p:not(.gift-kicker) {
+  margin: 0.8rem auto 0;
+  max-width: 34rem;
+  color: var(--gift-muted);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+.gift-shared-list-hero-inner {
+  grid-template-columns: minmax(0, 1fr) 18rem;
+}
+
+.gift-shared-list-note {
+  border: 1px solid var(--gift-line);
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 1rem;
+  box-shadow: var(--gift-shadow-sm);
+}
+
+.gift-shared-list-note > span {
+  display: grid;
+  width: 2.55rem;
+  height: 2.55rem;
+  place-items: center;
+  border-radius: 0.85rem;
+  background: var(--gift-warm-soft);
+  color: #a64e27;
+  font-weight: 900;
+}
+
+.gift-shared-list-note strong {
+  display: block;
+  margin-top: 0.8rem;
+  color: var(--gift-petrol-deep);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.gift-shared-list-note p {
+  margin-top: 0.35rem;
+  color: var(--gift-muted);
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+
+.gift-shared-list-heading,
+.gift-recipient-wishes-head,
+.gift-recipient-search-cta,
+.gift-shared-list-footer-cta {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.gift-wish-grid-viewer {
+  margin-top: 1.25rem;
+}
+
+.gift-shared-list-footer-cta,
+.gift-recipient-search-cta {
+  margin-top: 1.25rem;
+  border: 1px solid var(--gift-line);
+  border-radius: 1.35rem;
+  background: rgba(223, 233, 228, 0.58);
+  padding: 1.2rem;
+}
+
+.gift-recipient-wishes {
+  margin-top: 1rem;
+}
+
+.gift-recipient-progress {
+  display: grid;
+  min-width: 5.5rem;
+  place-items: center;
+  border: 1px solid var(--gift-line);
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 0.75rem 0.9rem;
+}
+
+.gift-recipient-progress strong {
+  color: var(--gift-petrol-deep);
+  font-family: var(--wn-font-display);
+  font-size: 1.35rem;
+  font-weight: 650;
+}
+
+.gift-recipient-progress span {
+  margin-top: 0.12rem;
+  color: var(--gift-muted);
+  font-size: 0.62rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.gift-recipient-grid {
+  margin-top: 1.1rem;
+}
+
+.gift-recipient-wish {
+  overflow: hidden;
+  border: 1px solid var(--gift-line);
+  border-radius: 1.45rem;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: var(--gift-shadow-sm);
+}
+
+.gift-recipient-wish > .gift-wish-card {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.gift-recipient-wish[data-reserved='true'] {
+  border-color: rgba(49, 95, 67, 0.28);
+  background: rgba(223, 233, 228, 0.62);
+}
+
+.gift-reservation-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid var(--gift-line);
+  padding: 0.85rem 1rem;
+}
+
+.gift-reservation-copy {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.gift-reservation-status {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--gift-petrol-soft);
+  color: var(--gift-petrol);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.gift-recipient-wish[data-reserved='true'] .gift-reservation-status {
+  background: var(--wn-success-bg);
+  color: var(--wn-success-text);
+}
+
+.gift-reservation-copy strong {
+  display: block;
+  color: var(--gift-petrol-deep);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.gift-reservation-copy p {
+  margin-top: 0.2rem;
+  color: var(--gift-muted);
+  font-size: 0.66rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 1023px) {
+  .gift-wishlist-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .gift-wishlist-rail {
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gift-shared-list-hero-inner {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .gift-wishlist-hero-inner,
+  .gift-shared-list-hero-inner {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .gift-wishlist-hero-actions {
+    justify-content: flex-start;
+  }
+
+  .gift-wishlist-nav {
+    border-radius: 1.15rem;
+  }
+
+  .gift-wishlist-nav a {
+    flex: 1 1 calc(50% - 0.5rem);
+    justify-content: center;
+  }
+
+  .gift-wish-grid,
+  .gift-product-results,
+  .gift-recipient-grid,
+  .gift-own-wish-fields,
+  .gift-wishlist-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .gift-product-search {
+    grid-template-columns: 1fr;
+  }
+
+  .gift-wishlist-panel-head,
+  .gift-shared-list-heading,
+  .gift-recipient-wishes-head,
+  .gift-recipient-search-cta,
+  .gift-shared-list-footer-cta,
+  .gift-reservation-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .gift-wishlist-count,
+  .gift-product-picker-badge,
+  .gift-own-wish-badge {
+    align-self: flex-start;
+  }
+
+  .gift-shared-list-note {
+    max-width: 26rem;
+  }
+
+  .gift-reservation-bar .wn-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 479px) {
+  .gift-wishlist-title,
+  .gift-shared-list-title {
+    font-size: 2.45rem;
+  }
+
+  .gift-wishlist-hero-actions .wn-button,
+  .gift-shared-list-heading .wn-button,
+  .gift-shared-list-footer-cta .wn-button,
+  .gift-recipient-search-cta .wn-button {
+    width: 100%;
+  }
+
+  .gift-wishlist-panel,
+  .gift-wishlist-side-card {
+    border-radius: 1.2rem;
+  }
+}

@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { resolveGiftCatalogProductViews } from '@/application/gifting/gift-catalog'
 import { getSharedGiftList } from '@/application/gifting/standalone-gift-lists'
 import { GiftListItemCard } from '@/components/gifting/gift-list-item-card'
-import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
-import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 
 export const metadata: Metadata = {
   title: 'Gedeeld verlanglijstje',
@@ -47,41 +46,65 @@ export default async function SharedGiftListPage({ params }: { params: Promise<{
   const productViews = await resolveGiftCatalogProductViews(list.items)
   const budget = budgetText(list.budgetMinCents, list.budgetMaxCents)
   const heading = list.title ?? `${list.displayName}’s lijstje`
+  const wishCountLabel = list.items.length === 1 ? '1 wens' : `${list.items.length} wensen`
 
   return (
-    <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
-      <WinkelnuHeader />
+    <div className="min-h-screen text-[var(--gift-ink)]">
       <main id="inhoud">
-        <section className="border-b border-[var(--wn-border)] bg-[image:var(--wn-gradient-welcome)]">
-          <div className="wn-container py-12 sm:py-16">
-            <p className="wn-eyebrow">Lootje &amp; Lijstje</p>
-            <h1 className="wn-heading mt-3 max-w-3xl text-4xl sm:text-5xl">{heading}</h1>
-            <div className="mt-5 flex flex-wrap gap-2 text-sm font-semibold text-[var(--wn-text-muted)]">
-              <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{occasionLabels[list.occasion]}</span>
-              {budget ? <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">Budget {budget}</span> : null}
-              {list.eventDate ? <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{new Intl.DateTimeFormat('nl-NL', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${list.eventDate}T00:00:00Z`))}</span> : null}
+        <section className="gift-shared-list-hero">
+          <div className="gift-shell-container gift-shared-list-hero-inner">
+            <div>
+              <span className="gift-wishlist-role">Gedeeld verlanglijstje</span>
+              <h1 className="gift-shared-list-title">{heading}</h1>
+              <p className="gift-shared-list-lead">Een rustige plek met de wensen van {list.displayName}. Kies iets van de lijst of gebruik Winkelnu om een passend alternatief te vinden.</p>
+              <div className="gift-wishlist-meta">
+                <span>{occasionLabels[list.occasion]}</span>
+                <span>{wishCountLabel}</span>
+                {budget ? <span>Budget {budget}</span> : null}
+                {list.eventDate ? <span>{new Intl.DateTimeFormat('nl-NL', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${list.eventDate}T00:00:00Z`))}</span> : null}
+              </div>
             </div>
-            <p className="wn-body-muted mt-5">{list.items.length === 1 ? '1 wens' : `${list.items.length} wensen`} van {list.displayName}.</p>
+            <div className="gift-shared-list-note">
+              <span aria-hidden="true">♡</span>
+              <strong>Tip voor de gever</strong>
+              <p>De toelichting bij een wens kan net het verschil maken in kleur, uitvoering of stijl.</p>
+            </div>
           </div>
         </section>
 
-        <section className="wn-container wn-section">
+        <section className="gift-shell-container gift-shared-list-body">
+          <div className="gift-shared-list-heading">
+            <div>
+              <p className="gift-kicker">Wensen van {list.displayName}</p>
+              <h2>Kies iets dat echt past.</h2>
+            </div>
+            <Link href="/zoeken" className="wn-button wn-button-secondary">Zoek ook op Winkelnu →</Link>
+          </div>
+
           {list.items.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="gift-wish-grid gift-wish-grid-viewer">
               {list.items.map((item) => (
                 <GiftListItemCard key={item.id} item={item} productView={productViews[item.id]} />
               ))}
             </div>
           ) : (
-            <div className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-8 text-center shadow-[var(--wn-shadow-xs)]">
-              <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xl text-[var(--wn-petrol)]" aria-hidden="true">✦</span>
-              <h2 className="wn-heading mt-4 text-2xl">Nog geen wensen toegevoegd.</h2>
-              <p className="wn-body-muted mx-auto mt-3 max-w-xl">Dit lijstje is al gedeeld, maar de eigenaar heeft nog geen wensen ingevuld. Kijk later nog eens.</p>
+            <div className="gift-wishlist-empty">
+              <span aria-hidden="true">✦</span>
+              <h2>Nog geen wensen toegevoegd.</h2>
+              <p>Dit lijstje is al gedeeld, maar de eigenaar heeft nog geen wensen ingevuld. Kijk later nog eens.</p>
             </div>
           )}
+
+          <div className="gift-shared-list-footer-cta">
+            <div>
+              <p className="gift-kicker">Nog niet gevonden?</p>
+              <h2>Ontdek zelf een passend cadeau.</h2>
+              <p>Gebruik Winkelnu om producten te bekijken en verschillende opties naast elkaar te zetten.</p>
+            </div>
+            <Link href="/zoeken" className="wn-button wn-button-primary">Cadeau zoeken →</Link>
+          </div>
         </section>
       </main>
-      <WinkelnuFooter />
     </div>
   )
 }

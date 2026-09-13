@@ -17,49 +17,51 @@ export function GiftListItemEditor({ action, shareCode, contextFields }: GiftLis
   const [state, formAction, pending] = useActionState(action, initialGiftListItemFormState)
 
   return (
-    <form action={formAction} className="space-y-5 rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-5 shadow-[var(--wn-shadow-xs)] sm:p-6">
+    <form id="eigen-wens" action={formAction} className="gift-wishlist-panel gift-own-wish-form">
       {Object.entries(hiddenFields).map(([name, value]) => (
         <input key={name} type="hidden" name={name} value={value} />
       ))}
 
-      <div>
-        <p className="wn-eyebrow">Eigen wens of externe link</p>
-        <h2 className="wn-heading mt-2 text-2xl">Staat het niet op Winkelnu?</h2>
-        <p className="wn-body-muted mt-2 text-sm">Schrijf zelf een wens op of voeg een beveiligde productlink van een andere website toe.</p>
+      <div className="gift-wishlist-panel-head">
+        <div>
+          <p className="gift-kicker">Eigen wens of externe link</p>
+          <h2>Staat het niet op Winkelnu?</h2>
+          <p>Schrijf het gewoon zelf op of voeg een link toe van een andere website. Een korte toelichting maakt je wens extra duidelijk.</p>
+        </div>
+        <span className="gift-own-wish-badge">Vrij toevoegen</span>
       </div>
 
       {state.error ? (
-        <div role="alert" className="rounded-xl border border-[#d9a99f] bg-[#fff3ef] p-4 text-sm font-semibold leading-6 text-[#7f2d23]">
+        <div role="alert" className="gift-wishlist-notice is-error">
           {state.error}
         </div>
       ) : null}
 
-      <div key={state.revision} className="space-y-5">
-        <div className="grid gap-5 sm:grid-cols-2">
-          <label className="block">
-            <span className="mb-2 block text-sm font-bold text-[var(--wn-petrol-deep)]">Type wens</span>
-            <select name="itemType" defaultValue={state.values.itemType} className="wn-input">
-              <option value="text">Zelf iets opschrijven</option>
-              <option value="external_link">Productlink toevoegen</option>
-            </select>
-          </label>
+      <div key={state.revision} className="gift-own-wish-fields">
+        <label>
+          <span>Type wens</span>
+          <select name="itemType" defaultValue={state.values.itemType} className="wn-input">
+            <option value="text">Zelf iets opschrijven</option>
+            <option value="external_link">Productlink toevoegen</option>
+          </select>
+          <small>Kies een productlink als je al precies weet welk artikel je bedoelt.</small>
+        </label>
 
-          <label className="block">
-            <span className="mb-2 block text-sm font-bold text-[var(--wn-petrol-deep)]">Wens</span>
-            <input
-              name="title"
-              required
-              minLength={2}
-              maxLength={120}
-              defaultValue={state.values.title}
-              className="wn-input"
-              placeholder="Bijvoorbeeld Een goed kookboek"
-            />
-          </label>
-        </div>
+        <label>
+          <span>Wat wil je graag?</span>
+          <input
+            name="title"
+            required
+            minLength={2}
+            maxLength={120}
+            defaultValue={state.values.title}
+            className="wn-input"
+            placeholder="Bijvoorbeeld Een goed kookboek"
+          />
+        </label>
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-[var(--wn-petrol-deep)]">Productlink <span className="font-normal text-[var(--wn-text-muted)]">(alleen bij productlink)</span></span>
+        <label className="gift-own-wish-wide">
+          <span>Productlink <small>optioneel</small></span>
           <input
             name="externalUrl"
             type="url"
@@ -70,8 +72,8 @@ export function GiftListItemEditor({ action, shareCode, contextFields }: GiftLis
           />
         </label>
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-[var(--wn-petrol-deep)]">Toelichting <span className="font-normal text-[var(--wn-text-muted)]">(optioneel)</span></span>
+        <label className="gift-own-wish-wide">
+          <span>Toelichting <small>optioneel</small></span>
           <textarea
             name="note"
             rows={3}
@@ -83,9 +85,12 @@ export function GiftListItemEditor({ action, shareCode, contextFields }: GiftLis
         </label>
       </div>
 
-      <button type="submit" disabled={pending} className="wn-button wn-button-primary w-full disabled:cursor-wait disabled:opacity-65 sm:w-auto">
-        {pending ? 'Bezig…' : '+ Voeg wens toe'}
-      </button>
+      <div className="gift-own-wish-actions">
+        <button type="submit" disabled={pending} className="wn-button wn-button-primary disabled:cursor-wait disabled:opacity-65">
+          {pending ? 'Bezig…' : '+ Voeg wens toe'}
+        </button>
+        <span>Je kunt de wens later altijd nog aanpassen.</span>
+      </div>
     </form>
   )
 }

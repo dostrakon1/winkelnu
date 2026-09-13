@@ -21,8 +21,6 @@ import { GiftListItemEditor } from '@/components/gifting/gift-list-item-editor'
 import { GiftProductPicker } from '@/components/gifting/gift-product-picker'
 import { GiftRecoveryLink } from '@/components/gifting/gift-recovery-link'
 import { GiftShareActions } from '@/components/gifting/gift-share-actions'
-import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
-import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 
 export const metadata: Metadata = {
   title: 'Verlanglijstje beheren',
@@ -62,20 +60,19 @@ export default async function EditGiftListPage({
     if (!sharedList) notFound()
 
     return (
-      <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
-        <WinkelnuHeader />
-        <main id="inhoud" className="wn-container py-14 sm:py-20">
-          <section className="mx-auto max-w-2xl rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-7 text-center shadow-[var(--wn-shadow-sm)] sm:p-10">
-            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xl text-[var(--wn-petrol)]" aria-hidden="true">↗</span>
-            <h1 className="wn-heading mt-5 text-3xl">Beheer-toegang nodig.</h1>
-            <p className="wn-body-muted mt-4">Deze deel-link laat het lijstje zien, maar geeft geen bewerkrechten. Open je bewaarde herstel-link op dit apparaat om de beheer-toegang terug te zetten.</p>
+      <div className="min-h-screen text-[var(--gift-ink)]">
+        <main id="inhoud" className="gift-shell-container py-14 sm:py-20">
+          <section className="gift-wishlist-access-card">
+            <span className="gift-wishlist-access-icon" aria-hidden="true">↗</span>
+            <p className="gift-kicker mt-5">Privé beheer</p>
+            <h1>Beheer-toegang nodig.</h1>
+            <p>Deze deel-link laat het lijstje zien, maar geeft geen bewerkrechten. Open je bewaarde herstel-link op dit apparaat om de beheer-toegang terug te zetten.</p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Link href={`/lootje-lijstje/lijstje/${encodeURIComponent(shareCode)}`} className="wn-button wn-button-primary">Bekijk gedeeld lijstje</Link>
               <Link href="/lootje-lijstje" className="wn-button wn-button-secondary">Naar Lootje &amp; Lijstje</Link>
             </div>
           </section>
         </main>
-        <WinkelnuFooter />
       </div>
     )
   }
@@ -95,46 +92,61 @@ export default async function EditGiftListPage({
     ?? (first(query.verwijderd) ? 'Wens verwijderd.' : undefined)
   const isError = Boolean(first(query.fout))
   const sharePath = `/lootje-lijstje/lijstje/${encodeURIComponent(shareCode)}`
+  const wishCountLabel = list.items.length === 1 ? '1 wens' : `${list.items.length} wensen`
 
   return (
-    <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
-      <WinkelnuHeader />
+    <div className="min-h-screen text-[var(--gift-ink)]">
       <main id="inhoud">
-        <section className="border-b border-[var(--wn-border)] bg-[image:var(--wn-gradient-welcome)]">
-          <div className="wn-container py-10 sm:py-14">
-            <div className="flex flex-wrap items-start justify-between gap-5">
-              <div>
-                <p className="wn-eyebrow">Mijn lijstje</p>
-                <h1 className="wn-heading mt-3 text-3xl sm:text-5xl">{list.title ?? `${list.displayName}’s lijstje`}</h1>
-                <p className="wn-body-muted mt-3">{list.items.length === 1 ? '1 wens toegevoegd' : `${list.items.length} wensen toegevoegd`}.</p>
+        <section className="gift-wishlist-hero">
+          <div className="gift-shell-container gift-wishlist-hero-inner">
+            <div>
+              <span className="gift-wishlist-role">Mijn verlanglijstje</span>
+              <h1 className="gift-wishlist-title">{list.title ?? `${list.displayName}’s lijstje`}</h1>
+              <p className="gift-wishlist-lead">Verzamel hier alles wat je graag wilt krijgen. Kies producten op Winkelnu of voeg zelf een wens toe.</p>
+              <div className="gift-wishlist-meta">
+                <span>{wishCountLabel}</span>
+                <span>Privé te beheren</span>
+                <span>Deelbaar zonder account</span>
               </div>
+            </div>
+            <div className="gift-wishlist-hero-actions">
+              <a href="#zoeken" className="wn-button wn-button-primary">+ Wens toevoegen</a>
               <Link href={sharePath} className="wn-button wn-button-secondary">Bekijk zoals anderen het zien →</Link>
             </div>
           </div>
         </section>
 
-        <div className="wn-container py-8 sm:py-12">
+        <div className="gift-shell-container gift-wishlist-body">
           {notification ? (
             <div
               role={isError ? 'alert' : 'status'}
-              className={`mb-6 rounded-xl border p-4 text-sm font-semibold leading-6 ${isError ? 'border-[#d9a99f] bg-[#fff3ef] text-[#7f2d23]' : 'border-[color:rgba(18,59,58,0.16)] bg-[var(--wn-petrol-soft)] text-[var(--wn-petrol-deep)]'}`}
+              className={`gift-wishlist-notice ${isError ? 'is-error' : ''}`}
             >
               {notification}
             </div>
           ) : null}
 
-          <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
-            <div className="space-y-8">
-              <section>
-                <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+          <nav className="gift-wishlist-nav" aria-label="Snel naar onderdeel">
+            <a href="#wensen">Mijn wensen <span>{list.items.length}</span></a>
+            <a href="#zoeken">Zoek op Winkelnu</a>
+            <a href="#eigen-wens">Eigen wens</a>
+            <a href="#instellingen">Instellingen</a>
+          </nav>
+
+          <div className="gift-wishlist-layout">
+            <div className="gift-wishlist-main">
+              <section id="wensen" className="gift-wishlist-panel">
+                <div className="gift-wishlist-panel-head">
                   <div>
-                    <p className="wn-eyebrow">Wensen</p>
-                    <h2 className="wn-heading mt-2 text-3xl">Wat staat er op je lijst?</h2>
+                    <p className="gift-kicker">Mijn wensen</p>
+                    <h2>Wat staat er op je lijst?</h2>
+                    <p>Je kunt elke wens later nog aanpassen of verwijderen.</p>
                   </div>
+                  <span className="gift-wishlist-count">{wishCountLabel}</span>
                 </div>
 
                 {list.items.length > 0 ? (
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="gift-wish-grid">
                     {list.items.map((item) => (
                       <GiftListItemCard
                         key={item.id}
@@ -149,9 +161,11 @@ export default async function EditGiftListPage({
                     ))}
                   </div>
                 ) : (
-                  <div className="rounded-[var(--wn-radius-xl)] border border-dashed border-[color:rgba(18,59,58,0.24)] bg-white/70 p-7 text-center">
-                    <h3 className="wn-ui-heading text-lg">Je lijstje is nog leeg.</h3>
-                    <p className="wn-body-muted mt-2 text-sm">Zoek hieronder een Winkelnu-product of voeg zelf een wens toe.</p>
+                  <div className="gift-wishlist-empty">
+                    <span aria-hidden="true">♡</span>
+                    <h3>Je lijstje is nog leeg.</h3>
+                    <p>Zoek hieronder een Winkelnu-product of schrijf zelf je eerste wens op.</p>
+                    <a href="#zoeken" className="wn-button wn-button-primary mt-5">Voeg je eerste wens toe</a>
                   </div>
                 )}
               </section>
@@ -166,20 +180,25 @@ export default async function EditGiftListPage({
 
               <GiftListItemEditor action={addGiftListItemAction} shareCode={shareCode} />
 
-              <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-6 shadow-[var(--wn-shadow-xs)] sm:p-8">
-                <p className="wn-eyebrow">Lijstje-instellingen</p>
-                <h2 className="wn-heading mt-2 text-2xl">Naam, gelegenheid en budget.</h2>
-                <div className="mt-6">
+              <section id="instellingen" className="gift-wishlist-panel">
+                <div className="gift-wishlist-panel-head">
+                  <div>
+                    <p className="gift-kicker">Lijstje-instellingen</p>
+                    <h2>Pas de details van je lijstje aan.</h2>
+                    <p>Naam, gelegenheid, budget en datum helpen anderen sneller kiezen.</p>
+                  </div>
+                </div>
+                <div className="gift-wishlist-form-wrap">
                   <GiftListForm action={updateGiftListAction} submitLabel="Wijzigingen opslaan" shareCode={shareCode} list={list} />
                 </div>
               </section>
             </div>
 
-            <aside className="space-y-5 xl:sticky xl:top-28">
-              <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-5 shadow-[var(--wn-shadow-xs)] sm:p-6">
-                <p className="wn-eyebrow">Delen</p>
-                <h2 className="wn-ui-heading mt-2 text-xl">Stuur je wensen door.</h2>
-                <p className="wn-body-muted mt-2 text-sm">Deze link is alleen-lezen. Mensen met de link kunnen je lijstje bekijken, maar niets aanpassen.</p>
+            <aside className="gift-wishlist-rail">
+              <section className="gift-wishlist-side-card" data-tone="share">
+                <p className="gift-kicker">Klaar om te delen?</p>
+                <h2>Stuur je lijstje door.</h2>
+                <p>De deel-link is alleen-lezen. Iedereen met de link kan je wensen bekijken, maar niets aanpassen.</p>
                 <div className="mt-5">
                   <GiftShareActions sharePath={sharePath} title={`${list.displayName} heeft een lijstje met je gedeeld via Winkelnu.`} />
                 </div>
@@ -187,9 +206,10 @@ export default async function EditGiftListPage({
 
               <GiftRecoveryLink shareCode={shareCode} />
 
-              <section className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)] p-5">
-                <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Je Winkelnu-wensen blijven herkenbaar</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Als je een Winkelnu-product toevoegt, bewaren we genoeg informatie om je wens herkenbaar te houden, ook als het product later verandert of verdwijnt.</p>
+              <section className="gift-wishlist-side-card" data-tone="soft">
+                <span className="gift-wishlist-side-icon" aria-hidden="true">✦</span>
+                <h2>Winkelnu-wensen blijven herkenbaar.</h2>
+                <p>Als een product later verandert, blijft je opgeslagen wens zoveel mogelijk herkenbaar voor degene die je lijstje bekijkt.</p>
               </section>
 
               <GiftListDeletePanel shareCode={shareCode} />
@@ -197,7 +217,6 @@ export default async function EditGiftListPage({
           </div>
         </div>
       </main>
-      <WinkelnuFooter />
     </div>
   )
 }
