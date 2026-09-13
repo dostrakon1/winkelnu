@@ -7,6 +7,7 @@ import {
   grantGiftGroupParticipantAccess,
 } from '@/application/gifting/access-grants'
 import { getGiftCatalogProductBySlug } from '@/application/gifting/gift-catalog'
+import { enforceGiftingRateLimit, GiftingRateLimitError } from '@/application/gifting/gifting-rate-limit'
 import type {
   CreateGiftGroupInput,
   CreateGiftListItemInput,
@@ -25,6 +26,7 @@ import {
 } from '@/infrastructure/gifting/gift-capabilities'
 import { SupabaseGiftGroupRepository } from '@/infrastructure/gifting/supabase-gift-group-repository'
 import { SupabaseGiftRepository } from '@/infrastructure/gifting/supabase-gift-repository'
+import { SupabaseGiftRetentionRepository } from '@/infrastructure/gifting/supabase-gift-retention-repository'
 
 const RETENTION_DAYS = 180
 
@@ -41,6 +43,19 @@ function nextExpiry(): string {
 
 function active(group: GiftGroup): boolean {
   return group.status !== 'closed' && new Date(group.expiresAt).getTime() > Date.now()
+}
+
+async function applyRateLimit(action: 'create-group' | 'join-group'): Promise<void> {
+  try {
+    await enforceGiftingRateLimit(action)
+  } catch (error) {
+    if (error instanceof GiftingRateLimitError) throw new GiftGroupAccessError(error.message)
+    throw error
+  }
+}
+
+async function refreshParticipantListRetention(groupId: string): Promise<void> {
+  await new SupabaseGiftRetentionRepository().refreshGroup(groupId)
 }
 
 function repositoryErrorMessage(error: unknown): string {
@@ -83,6 +98,8 @@ export async function createGiftGroup(input: CreateGiftGroupInput): Promise<{
   group: GiftGroup
   participant: GiftGroupParticipant
 }> {
+  await applyRateLimit('create-group')
+
   const groupCode = createGiftShareCode()
   const repository = new SupabaseGiftGroupRepository()
   const expiresAt = nextExpiry()
@@ -122,6 +139,8 @@ export async function getGiftGroupInvite(groupCode: string): Promise<GiftGroupIn
 }
 
 export async function joinGiftGroup(groupCode: string, input: JoinGiftGroupInput): Promise<GiftGroupParticipant> {
+  await applyRateLimit('join-group')
+
   const group = await getGroupByCode(groupCode)
   if (!group || group.status !== 'draft') throw new GiftGroupAccessError('Je kunt niet meer deelnemen aan deze groep.')
 
@@ -195,6 +214,7 @@ export async function removeGiftGroupParticipant(groupCode: string, participantI
 export async function addParticipantGiftListItem(groupCode: string, input: CreateGiftListItemInput): Promise<void> {
   const context = await requireParticipantContext(groupCode)
   await new SupabaseGiftRepository().addListItem(context.list.id, input, context.group.expiresAt)
+  await refreshParticipantListRetention(context.group.id)
 }
 
 export async function addWinkelnuProductToParticipantList(
@@ -220,6 +240,7 @@ export async function addWinkelnuProductToParticipantList(
     currencySnapshot: product.currency,
     note: validateGiftNote(rawNote),
   }, context.group.expiresAt)
+  await refreshParticipantListRetention(context.group.id)
 }
 
 export async function updateParticipantGiftListItem(
@@ -230,6 +251,7 @@ export async function updateParticipantGiftListItem(
   const context = await requireParticipantContext(groupCode)
   if (!itemId) throw new GiftGroupAccessError('Ongeldige wens.')
   await new SupabaseGiftRepository().updateListItem(context.list.id, itemId, input, context.group.expiresAt)
+  await refreshParticipantListRetention(context.group.id)
 }
 
 export async function updateParticipantWinkelnuProductNote(
@@ -245,10 +267,12 @@ export async function updateParticipantWinkelnuProductNote(
     validateGiftNote(rawNote),
     context.group.expiresAt,
   )
+  await refreshParticipantListRetention(context.group.id)
 }
 
 export async function deleteParticipantGiftListItem(groupCode: string, itemId: string): Promise<void> {
   const context = await requireParticipantContext(groupCode)
   if (!itemId) throw new GiftGroupAccessError('Ongeldige wens.')
   await new SupabaseGiftRepository().deleteListItem(context.list.id, itemId, context.group.expiresAt)
+  await refreshParticipantListRetention(context.group.id)
 }

@@ -12,7 +12,7 @@ export default function CookiesPage() {
     <LegalPage
       eyebrow="Cookies"
       title="Cookies en browseropslag"
-      intro="Winkelnu gebruikt geen marketing- of trackingcookies. Voor Lootje & Lijstje gebruiken we alleen een strikt noodzakelijke first-party cookie om no-login beheer-toegang veilig te onthouden."
+      intro="Winkelnu gebruikt geen marketing- of trackingcookies. Voor Lootje & Lijstje gebruiken we alleen een strikt noodzakelijke first-party cookie om no-login toegang veilig te onthouden."
     >
       <section>
         <h2 className="text-xl font-bold">Huidige productieconfiguratie</h2>
@@ -21,9 +21,18 @@ export default function CookiesPage() {
       </section>
       <section>
         <h2 className="text-xl font-bold">Noodzakelijke cookie voor Lootje &amp; Lijstje</h2>
-        <p className="mt-3">Wanneer je zonder account een verlanglijstje beheert, kan Winkelnu de first-party cookie <code>wn_gift_access</code> plaatsen. Deze cookie bevat geen naam, wens, productlink of andere lijstinhoud. Hij bevat alleen ondertekende technische toegangsgegevens waarmee de applicatie kan herkennen welke lijstjes deze browser mag beheren.</p>
-        <p className="mt-3">De cookie is <code>HttpOnly</code>, wordt in productie alleen via HTTPS verzonden en gebruikt <code>SameSite=Lax</code>. De maximale geldigheidsduur is 180 dagen, maar toegang kan eerder vervallen wanneer het bijbehorende lijstje vervalt of wordt verwijderd. De cookie is noodzakelijk voor de gevraagde no-login beheerfunctie en wordt niet gebruikt voor analytics, advertenties of cross-siteprofilering.</p>
-        <p className="mt-3">Voor herstel op een ander apparaat kan de eigenaar zelf een geheime herstel-link maken. Die link staat los van de gedeelde alleen-lezen lijstlink. Winkelnu bewaart het geheime token uit zo’n herstel-link niet leesbaar in de database.</p>
+        <p className="mt-3">Wanneer je Lootje &amp; Lijstje zonder account gebruikt, kan Winkelnu de first-party cookie <code>wn_gift_access</code> plaatsen. Daarmee kan de applicatie onthouden welke zelfstandige lijstjes je mag beheren, welke groepen je als organisator mag beheren en voor welke groepen je als deelnemer persoonlijke toegang hebt.</p>
+        <p className="mt-3">De cookie bevat geen naam, wens, productlink, groepsnaam of getrokken persoon. Hij bevat alleen ondertekende technische toegangsgegevens. De cookie is <code>HttpOnly</code>, wordt in productie alleen via HTTPS verzonden en gebruikt <code>SameSite=Lax</code>. De maximale cookielevensduur is 180 dagen; een specifiek toegangsrecht vervalt eerder zodra het bijbehorende lijstje of de groep vervalt of wordt verwijderd.</p>
+        <p className="mt-3">De cookie is noodzakelijk voor de door jou gevraagde no-login functie en wordt niet gebruikt voor analytics, advertenties of cross-siteprofilering. Daarom vragen we voor deze noodzakelijke cookie geen marketingtoestemming.</p>
+      </section>
+      <section>
+        <h2 className="text-xl font-bold">Geheime herstel-links</h2>
+        <p className="mt-3">Een eigenaar, organisator of deelnemer kan vanuit zijn eigen toegankelijke pagina een geheime herstel-link maken om toegang op een andere browser of telefoon terug te zetten. Zo’n herstel-link staat los van de openbare deel- of uitnodigingslink. Het geheime token uit de herstel-link wordt niet leesbaar in de database opgeslagen; alleen een cryptografische hash wordt bewaard.</p>
+        <p className="mt-3">Omdat een herstel-link toegang kan geven tot privé functies, moet je die behandelen als een wachtwoord: deel hem niet met anderen en maak een nieuwe herstel-link als je vermoedt dat de oude link is uitgelekt.</p>
+      </section>
+      <section>
+        <h2 className="text-xl font-bold">Misbruikbeperking zonder trackingcookie</h2>
+        <p className="mt-3">Voor het beperken van geautomatiseerd aanmaken en deelnemen gebruikt Lootje &amp; Lijstje geen extra browsercookie. De server maakt tijdelijk een eenrichtingsbucket van technische verzoekinformatie met een geheime sleutel. Het ruwe verzoekadres wordt niet in de Lootje &amp; Lijstje-rate-limittabel opgeslagen en verouderde buckets worden automatisch verwijderd.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Zoekkompas verbeteren zonder bezoekerscookie</h2>
@@ -32,7 +41,7 @@ export default function CookiesPage() {
       </section>
       <section>
         <h2 className="text-xl font-bold">Waarom geen marketing-cookiebanner?</h2>
-        <p className="mt-3">De huidige analysemethode plaatst volgens de gebruikte configuratie geen marketing- of trackingcookies en wordt niet ingezet voor advertenties of cross-siteprofilering. De noodzakelijke Lootje &amp; Lijstje-cookie dient uitsluitend om een door jou gevraagde beheerfunctie zonder account te laten werken. Daarom tonen we voor deze huidige configuratie geen marketing-cookiekeuze. Als techniek of doel verandert, beoordelen we opnieuw welke informatie en eventuele toestemming nodig zijn voordat zo’n wijziging openbaar wordt geactiveerd.</p>
+        <p className="mt-3">De huidige analysemethode plaatst volgens de gebruikte configuratie geen marketing- of trackingcookies en wordt niet ingezet voor advertenties of cross-siteprofilering. De noodzakelijke Lootje &amp; Lijstje-cookie dient uitsluitend om een door jou gevraagde functie zonder account te laten werken. Daarom tonen we voor deze huidige configuratie geen marketing-cookiekeuze. Als techniek of doel verandert, beoordelen we opnieuw welke informatie en eventuele toestemming nodig zijn voordat zo’n wijziging openbaar wordt geactiveerd.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Andere noodzakelijke techniek</h2>

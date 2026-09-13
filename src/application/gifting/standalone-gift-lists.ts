@@ -3,6 +3,7 @@ import 'server-only'
 import type { CreateGiftListInput, CreateGiftListItemInput, GiftListWithItems, UpdateGiftListInput } from '@/domain/gifting/types'
 import { canManageGiftList, grantGiftListOwnerAccess } from '@/application/gifting/access-grants'
 import { getGiftCatalogProductBySlug } from '@/application/gifting/gift-catalog'
+import { enforceGiftingRateLimit, GiftingRateLimitError } from '@/application/gifting/gifting-rate-limit'
 import { validateGiftNote } from '@/domain/gifting/validation'
 import { createGiftExternalKey, createGiftRecoveryToken, createGiftShareCode, hashGiftCapability } from '@/infrastructure/gifting/gift-capabilities'
 import { SupabaseGiftRepository } from '@/infrastructure/gifting/supabase-gift-repository'
@@ -28,6 +29,13 @@ export async function createStandaloneGiftList(input: CreateGiftListInput): Prom
   list: GiftListWithItems
   shareCode: string
 }> {
+  try {
+    await enforceGiftingRateLimit('create-list')
+  } catch (error) {
+    if (error instanceof GiftingRateLimitError) throw new GiftListAccessError(error.message)
+    throw error
+  }
+
   const repository = new SupabaseGiftRepository()
   const shareCode = createGiftShareCode()
   const initialOwnerToken = createGiftRecoveryToken()

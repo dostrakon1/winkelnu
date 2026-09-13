@@ -1,31 +1,41 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { isGiftingEnabled, requireGiftingEnabled } from './gifting-release'
+import { giftSessionSecret, isGiftingEnabled, requireGiftingEnabled } from './gifting-release'
 
-const original = process.env.WINKELNU_GIFTING_ENABLED
+const originalFlag = process.env.WINKELNU_GIFTING_ENABLED
+const originalSecret = process.env.WINKELNU_GIFT_SESSION_SECRET
 
 afterEach(() => {
-  if (original === undefined) delete process.env.WINKELNU_GIFTING_ENABLED
-  else process.env.WINKELNU_GIFTING_ENABLED = original
+  if (originalFlag === undefined) delete process.env.WINKELNU_GIFTING_ENABLED
+  else process.env.WINKELNU_GIFTING_ENABLED = originalFlag
+
+  if (originalSecret === undefined) delete process.env.WINKELNU_GIFT_SESSION_SECRET
+  else process.env.WINKELNU_GIFT_SESSION_SECRET = originalSecret
 })
 
-describe('gifting release gate', () => {
-  it('stays disabled unless explicitly enabled', () => {
-    delete process.env.WINKELNU_GIFTING_ENABLED
-    expect(isGiftingEnabled()).toBe(false)
-
+describe('Lootje & Lijstje release gate', () => {
+  it('stays disabled when the feature flag is off', () => {
     process.env.WINKELNU_GIFTING_ENABLED = 'false'
+    process.env.WINKELNU_GIFT_SESSION_SECRET = 'x'.repeat(64)
     expect(isGiftingEnabled()).toBe(false)
-
-    process.env.WINKELNU_GIFTING_ENABLED = 'TRUE'
-    expect(isGiftingEnabled()).toBe(false)
+    expect(() => requireGiftingEnabled()).toThrow('GIFTING_NOT_RELEASED')
   })
 
-  it('enables only on exact true and enforces the gate', () => {
+  it('fails closed when the flag is on but the secret is missing or short', () => {
     process.env.WINKELNU_GIFTING_ENABLED = 'true'
-    expect(isGiftingEnabled()).toBe(true)
-    expect(() => requireGiftingEnabled()).not.toThrow()
+    delete process.env.WINKELNU_GIFT_SESSION_SECRET
+    expect(isGiftingEnabled()).toBe(false)
+    expect(() => requireGiftingEnabled()).toThrow('GIFTING_RELEASE_MISCONFIGURED')
 
-    process.env.WINKELNU_GIFTING_ENABLED = 'false'
-    expect(() => requireGiftingEnabled()).toThrow('GIFTING_NOT_RELEASED')
+    process.env.WINKELNU_GIFT_SESSION_SECRET = 'too-short'
+    expect(isGiftingEnabled()).toBe(false)
+    expect(() => giftSessionSecret()).toThrow('GIFTING_RELEASE_MISCONFIGURED')
+  })
+
+  it('enables only with an explicit flag and a 32+ byte secret', () => {
+    process.env.WINKELNU_GIFTING_ENABLED = 'true'
+    process.env.WINKELNU_GIFT_SESSION_SECRET = 's'.repeat(32)
+    expect(isGiftingEnabled()).toBe(true)
+    expect(giftSessionSecret()).toBe('s'.repeat(32))
+    expect(() => requireGiftingEnabled()).not.toThrow()
   })
 })

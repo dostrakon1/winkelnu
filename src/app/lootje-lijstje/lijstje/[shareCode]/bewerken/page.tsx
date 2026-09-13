@@ -14,6 +14,7 @@ import {
   searchGiftCatalogProducts,
 } from '@/application/gifting/gift-catalog'
 import { getEditableGiftList, getSharedGiftList } from '@/application/gifting/standalone-gift-lists'
+import { GiftListDeletePanel } from '@/components/gifting/gift-list-delete-panel'
 import { GiftListForm } from '@/components/gifting/gift-list-form'
 import { GiftListItemCard } from '@/components/gifting/gift-list-item-card'
 import { GiftListItemEditor } from '@/components/gifting/gift-list-item-editor'
@@ -190,6 +191,8 @@ export default async function EditGiftListPage({
                 <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Gekoppeld aan de Winkelnu-catalogus</p>
                 <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Winkelnu-producten blijven gekoppeld via hun productidentiteit. Titel en prijs worden als veilige fallback bewaard als een product later uit de catalogus verdwijnt.</p>
               </section>
+
+              <GiftListDeletePanel shareCode={shareCode} />
             </aside>
           </div>
         </div>
