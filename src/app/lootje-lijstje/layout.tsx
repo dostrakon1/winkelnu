@@ -6,6 +6,7 @@ import { GiftExperienceHeader } from '@/components/gifting/gift-experience-heade
 import './gift-experience.css'
 import './premium-onboarding.css'
 import './premium-group-dashboard.css'
+import './premium-wishlist.css'
 
 export const dynamic = 'force-dynamic'
 

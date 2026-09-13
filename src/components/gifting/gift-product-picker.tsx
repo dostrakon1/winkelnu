@@ -31,18 +31,20 @@ export function GiftProductPicker({
   const hiddenFields = contextFields ?? (shareCode ? { shareCode } : {})
 
   return (
-    <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-5 shadow-[var(--wn-shadow-xs)] sm:p-6">
-      <div>
-        <p className="wn-eyebrow">Zoek op Winkelnu</p>
-        <h2 className="wn-heading mt-2 text-2xl">Zet een Winkelnu-product op je lijstje.</h2>
-        <p className="wn-body-muted mt-2 text-sm leading-6">
-          Zoek in dezelfde productcatalogus als de rest van Winkelnu. De productidentiteit wordt server-side gecontroleerd voordat de wens wordt opgeslagen.
-        </p>
+    <section id="zoeken" className="gift-wishlist-panel gift-product-picker">
+      <div className="gift-wishlist-panel-head">
+        <div>
+          <p className="gift-kicker">Zoek op Winkelnu</p>
+          <h2>Vind een product en zet het direct op je lijst.</h2>
+          <p>Zoek op product, merk of type cadeau. Je kunt daarna nog een persoonlijke toelichting toevoegen.</p>
+        </div>
+        <span className="gift-product-picker-badge">Winkelnu</span>
       </div>
 
-      <form method="get" className="mt-5 flex flex-col gap-3 sm:flex-row">
-        <label className="min-w-0 flex-1">
+      <form method="get" className="gift-product-search">
+        <label>
           <span className="sr-only">Zoek een product op Winkelnu</span>
+          <span className="gift-product-search-icon" aria-hidden="true">⌕</span>
           <input
             type="search"
             name="productZoek"
@@ -53,41 +55,34 @@ export function GiftProductPicker({
             placeholder="Bijvoorbeeld koptelefoon, airfryer of Bosch"
           />
         </label>
-        <button type="submit" className="wn-button wn-button-primary shrink-0">
-          Zoeken
-        </button>
+        <button type="submit" className="wn-button wn-button-primary">Zoeken</button>
       </form>
 
       {!hasQuery ? (
-        <div className="mt-5 rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4 text-sm leading-6 text-[var(--wn-text-muted)]">
-          Typ minimaal twee tekens om producten te vinden.
+        <div className="gift-product-picker-hint">
+          <span aria-hidden="true">✦</span>
+          <p><strong>Begin met zoeken.</strong> Typ minimaal twee tekens om passende producten te vinden.</p>
         </div>
       ) : products.length === 0 ? (
-        <div className="mt-5 rounded-[var(--wn-radius-lg)] border border-dashed border-[color:rgba(18,59,58,0.24)] bg-[var(--wn-cream)] p-5 text-sm leading-6 text-[var(--wn-text-muted)]">
-          Geen passend Winkelnu-product gevonden voor <strong className="text-[var(--wn-petrol-deep)]">{query}</strong>. Je kunt hieronder nog steeds zelf een wens of externe productlink toevoegen.
+        <div className="gift-product-picker-empty">
+          <span aria-hidden="true">?</span>
+          <div>
+            <strong>Geen passend Winkelnu-product gevonden voor “{query}”.</strong>
+            <p>Geen probleem — hieronder kun je nog steeds zelf een wens of externe productlink toevoegen.</p>
+          </div>
         </div>
       ) : (
-        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <div className="gift-product-results">
           {products.map((product) => {
             const isAdded = added.has(product.productExternalKey)
             return (
-              <article
-                key={product.productExternalKey}
-                className="flex min-h-full flex-col rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-[var(--wn-cream)] p-5"
-              >
-                <div className="flex items-start gap-4">
-                  <span
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--wn-petrol-soft)] text-xl text-[var(--wn-petrol)]"
-                    aria-hidden="true"
-                  >
-                    ✦
-                  </span>
+              <article key={product.productExternalKey} className="gift-product-result" data-added={isAdded ? 'true' : 'false'}>
+                <div className="gift-product-result-top">
+                  <span className="gift-product-result-mark" aria-hidden="true">✦</span>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--wn-text-muted)]">
-                      {product.brand ?? 'Winkelnu-product'}
-                    </p>
-                    <h3 className="wn-ui-heading mt-1 text-lg leading-6">{product.title}</h3>
-                    <p className="mt-2 text-sm font-bold text-[var(--wn-petrol-deep)]">
+                    <p className="gift-product-result-brand">{product.brand ?? 'Winkelnu-product'}</p>
+                    <h3>{product.title}</h3>
+                    <p className="gift-product-result-price">
                       {product.priceCents !== undefined
                         ? `Vanaf ${money(product.priceCents)}`
                         : 'Nog geen gecontroleerde winkelprijs'}
@@ -95,29 +90,20 @@ export function GiftProductPicker({
                   </div>
                 </div>
 
-                <div className="mt-5 flex flex-wrap items-center gap-3">
-                  <Link
-                    href={`/product/${encodeURIComponent(product.slug)}`}
-                    className="inline-flex min-h-10 items-center text-sm font-bold text-[var(--wn-petrol)] hover:underline"
-                  >
-                    Bekijk product →
-                  </Link>
+                <div className="gift-product-result-meta">
+                  <Link href={`/product/${encodeURIComponent(product.slug)}`}>Bekijk product →</Link>
                   {product.offerCount > 0 ? (
-                    <span className="text-xs font-semibold text-[var(--wn-text-muted)]">
-                      {product.offerCount === 1 ? '1 gecontroleerde aanbieding' : `${product.offerCount} gecontroleerde aanbiedingen`}
-                    </span>
-                  ) : null}
+                    <span>{product.offerCount === 1 ? '1 aanbieding' : `${product.offerCount} aanbiedingen`}</span>
+                  ) : <span>Productinformatie</span>}
                 </div>
 
-                <form action={addAction} className="mt-auto pt-5">
+                <form action={addAction} className="gift-product-result-form">
                   {Object.entries(hiddenFields).map(([name, value]) => (
                     <input key={name} type="hidden" name={name} value={value} />
                   ))}
                   <input type="hidden" name="productSlug" value={product.slug} />
-                  <label className="block">
-                    <span className="mb-1.5 block text-xs font-bold text-[var(--wn-petrol-deep)]">
-                      Toelichting <span className="font-normal text-[var(--wn-text-muted)]">(optioneel)</span>
-                    </span>
+                  <label>
+                    <span>Persoonlijke toelichting <small>optioneel</small></span>
                     <input
                       name="note"
                       maxLength={300}
@@ -129,7 +115,7 @@ export function GiftProductPicker({
                   <button
                     type="submit"
                     disabled={isAdded}
-                    className="wn-button wn-button-primary mt-3 w-full disabled:cursor-not-allowed disabled:opacity-55"
+                    className="wn-button wn-button-primary disabled:cursor-not-allowed disabled:opacity-55"
                   >
                     {isAdded ? 'Staat al op mijn lijstje ✓' : '+ Zet op mijn lijstje'}
                   </button>
