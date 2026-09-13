@@ -5,6 +5,7 @@ import {
   addGiftListItemAction,
   deleteGiftListItemAction,
   updateGiftListAction,
+  updateGiftListItemAction,
 } from '@/app/lootje-lijstje/actions'
 import { getEditableGiftList, getSharedGiftList } from '@/application/gifting/standalone-gift-lists'
 import { GiftListForm } from '@/components/gifting/gift-list-form'
@@ -38,6 +39,7 @@ export default async function EditGiftListPage({
     gemaakt?: string | string[]
     opgeslagen?: string | string[]
     toegevoegd?: string | string[]
+    bijgewerkt?: string | string[]
     verwijderd?: string | string[]
     fout?: string | string[]
   }>
@@ -73,6 +75,7 @@ export default async function EditGiftListPage({
     ?? (first(query.gemaakt) ? 'Je lijstje is gemaakt. Voeg nu je eerste wens toe en bewaar je herstel-link.' : undefined)
     ?? (first(query.opgeslagen) ? 'Je lijstje is bijgewerkt.' : undefined)
     ?? (first(query.toegevoegd) ? 'Wens toegevoegd.' : undefined)
+    ?? (first(query.bijgewerkt) ? 'Wens bijgewerkt.' : undefined)
     ?? (first(query.verwijderd) ? 'Wens verwijderd.' : undefined)
   const isError = Boolean(first(query.fout))
   const sharePath = `/lootje-lijstje/lijstje/${encodeURIComponent(shareCode)}`
@@ -121,6 +124,7 @@ export default async function EditGiftListPage({
                         key={item.id}
                         item={item}
                         editable
+                        updateAction={updateGiftListItemAction}
                         deleteAction={deleteGiftListItemAction}
                         shareCode={shareCode}
                       />
