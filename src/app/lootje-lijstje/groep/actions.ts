@@ -12,6 +12,10 @@ import {
   createGiftGroupParticipantRecoveryPath,
 } from '@/application/gifting/gift-group-recovery'
 import {
+  GiftGroupRevealError,
+  setGiftItemReservation,
+} from '@/application/gifting/gift-group-reveal'
+import {
   addParticipantGiftListItem,
   addWinkelnuProductToParticipantList,
   createGiftGroup,
@@ -40,6 +44,7 @@ function message(error: unknown): string {
     error instanceof GiftValidationError
     || error instanceof GiftGroupAccessError
     || error instanceof GiftGroupDrawError
+    || error instanceof GiftGroupRevealError
   ) return error.message
   if (error instanceof Error && error.message === 'GIFT_LIST_ITEM_LIMIT') return 'Je lijstje heeft het maximum van 100 wensen bereikt.'
   if (error instanceof Error && error.message === 'GIFT_LIST_ITEM_NOT_FOUND') return 'Deze wens bestaat niet meer.'
@@ -54,6 +59,14 @@ function participantPath(groupCode: string, key?: string, error?: string): strin
   return `/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/mijn${suffix ? `?${suffix}` : ''}`
 }
 
+function revealPath(groupCode: string, key?: string, error?: string): string {
+  const params = new URLSearchParams()
+  if (key) params.set(key, '1')
+  if (error) params.set('fout', error)
+  const suffix = params.toString()
+  return `/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/mijn/lootje${suffix ? `?${suffix}` : ''}`
+}
+
 function organizerPath(groupCode: string, key?: string, error?: string): string {
   const params = new URLSearchParams()
   if (key) params.set(key, '1')
@@ -66,6 +79,7 @@ function revalidateGiftGroup(groupCode: string): void {
   revalidatePath(`/lootje-lijstje/groep/${groupCode}`)
   revalidatePath(`/lootje-lijstje/groep/${groupCode}/beheer`)
   revalidatePath(`/lootje-lijstje/groep/${groupCode}/mijn`)
+  revalidatePath(`/lootje-lijstje/groep/${groupCode}/mijn/lootje`)
 }
 
 export async function createGiftGroupAction(formData: FormData): Promise<void> {
@@ -253,6 +267,19 @@ export async function deleteParticipantGiftListItemAction(formData: FormData): P
   revalidatePath(`/lootje-lijstje/groep/${groupCode}/mijn`)
   revalidatePath(`/lootje-lijstje/groep/${groupCode}/beheer`)
   redirect(participantPath(groupCode, 'verwijderd'))
+}
+
+export async function setGiftItemReservationAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
+  const groupCode = field(formData, 'groupCode')
+  const reserved = field(formData, 'reserved') === 'true'
+  try {
+    await setGiftItemReservation(groupCode, field(formData, 'itemId'), reserved)
+  } catch (error) {
+    redirect(revealPath(groupCode, undefined, message(error)))
+  }
+  revalidatePath(`/lootje-lijstje/groep/${groupCode}/mijn/lootje`)
+  redirect(revealPath(groupCode, reserved ? 'geregeld' : 'vrij'))
 }
 
 export async function createGiftGroupOrganizerRecoveryLinkAction(

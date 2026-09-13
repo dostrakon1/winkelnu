@@ -29,6 +29,7 @@ const migrationPaths = [
   'supabase/migrations/0025_gifting_product_slug_snapshot.sql',
   'supabase/migrations/0026_gifting_group_participant_guard.sql',
   'supabase/migrations/0027_gifting_draw_engine.sql',
+  'supabase/migrations/0028_gifting_reveal_reservations.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -107,6 +108,9 @@ const requiredFunctions = [
   'enforce_gift_group_exclusion_structure',
   'set_gift_group_exclusion_pair',
   'apply_gift_group_draw',
+  'get_gift_group_participant_reveal',
+  'enforce_gift_item_reservation_validity',
+  'set_gift_item_reservation',
 ]
 
 const requiredSecurityPatterns = [
@@ -130,6 +134,12 @@ const requiredSecurityPatterns = [
   ['gift exclusion RPC service-role grant', /grant\s+execute\s+on\s+function\s+set_gift_group_exclusion_pair\(uuid\s*,\s*uuid\s*,\s*uuid\s*,\s*boolean\)\s+to\s+service_role/i],
   ['gift draw RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+apply_gift_group_draw\(uuid\s*,\s*integer\s*,\s*jsonb\s*,\s*boolean\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
   ['gift draw RPC service-role grant', /grant\s+execute\s+on\s+function\s+apply_gift_group_draw\(uuid\s*,\s*integer\s*,\s*jsonb\s*,\s*boolean\)\s+to\s+service_role/i],
+  ['gift reveal RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+get_gift_group_participant_reveal\(uuid\s*,\s*uuid\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
+  ['gift reveal RPC service-role grant', /grant\s+execute\s+on\s+function\s+get_gift_group_participant_reveal\(uuid\s*,\s*uuid\)\s+to\s+service_role/i],
+  ['gift reservation guard untrusted revoke', /revoke\s+all\s+on\s+function\s+enforce_gift_item_reservation_validity\(\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
+  ['gift reservation guard trigger', /create\s+trigger\s+gift_item_reservation_validity_guard[\s\S]*?before\s+insert\s+or\s+update\s+on\s+gift_item_reservations/i],
+  ['gift reservation RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+set_gift_item_reservation\(uuid\s*,\s*uuid\s*,\s*uuid\s*,\s*boolean\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
+  ['gift reservation RPC service-role grant', /grant\s+execute\s+on\s+function\s+set_gift_item_reservation\(uuid\s*,\s*uuid\s*,\s*uuid\s*,\s*boolean\)\s+to\s+service_role/i],
 ]
 
 const failures = []

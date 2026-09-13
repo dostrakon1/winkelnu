@@ -203,7 +203,7 @@ export default async function GiftGroupOrganizerPage({
 
               <section className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-white p-5">
                 <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">De trekking blijft geheim</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Ook als organisator krijg je de volledige giver→recipient-mapping niet te zien. L5 kan de verdeling alleen maken en veilig vervangen; individuele onthulling volgt in L6.</p>
+                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Ook als organisator krijg je de volledige giver→recipient-mapping niet te zien. Iedere deelnemer onthult uitsluitend zijn eigen ontvanger via de persoonlijke deelnemerspagina; ook “geregeld”-markeringen blijven privé.</p>
               </section>
             </aside>
           </div>
