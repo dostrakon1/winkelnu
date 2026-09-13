@@ -52,7 +52,7 @@ export function WinkelnuFooter() {
             <div className="mt-4 flex flex-col items-start gap-3 text-sm text-white/80">
               <Link href="/privacy" className="hover:text-white">Privacy</Link>
               <Link href="/cookies" className="hover:text-white">Cookies</Link>
-              <Link href="/over-winkelnu#exploitant" className="hover:text-white">Bedrijfsgegevens</Link>
+              <Link href="/bedrijfsgegevens" className="hover:text-white">Bedrijfsgegevens</Link>
             </div>
           </nav>
         </div>

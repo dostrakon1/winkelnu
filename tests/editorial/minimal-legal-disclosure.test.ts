@@ -7,12 +7,13 @@ function source(path: string): string {
 }
 
 const about = 'src/app/over-winkelnu/page.tsx'
+const businessDetails = 'src/app/bedrijfsgegevens/page.tsx'
 const privacy = 'src/app/privacy/page.tsx'
 const methodology = 'src/app/affiliate-en-vergelijking/page.tsx'
 
 describe('minimal legal disclosure contracts', () => {
-  it('keeps the full operator identity in one central record', () => {
-    const details = source('src/components/storefront/operator-details.tsx')
+  it('keeps the full operator identity in one central record and dedicated page', () => {
+    const details = source(businessDetails)
     const operator = source('src/content/operator.ts')
     expect(details).toContain('operator.tradeName')
     expect(details).toContain('operator.legalName')
@@ -21,29 +22,30 @@ describe('minimal legal disclosure contracts', () => {
     expect(details).toContain('operator.vatId')
     expect(details).toContain('operator.correspondenceAddress')
     expect(details).toContain('operator.email')
-    expect(details).toContain('<details')
-    expect(details).toContain('<summary')
     expect(details).toContain('geen bezoekadres')
     expect(details).toContain('https://www.akflow.nl/')
     expect(operator).toContain('chamberOfCommerce')
     expect(operator).toContain('email:')
-    expect(source(about)).toContain('<OperatorDetails />')
+    expect(source(about)).toContain('/bedrijfsgegevens')
     expect(source(about)).toContain('id="exploitant"')
   })
 
-  it('keeps company information compact and closed by default', () => {
-    const details = source('src/components/storefront/operator-details.tsx')
-    expect(details).toContain('Meer bedrijfsgegevens')
-    expect(details).toContain('Heb je een vraag? We helpen je graag via')
-    expect(details).not.toMatch(/<details\s+open(?:\s|=|>)/)
-    expect(details).not.toContain('<table')
-    expect(details).not.toContain('<dl')
-    expect(source(about)).not.toContain('Winkelnu is een initiatief van Akflow.</p>')
+  it('keeps formal company information on the dedicated business page', () => {
+    const details = source(businessDetails)
+    const aboutPage = source(about)
+    expect(details).toContain('<dl')
+    expect(details).toContain('Bedrijfsgegevens')
+    expect(details).toContain('Correspondentieadres')
+    expect(aboutPage).toContain('Bekijk bedrijfsgegevens')
+    expect(aboutPage).not.toContain('operator.legalName')
+    expect(aboutPage).not.toContain('operator.correspondenceAddress')
+    expect(aboutPage).not.toContain('operator.vatId')
+    expect(aboutPage).not.toContain('<OperatorDetails')
   })
 
   it('links to the business details instead of repeating the identity table', () => {
     const text = source(privacy)
-    expect(text).toContain('/over-winkelnu#exploitant')
+    expect(text).toContain('/bedrijfsgegevens')
     expect(text).toContain('operator.email')
     expect(text).not.toContain('<OperatorDetails')
     expect(text).not.toContain('operator.correspondenceAddress')
@@ -63,7 +65,7 @@ describe('minimal legal disclosure contracts', () => {
 
   it('provides a short site-wide disclosure and keeps legal navigation accessible', () => {
     const footer = source('src/components/storefront/winkelnu-footer.tsx')
-    for (const route of ['/privacy', '/cookies', '/affiliate-en-vergelijking', '/over-winkelnu#exploitant']) {
+    for (const route of ['/privacy', '/cookies', '/affiliate-en-vergelijking', '/bedrijfsgegevens']) {
       expect(footer).toContain(route)
     }
     expect(footer).toContain('vergoeding ontvangen via uitgaande links')

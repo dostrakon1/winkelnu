@@ -18,7 +18,7 @@ export default function PrivacyPage() {
     >
       <section>
         <h2 className="text-xl font-bold">Wie is verantwoordelijk?</h2>
-        <p className="mt-3">Akflow is verantwoordelijk voor de verwerking van persoonsgegevens via Winkelnu.nl. Voor privacyvragen kun je contact opnemen via <a className="font-semibold underline underline-offset-4" href={`mailto:${operator.email}`}>{operator.email}</a>. De juridische en contactgegevens staan bij <Link href="/over-winkelnu#exploitant" className="font-semibold text-[var(--wn-petrol)] underline underline-offset-4">Bedrijfsgegevens</Link>.</p>
+        <p className="mt-3">Akflow is verantwoordelijk voor de verwerking van persoonsgegevens via Winkelnu.nl. Voor privacyvragen kun je contact opnemen via <a className="font-semibold underline underline-offset-4" href={`mailto:${operator.email}`}>{operator.email}</a>. De juridische en contactgegevens staan bij <Link href="/bedrijfsgegevens" className="font-semibold text-[var(--wn-petrol)] underline underline-offset-4">Bedrijfsgegevens</Link>.</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">Bezoeken, zoeken en vergelijken</h2>

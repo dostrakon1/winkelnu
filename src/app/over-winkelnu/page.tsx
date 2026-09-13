@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { OperatorDetails } from '@/components/storefront/operator-details'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
 import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 
@@ -201,9 +200,12 @@ export default function AboutWinkelnuPage() {
             <p className="mt-4 text-sm leading-7 text-[rgba(13,46,45,0.72)]">
               We bouwen Winkelnu als een onafhankelijk merk met een duidelijke eigen rol: mensen helpen om producten beter te begrijpen en bewuster te vergelijken.
             </p>
-            <div className="mt-6 border-t border-[rgba(13,46,45,0.12)] pt-5">
-              <OperatorDetails />
-            </div>
+            <p className="mt-5 text-sm leading-7 text-[rgba(13,46,45,0.72)]">
+              Formele gegevens van de exploitant houden we bewust apart van deze merkpagina, zodat ze duidelijk en makkelijk terug te vinden zijn zonder het verhaal van Winkelnu te onderbreken.
+            </p>
+            <Link href="/bedrijfsgegevens" className="mt-6 inline-flex min-h-11 items-center rounded-full bg-[var(--wn-petrol-deep)] px-5 text-sm font-bold text-white transition hover:bg-[var(--wn-petrol)]">
+              Bekijk bedrijfsgegevens →
+            </Link>
           </aside>
         </div>
       </section>

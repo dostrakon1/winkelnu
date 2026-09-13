@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = resolveSiteOrigin(process.env.NEXT_PUBLIC_SITE_URL)
-  const informationRoutes = ['/over-winkelnu', '/affiliate-en-vergelijking', '/privacy', '/cookies', '/disclaimer']
+  const informationRoutes = ['/over-winkelnu', '/bedrijfsgegevens', '/affiliate-en-vergelijking', '/privacy', '/cookies', '/disclaimer']
   const promotionalRoutes = ['/collecties/black-friday', '/collecties/cyber-monday']
   const editorialRoutes = [
     '/koopgidsen',
