@@ -3,6 +3,7 @@ import 'server-only'
 import type {
   CreateGiftListInput,
   CreateGiftListItemInput,
+  CreateWinkelnuGiftListItemInput,
   GiftList,
   GiftListItem,
   GiftListWithItems,
@@ -30,6 +31,7 @@ type GiftListItemRow = {
   gift_list_id: string
   item_type: GiftListItem['itemType']
   product_external_key: string | null
+  product_slug_snapshot: string | null
   external_url: string | null
   title: string
   image_url_snapshot: string | null
@@ -64,6 +66,7 @@ function mapItem(row: GiftListItemRow): GiftListItem {
     giftListId: row.gift_list_id,
     itemType: row.item_type,
     productExternalKey: row.product_external_key ?? undefined,
+    productSlugSnapshot: row.product_slug_snapshot ?? undefined,
     externalUrl: row.external_url ?? undefined,
     title: row.title,
     imageUrlSnapshot: row.image_url_snapshot ?? undefined,
@@ -86,6 +89,35 @@ async function attachItems(db: ReturnType<typeof createSupabaseServerClient>, li
 
   if (error) throw new Error(`Unable to read gift list items: ${error.message}`)
   return { ...list, items: ((data ?? []) as GiftListItemRow[]).map(mapItem) }
+}
+
+async function nextSortOrder(db: ReturnType<typeof createSupabaseServerClient>, listId: string): Promise<number> {
+  const { count, error: countError } = await db
+    .from('gift_list_items')
+    .select('id', { count: 'exact', head: true })
+    .eq('gift_list_id', listId)
+
+  if (countError) throw new Error(`Unable to count gift list items: ${countError.message}`)
+  if ((count ?? 0) >= 100) throw new Error('GIFT_LIST_ITEM_LIMIT')
+
+  const { data: lastItem, error: lastItemError } = await db
+    .from('gift_list_items')
+    .select('sort_order')
+    .eq('gift_list_id', listId)
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (lastItemError) throw new Error(`Unable to determine gift list item order: ${lastItemError.message}`)
+  return typeof lastItem?.sort_order === 'number' ? lastItem.sort_order + 1 : 0
+}
+
+async function touchList(db: ReturnType<typeof createSupabaseServerClient>, listId: string, expiresAt: string): Promise<void> {
+  const { error } = await db
+    .from('gift_lists')
+    .update({ expires_at: expiresAt, updated_at: new Date().toISOString() })
+    .eq('id', listId)
+  if (error) throw new Error(`Unable to extend gift list retention: ${error.message}`)
 }
 
 export class SupabaseGiftRepository {
@@ -167,24 +199,7 @@ export class SupabaseGiftRepository {
 
   async addListItem(listId: string, input: CreateGiftListItemInput, expiresAt: string): Promise<GiftListItem> {
     const db = createSupabaseServerClient()
-    const { count, error: countError } = await db
-      .from('gift_list_items')
-      .select('id', { count: 'exact', head: true })
-      .eq('gift_list_id', listId)
-
-    if (countError) throw new Error(`Unable to count gift list items: ${countError.message}`)
-    if ((count ?? 0) >= 100) throw new Error('GIFT_LIST_ITEM_LIMIT')
-
-    const { data: lastItem, error: lastItemError } = await db
-      .from('gift_list_items')
-      .select('sort_order')
-      .eq('gift_list_id', listId)
-      .order('sort_order', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-
-    if (lastItemError) throw new Error(`Unable to determine gift list item order: ${lastItemError.message}`)
-    const nextSortOrder = typeof lastItem?.sort_order === 'number' ? lastItem.sort_order + 1 : 0
+    const sortOrder = await nextSortOrder(db, listId)
 
     const { data, error } = await db
       .from('gift_list_items')
@@ -192,22 +207,48 @@ export class SupabaseGiftRepository {
         gift_list_id: listId,
         item_type: input.itemType,
         product_external_key: null,
+        product_slug_snapshot: null,
         external_url: input.externalUrl ?? null,
         title: input.title,
         note: input.note ?? null,
-        sort_order: nextSortOrder,
+        sort_order: sortOrder,
       })
       .select('*')
       .single()
 
     if (error || !data) throw new Error(`Unable to add gift list item: ${error?.message ?? 'missing row'}`)
+    await touchList(db, listId, expiresAt)
+    return mapItem(data as GiftListItemRow)
+  }
 
-    const { error: touchError } = await db
-      .from('gift_lists')
-      .update({ expires_at: expiresAt, updated_at: new Date().toISOString() })
-      .eq('id', listId)
-    if (touchError) throw new Error(`Unable to extend gift list retention: ${touchError.message}`)
+  async addWinkelnuProductItem(
+    listId: string,
+    input: CreateWinkelnuGiftListItemInput,
+    expiresAt: string,
+  ): Promise<GiftListItem> {
+    const db = createSupabaseServerClient()
+    const sortOrder = await nextSortOrder(db, listId)
 
+    const { data, error } = await db
+      .from('gift_list_items')
+      .insert({
+        gift_list_id: listId,
+        item_type: 'winkelnu_product',
+        product_external_key: input.productExternalKey,
+        product_slug_snapshot: input.productSlugSnapshot,
+        external_url: null,
+        title: input.title,
+        image_url_snapshot: input.imageUrlSnapshot ?? null,
+        price_cents_snapshot: input.priceCentsSnapshot ?? null,
+        currency_snapshot: input.currencySnapshot ?? null,
+        note: input.note ?? null,
+        sort_order: sortOrder,
+      })
+      .select('*')
+      .single()
+
+    if (error || !data) throw new Error(`Unable to add Winkelnu gift list item: ${error?.message ?? 'missing row'}`)
+    await touchList(db, listId, expiresAt)
     return mapItem(data as GiftListItemRow)
   }
 
@@ -218,25 +259,43 @@ export class SupabaseGiftRepository {
       .update({
         item_type: input.itemType,
         product_external_key: null,
+        product_slug_snapshot: null,
         external_url: input.externalUrl ?? null,
         title: input.title,
+        image_url_snapshot: null,
+        price_cents_snapshot: null,
+        currency_snapshot: null,
         note: input.note ?? null,
         updated_at: new Date().toISOString(),
       })
       .eq('id', itemId)
       .eq('gift_list_id', listId)
+      .neq('item_type', 'winkelnu_product')
       .select('*')
       .maybeSingle()
 
     if (error) throw new Error(`Unable to update gift list item: ${error.message}`)
     if (!data) throw new Error('GIFT_LIST_ITEM_NOT_FOUND')
 
-    const { error: touchError } = await db
-      .from('gift_lists')
-      .update({ expires_at: expiresAt, updated_at: new Date().toISOString() })
-      .eq('id', listId)
-    if (touchError) throw new Error(`Unable to extend gift list retention: ${touchError.message}`)
+    await touchList(db, listId, expiresAt)
+    return mapItem(data as GiftListItemRow)
+  }
 
+  async updateWinkelnuProductNote(listId: string, itemId: string, note: string | undefined, expiresAt: string): Promise<GiftListItem> {
+    const db = createSupabaseServerClient()
+    const { data, error } = await db
+      .from('gift_list_items')
+      .update({ note: note ?? null, updated_at: new Date().toISOString() })
+      .eq('id', itemId)
+      .eq('gift_list_id', listId)
+      .eq('item_type', 'winkelnu_product')
+      .select('*')
+      .maybeSingle()
+
+    if (error) throw new Error(`Unable to update Winkelnu gift list item: ${error.message}`)
+    if (!data) throw new Error('GIFT_LIST_ITEM_NOT_FOUND')
+
+    await touchList(db, listId, expiresAt)
     return mapItem(data as GiftListItemRow)
   }
 
@@ -249,12 +308,7 @@ export class SupabaseGiftRepository {
       .eq('gift_list_id', listId)
 
     if (error) throw new Error(`Unable to delete gift list item: ${error.message}`)
-
-    const { error: touchError } = await db
-      .from('gift_lists')
-      .update({ expires_at: expiresAt, updated_at: new Date().toISOString() })
-      .eq('id', listId)
-    if (touchError) throw new Error(`Unable to extend gift list retention: ${touchError.message}`)
+    await touchList(db, listId, expiresAt)
   }
 
   async rotateOwnerToken(listId: string, ownerTokenHash: string, expiresAt: string): Promise<void> {
