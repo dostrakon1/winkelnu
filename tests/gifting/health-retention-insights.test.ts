@@ -11,7 +11,8 @@ describe('Lootje & Lijstje GI5 health and retention', () => {
     const page = source('src/app/intern/operations/gifting/health/page.tsx')
 
     expect(page).toContain("requireOperatorPermission('read_gifting_insights')")
-    expect(page).toContain("title: 'Lootje & Lijstje Health | Winkelnu.nl'")
+    expect(page).toContain("title: 'Lootje & Lijstje Health'")
+    expect(page).not.toContain("title: 'Lootje & Lijstje Health | Winkelnu.nl'")
     expect(page).toContain('index: false')
     expect(page).toContain('follow: false')
     expect(page).toContain('nocache: true')
