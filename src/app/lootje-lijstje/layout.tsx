@@ -2,6 +2,8 @@ import type { ReactNode } from 'react'
 import { notFound } from 'next/navigation'
 import { isGiftingEnabled } from '@/application/gifting/gifting-release'
 
+export const dynamic = 'force-dynamic'
+
 export default function GiftLayout({ children }: { children: ReactNode }) {
   if (!isGiftingEnabled()) {
     const rawFlag = process.env.WINKELNU_GIFTING_ENABLED
