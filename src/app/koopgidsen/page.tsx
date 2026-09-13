@@ -3,11 +3,19 @@ import { CategoryCard } from '@/components/storefront/category-card'
 import { getEditorialTone } from '@/components/storefront/editorial-design'
 import { EditorialIntro, EditorialShell, GuideCard } from '@/components/storefront/editorial-shell'
 import { buyingGuides, editorialCategories } from '@/content/editorial-catalog'
+import { createPageSocialMetadata } from '@/lib/seo/page-social-metadata'
+
+const description = 'Praktische keuzehulpen voor elektronica, wonen, keuken, persoonlijke verzorging, baby en kind, dieren, auto en fiets, huis en tuin, sport, outdoor, speelgoed en hobby. Vergelijk eigenschappen voordat je kiest.'
 
 export const metadata: Metadata = {
   title: 'Koopgidsen',
-  description: 'Praktische keuzehulpen voor elektronica, wonen, keuken, persoonlijke verzorging, baby en kind, dieren, auto en fiets, huis en tuin, sport, outdoor, speelgoed en hobby. Vergelijk eigenschappen voordat je kiest.',
+  description,
   alternates: { canonical: '/koopgidsen' },
+  ...createPageSocialMetadata({
+    title: 'Koopgidsen | Winkelnu.nl',
+    description,
+    url: '/koopgidsen',
+  }),
 }
 
 export default function BuyingGuidesPage() {
