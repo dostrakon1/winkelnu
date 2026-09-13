@@ -28,6 +28,7 @@ const migrationPaths = [
   'supabase/migrations/0024_gifting_fk_indexes.sql',
   'supabase/migrations/0025_gifting_product_slug_snapshot.sql',
   'supabase/migrations/0026_gifting_group_participant_guard.sql',
+  'supabase/migrations/0027_gifting_draw_engine.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -103,6 +104,9 @@ const requiredFunctions = [
   'operator_pause_feed',
   'operator_resume_feed',
   'enforce_gift_group_participant_structure',
+  'enforce_gift_group_exclusion_structure',
+  'set_gift_group_exclusion_pair',
+  'apply_gift_group_draw',
 ]
 
 const requiredSecurityPatterns = [
@@ -120,6 +124,12 @@ const requiredSecurityPatterns = [
   ['catalog ranking RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+catalog_ranked_products\([\s\S]*?\)\s+from\s+anon\s*,\s*authenticated/i],
   ['gift participant guard untrusted revoke', /revoke\s+all\s+on\s+function\s+enforce_gift_group_participant_structure\(\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
   ['gift participant guard trigger', /create\s+trigger\s+gift_group_participant_structure_guard[\s\S]*?before\s+insert\s+or\s+update\s+or\s+delete\s+on\s+gift_group_participants/i],
+  ['gift exclusion guard untrusted revoke', /revoke\s+all\s+on\s+function\s+enforce_gift_group_exclusion_structure\(\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
+  ['gift exclusion guard trigger', /create\s+trigger\s+gift_group_exclusion_structure_guard[\s\S]*?before\s+insert\s+or\s+update\s+or\s+delete\s+on\s+gift_group_exclusions/i],
+  ['gift exclusion RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+set_gift_group_exclusion_pair\(uuid\s*,\s*uuid\s*,\s*uuid\s*,\s*boolean\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
+  ['gift exclusion RPC service-role grant', /grant\s+execute\s+on\s+function\s+set_gift_group_exclusion_pair\(uuid\s*,\s*uuid\s*,\s*uuid\s*,\s*boolean\)\s+to\s+service_role/i],
+  ['gift draw RPC untrusted revoke', /revoke\s+all\s+on\s+function\s+apply_gift_group_draw\(uuid\s*,\s*integer\s*,\s*jsonb\s*,\s*boolean\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i],
+  ['gift draw RPC service-role grant', /grant\s+execute\s+on\s+function\s+apply_gift_group_draw\(uuid\s*,\s*integer\s*,\s*jsonb\s*,\s*boolean\)\s+to\s+service_role/i],
 ]
 
 const failures = []
