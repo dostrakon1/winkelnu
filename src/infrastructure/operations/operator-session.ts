@@ -3,7 +3,13 @@ import 'server-only'
 import { redirect } from 'next/navigation'
 
 import { isOperatorEmailAllowed, parseOperatorEmails } from '@/application/auth/operator-access'
-import { parseOperatorRoles, resolveOperatorRole, type OperatorRole } from '@/application/auth/operator-authorization'
+import {
+  operatorCan,
+  parseOperatorRoles,
+  resolveOperatorRole,
+  type OperatorPermission,
+  type OperatorRole,
+} from '@/application/auth/operator-authorization'
 import { createSupabaseAuthServerClient } from '@/infrastructure/supabase/auth-server-client'
 
 export type OperatorIdentity = {
@@ -29,4 +35,10 @@ export async function requireOperatorSession(): Promise<OperatorIdentity> {
     email,
     role,
   }
+}
+
+export async function requireOperatorPermission(permission: OperatorPermission): Promise<OperatorIdentity> {
+  const operator = await requireOperatorSession()
+  if (!operatorCan(operator.role, permission)) redirect('/intern/operations?error=not-authorized')
+  return operator
 }
