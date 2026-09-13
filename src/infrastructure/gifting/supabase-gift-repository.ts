@@ -211,6 +211,35 @@ export class SupabaseGiftRepository {
     return mapItem(data as GiftListItemRow)
   }
 
+  async updateListItem(listId: string, itemId: string, input: CreateGiftListItemInput, expiresAt: string): Promise<GiftListItem> {
+    const db = createSupabaseServerClient()
+    const { data, error } = await db
+      .from('gift_list_items')
+      .update({
+        item_type: input.itemType,
+        product_external_key: null,
+        external_url: input.externalUrl ?? null,
+        title: input.title,
+        note: input.note ?? null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', itemId)
+      .eq('gift_list_id', listId)
+      .select('*')
+      .maybeSingle()
+
+    if (error) throw new Error(`Unable to update gift list item: ${error.message}`)
+    if (!data) throw new Error('GIFT_LIST_ITEM_NOT_FOUND')
+
+    const { error: touchError } = await db
+      .from('gift_lists')
+      .update({ expires_at: expiresAt, updated_at: new Date().toISOString() })
+      .eq('id', listId)
+    if (touchError) throw new Error(`Unable to extend gift list retention: ${touchError.message}`)
+
+    return mapItem(data as GiftListItemRow)
+  }
+
   async deleteListItem(listId: string, itemId: string, expiresAt: string): Promise<void> {
     const db = createSupabaseServerClient()
     const { error } = await db
