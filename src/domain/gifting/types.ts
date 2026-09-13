@@ -26,6 +26,7 @@ export type GiftListItem = {
   giftListId: string
   itemType: GiftListItemType
   productExternalKey?: string
+  productSlugSnapshot?: string
   externalUrl?: string
   title: string
   imageUrlSnapshot?: string
@@ -56,5 +57,16 @@ export type CreateGiftListItemInput = {
   itemType: Extract<GiftListItemType, 'external_link' | 'text'>
   title: string
   externalUrl?: string
+  note?: string
+}
+
+export type CreateWinkelnuGiftListItemInput = {
+  itemType: 'winkelnu_product'
+  productExternalKey: string
+  productSlugSnapshot: string
+  title: string
+  imageUrlSnapshot?: string
+  priceCentsSnapshot?: number
+  currencySnapshot?: 'EUR'
   note?: string
 }

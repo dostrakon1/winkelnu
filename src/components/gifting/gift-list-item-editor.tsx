@@ -9,9 +9,9 @@ export function GiftListItemEditor({ action, shareCode }: GiftListItemEditorProp
       <input type="hidden" name="shareCode" value={shareCode} />
 
       <div>
-        <p className="wn-eyebrow">Nieuwe wens</p>
-        <h2 className="wn-heading mt-2 text-2xl">Wat zou je graag willen?</h2>
-        <p className="wn-body-muted mt-2 text-sm">In L1 kun je een eigen wens of een productlink toevoegen. Winkelnu-producten volgen in L2.</p>
+        <p className="wn-eyebrow">Eigen wens of externe link</p>
+        <h2 className="wn-heading mt-2 text-2xl">Staat het niet op Winkelnu?</h2>
+        <p className="wn-body-muted mt-2 text-sm">Schrijf zelf een wens op of voeg een beveiligde productlink van een andere website toe.</p>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">

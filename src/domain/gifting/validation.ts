@@ -16,6 +16,12 @@ export function normalizeGiftText(value: string): string {
   return value.replace(/\s+/g, ' ').trim()
 }
 
+export function validateGiftNote(value: string): string | undefined {
+  const note = normalizeGiftText(value)
+  if (note.length > 300) throw new GiftValidationError('De toelichting mag maximaal 300 tekens zijn.')
+  return note || undefined
+}
+
 export function parseGiftOccasion(value: string): GiftOccasion {
   if ((giftOccasions as readonly string[]).includes(value)) return value as GiftOccasion
   throw new GiftValidationError('Kies een geldige gelegenheid.')
@@ -93,13 +99,12 @@ export function validateGiftListItemInput(input: {
   }
 
   const title = normalizeGiftText(input.title)
-  const note = normalizeGiftText(input.note ?? '')
+  const note = validateGiftNote(input.note ?? '')
   const externalUrl = input.externalUrl?.trim()
 
   if (title.length < 2 || title.length > 120) {
     throw new GiftValidationError('De wens moet tussen 2 en 120 tekens zijn.')
   }
-  if (note.length > 300) throw new GiftValidationError('De toelichting mag maximaal 300 tekens zijn.')
 
   if (input.itemType === 'external_link') {
     if (!externalUrl) throw new GiftValidationError('Plak een https-link naar het product.')
@@ -116,6 +121,6 @@ export function validateGiftListItemInput(input: {
     itemType: input.itemType,
     title,
     externalUrl: input.itemType === 'external_link' ? externalUrl : undefined,
-    note: note || undefined,
+    note,
   }
 }

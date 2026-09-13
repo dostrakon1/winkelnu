@@ -3,14 +3,21 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import {
   addGiftListItemAction,
+  addWinkelnuProductGiftListItemAction,
   deleteGiftListItemAction,
   updateGiftListAction,
   updateGiftListItemAction,
+  updateWinkelnuProductGiftNoteAction,
 } from '@/app/lootje-lijstje/actions'
+import {
+  resolveGiftCatalogProductViews,
+  searchGiftCatalogProducts,
+} from '@/application/gifting/gift-catalog'
 import { getEditableGiftList, getSharedGiftList } from '@/application/gifting/standalone-gift-lists'
 import { GiftListForm } from '@/components/gifting/gift-list-form'
 import { GiftListItemCard } from '@/components/gifting/gift-list-item-card'
 import { GiftListItemEditor } from '@/components/gifting/gift-list-item-editor'
+import { GiftProductPicker } from '@/components/gifting/gift-product-picker'
 import { GiftRecoveryLink } from '@/components/gifting/gift-recovery-link'
 import { GiftShareActions } from '@/components/gifting/gift-share-actions'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
@@ -42,6 +49,7 @@ export default async function EditGiftListPage({
     bijgewerkt?: string | string[]
     verwijderd?: string | string[]
     fout?: string | string[]
+    productZoek?: string | string[]
   }>
 }) {
   const { shareCode } = await params
@@ -70,6 +78,13 @@ export default async function EditGiftListPage({
       </div>
     )
   }
+
+  const productSearchTerm = first(query.productZoek)?.trim().slice(0, 120)
+  const [productResults, productViews] = await Promise.all([
+    productSearchTerm ? searchGiftCatalogProducts(productSearchTerm) : Promise.resolve([]),
+    resolveGiftCatalogProductViews(list.items),
+  ])
+  const addedProductKeys = list.items.flatMap((item) => item.productExternalKey ? [item.productExternalKey] : [])
 
   const notification = first(query.fout)
     ?? (first(query.gemaakt) ? 'Je lijstje is gemaakt. Voeg nu je eerste wens toe en bewaar je herstel-link.' : undefined)
@@ -123,8 +138,10 @@ export default async function EditGiftListPage({
                       <GiftListItemCard
                         key={item.id}
                         item={item}
+                        productView={productViews[item.id]}
                         editable
                         updateAction={updateGiftListItemAction}
+                        updateProductNoteAction={updateWinkelnuProductGiftNoteAction}
                         deleteAction={deleteGiftListItemAction}
                         shareCode={shareCode}
                       />
@@ -133,10 +150,18 @@ export default async function EditGiftListPage({
                 ) : (
                   <div className="rounded-[var(--wn-radius-xl)] border border-dashed border-[color:rgba(18,59,58,0.24)] bg-white/70 p-7 text-center">
                     <h3 className="wn-ui-heading text-lg">Je lijstje is nog leeg.</h3>
-                    <p className="wn-body-muted mt-2 text-sm">Voeg hieronder je eerste wens toe.</p>
+                    <p className="wn-body-muted mt-2 text-sm">Zoek hieronder een Winkelnu-product of voeg zelf een wens toe.</p>
                   </div>
                 )}
               </section>
+
+              <GiftProductPicker
+                shareCode={shareCode}
+                query={productSearchTerm}
+                products={productResults}
+                addedProductKeys={addedProductKeys}
+                addAction={addWinkelnuProductGiftListItemAction}
+              />
 
               <GiftListItemEditor action={addGiftListItemAction} shareCode={shareCode} />
 
@@ -162,8 +187,8 @@ export default async function EditGiftListPage({
               <GiftRecoveryLink shareCode={shareCode} />
 
               <section className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)] p-5">
-                <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Winkelnu-producten volgen in L2</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Dan kun je producten uit de bestaande Winkelnu-catalogus rechtstreeks op je lijstje zetten. Er komt geen tweede productdatabase.</p>
+                <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Gekoppeld aan de Winkelnu-catalogus</p>
+                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Winkelnu-producten blijven gekoppeld via hun productidentiteit. Titel en prijs worden als veilige fallback bewaard als een product later uit de catalogus verdwijnt.</p>
               </section>
             </aside>
           </div>

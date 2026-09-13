@@ -2,6 +2,8 @@ import 'server-only'
 
 import type { CreateGiftListInput, CreateGiftListItemInput, GiftListWithItems, UpdateGiftListInput } from '@/domain/gifting/types'
 import { canManageGiftList, grantGiftListOwnerAccess } from '@/application/gifting/access-grants'
+import { getGiftCatalogProductBySlug } from '@/application/gifting/gift-catalog'
+import { validateGiftNote } from '@/domain/gifting/validation'
 import { createGiftExternalKey, createGiftRecoveryToken, createGiftShareCode, hashGiftCapability } from '@/infrastructure/gifting/gift-capabilities'
 import { SupabaseGiftRepository } from '@/infrastructure/gifting/supabase-gift-repository'
 
@@ -73,11 +75,50 @@ export async function addStandaloneGiftListItem(shareCode: string, input: Create
   await repository.addListItem(list.id, input, nextExpiry())
 }
 
+export async function addWinkelnuProductToGiftList(
+  shareCode: string,
+  productSlug: string,
+  rawNote = '',
+): Promise<void> {
+  const list = await requireEditableGiftList(shareCode)
+  const product = await getGiftCatalogProductBySlug(productSlug)
+  if (!product) throw new GiftListAccessError('Dit Winkelnu-product is niet meer beschikbaar.')
+
+  if (list.items.some((item) => item.itemType === 'winkelnu_product' && item.productExternalKey === product.productExternalKey)) {
+    throw new GiftListAccessError('Dit Winkelnu-product staat al op je lijstje.')
+  }
+
+  const note = validateGiftNote(rawNote)
+  const repository = new SupabaseGiftRepository()
+  await repository.addWinkelnuProductItem(list.id, {
+    itemType: 'winkelnu_product',
+    productExternalKey: product.productExternalKey,
+    productSlugSnapshot: product.slug,
+    title: product.title,
+    imageUrlSnapshot: product.imageUrl,
+    priceCentsSnapshot: product.priceCents,
+    currencySnapshot: product.currency,
+    note,
+  }, nextExpiry())
+}
+
 export async function updateStandaloneGiftListItem(shareCode: string, itemId: string, input: CreateGiftListItemInput): Promise<void> {
   const list = await requireEditableGiftList(shareCode)
   if (!itemId) throw new GiftListAccessError('Ongeldige wens.')
   const repository = new SupabaseGiftRepository()
   await repository.updateListItem(list.id, itemId, input, nextExpiry())
+}
+
+export async function updateWinkelnuProductGiftNote(
+  shareCode: string,
+  itemId: string,
+  rawNote: string,
+): Promise<void> {
+  const list = await requireEditableGiftList(shareCode)
+  if (!itemId) throw new GiftListAccessError('Ongeldige wens.')
+  const note = validateGiftNote(rawNote)
+  const repository = new SupabaseGiftRepository()
+  await repository.updateWinkelnuProductNote(list.id, itemId, note, nextExpiry())
 }
 
 export async function deleteStandaloneGiftListItem(shareCode: string, itemId: string): Promise<void> {

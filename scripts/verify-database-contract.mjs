@@ -25,6 +25,8 @@ const migrationPaths = [
   'supabase/migrations/0021_search_feedback_learning_signals.sql',
   'supabase/migrations/0022_product_attribute_evidence.sql',
   'supabase/migrations/0023_gifting_foundation.sql',
+  'supabase/migrations/0024_gifting_fk_indexes.sql',
+  'supabase/migrations/0025_gifting_product_slug_snapshot.sql',
 ]
 
 const migrations = (await Promise.all(migrationPaths.map((path) => readFile(resolve(path), 'utf8')))).join('\n')
@@ -73,7 +75,7 @@ const requiredColumns = [
   ['gift_lists', 'external_key'], ['gift_lists', 'share_code_hash'], ['gift_lists', 'owner_token_hash'],
   ['gift_lists', 'display_name'], ['gift_lists', 'occasion'], ['gift_lists', 'expires_at'],
   ['gift_list_items', 'gift_list_id'], ['gift_list_items', 'item_type'], ['gift_list_items', 'product_external_key'],
-  ['gift_list_items', 'external_url'], ['gift_list_items', 'title'], ['gift_list_items', 'sort_order'],
+  ['gift_list_items', 'product_slug_snapshot'], ['gift_list_items', 'external_url'], ['gift_list_items', 'title'], ['gift_list_items', 'sort_order'],
   ['gift_groups', 'external_key'], ['gift_groups', 'group_code_hash'], ['gift_groups', 'organizer_token_hash'],
   ['gift_groups', 'status'], ['gift_groups', 'draw_version'], ['gift_groups', 'expires_at'],
   ['gift_group_participants', 'group_id'], ['gift_group_participants', 'gift_list_id'],

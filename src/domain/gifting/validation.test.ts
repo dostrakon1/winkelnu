@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { GiftValidationError, parseOptionalEuroAmount, validateGiftListInput, validateGiftListItemInput } from './validation'
+import {
+  GiftValidationError,
+  parseOptionalEuroAmount,
+  validateGiftListInput,
+  validateGiftListItemInput,
+  validateGiftNote,
+} from './validation'
 
 describe('gifting validation', () => {
   it('normalizes a valid standalone list', () => {
@@ -34,6 +40,12 @@ describe('gifting validation', () => {
     expect(parseOptionalEuroAmount('')).toBeUndefined()
   })
 
+  it('normalizes optional product notes and limits their length', () => {
+    expect(validateGiftNote('  Liefst   zwart  ')).toBe('Liefst zwart')
+    expect(validateGiftNote('   ')).toBeUndefined()
+    expect(() => validateGiftNote('x'.repeat(301))).toThrow(GiftValidationError)
+  })
+
   it('accepts text wishes and https product links', () => {
     expect(validateGiftListItemInput({ itemType: 'text', title: 'Een goed kookboek' })).toMatchObject({
       itemType: 'text',
@@ -48,10 +60,11 @@ describe('gifting validation', () => {
     })).toMatchObject({
       itemType: 'external_link',
       externalUrl: 'https://example.com/rugzak',
+      note: 'Liefst zwart',
     })
   })
 
-  it('rejects non-https external links and premature Winkelnu-product items', () => {
+  it('keeps Winkelnu-product identity out of the manual-item validator', () => {
     expect(() => validateGiftListItemInput({
       itemType: 'external_link',
       title: 'Onveilige link',
@@ -60,7 +73,7 @@ describe('gifting validation', () => {
 
     expect(() => validateGiftListItemInput({
       itemType: 'winkelnu_product',
-      title: 'Komt in L2',
+      title: 'Wordt server-side uit de catalogus gekozen',
     })).toThrow(GiftValidationError)
   })
 })

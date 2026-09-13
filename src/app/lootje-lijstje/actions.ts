@@ -5,12 +5,14 @@ import { redirect } from 'next/navigation'
 import { requireGiftingEnabled } from '@/application/gifting/gifting-release'
 import {
   addStandaloneGiftListItem,
+  addWinkelnuProductToGiftList,
   createGiftListRecoveryPath,
   createStandaloneGiftList,
   deleteStandaloneGiftListItem,
   GiftListAccessError,
   updateStandaloneGiftList,
   updateStandaloneGiftListItem,
+  updateWinkelnuProductGiftNote,
 } from '@/application/gifting/standalone-gift-lists'
 import { GiftValidationError, validateGiftListInput, validateGiftListItemInput } from '@/domain/gifting/validation'
 
@@ -96,6 +98,24 @@ export async function addGiftListItemAction(formData: FormData): Promise<void> {
   redirect(editPath(shareCode, 'toegevoegd'))
 }
 
+export async function addWinkelnuProductGiftListItemAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
+  const shareCode = field(formData, 'shareCode')
+  try {
+    await addWinkelnuProductToGiftList(
+      shareCode,
+      field(formData, 'productSlug'),
+      field(formData, 'note'),
+    )
+  } catch (error) {
+    redirect(editPath(shareCode, undefined, message(error)))
+  }
+
+  revalidatePath(`/lootje-lijstje/lijstje/${shareCode}`)
+  revalidatePath(`/lootje-lijstje/lijstje/${shareCode}/bewerken`)
+  redirect(editPath(shareCode, 'toegevoegd'))
+}
+
 export async function updateGiftListItemAction(formData: FormData): Promise<void> {
   requireGiftingEnabled()
   const shareCode = field(formData, 'shareCode')
@@ -108,6 +128,21 @@ export async function updateGiftListItemAction(formData: FormData): Promise<void
       note: field(formData, 'note'),
     })
     await updateStandaloneGiftListItem(shareCode, itemId, input)
+  } catch (error) {
+    redirect(editPath(shareCode, undefined, message(error)))
+  }
+
+  revalidatePath(`/lootje-lijstje/lijstje/${shareCode}`)
+  revalidatePath(`/lootje-lijstje/lijstje/${shareCode}/bewerken`)
+  redirect(editPath(shareCode, 'bijgewerkt'))
+}
+
+export async function updateWinkelnuProductGiftNoteAction(formData: FormData): Promise<void> {
+  requireGiftingEnabled()
+  const shareCode = field(formData, 'shareCode')
+  const itemId = field(formData, 'itemId')
+  try {
+    await updateWinkelnuProductGiftNote(shareCode, itemId, field(formData, 'note'))
   } catch (error) {
     redirect(editPath(shareCode, undefined, message(error)))
   }

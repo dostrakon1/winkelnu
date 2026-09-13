@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { resolveGiftCatalogProductViews } from '@/application/gifting/gift-catalog'
 import { getSharedGiftList } from '@/application/gifting/standalone-gift-lists'
 import { GiftListItemCard } from '@/components/gifting/gift-list-item-card'
 import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
@@ -43,6 +44,7 @@ export default async function SharedGiftListPage({ params }: { params: Promise<{
   const list = await getSharedGiftList(shareCode)
   if (!list) notFound()
 
+  const productViews = await resolveGiftCatalogProductViews(list.items)
   const budget = budgetText(list.budgetMinCents, list.budgetMaxCents)
   const heading = list.title ?? `${list.displayName}’s lijstje`
 
@@ -66,7 +68,9 @@ export default async function SharedGiftListPage({ params }: { params: Promise<{
         <section className="wn-container wn-section">
           {list.items.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2">
-              {list.items.map((item) => <GiftListItemCard key={item.id} item={item} />)}
+              {list.items.map((item) => (
+                <GiftListItemCard key={item.id} item={item} productView={productViews[item.id]} />
+              ))}
             </div>
           ) : (
             <div className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-8 text-center shadow-[var(--wn-shadow-xs)]">
