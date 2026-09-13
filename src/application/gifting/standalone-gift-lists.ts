@@ -73,6 +73,13 @@ export async function addStandaloneGiftListItem(shareCode: string, input: Create
   await repository.addListItem(list.id, input, nextExpiry())
 }
 
+export async function updateStandaloneGiftListItem(shareCode: string, itemId: string, input: CreateGiftListItemInput): Promise<void> {
+  const list = await requireEditableGiftList(shareCode)
+  if (!itemId) throw new GiftListAccessError('Ongeldige wens.')
+  const repository = new SupabaseGiftRepository()
+  await repository.updateListItem(list.id, itemId, input, nextExpiry())
+}
+
 export async function deleteStandaloneGiftListItem(shareCode: string, itemId: string): Promise<void> {
   const list = await requireEditableGiftList(shareCode)
   if (!itemId) throw new GiftListAccessError('Ongeldige wens.')
