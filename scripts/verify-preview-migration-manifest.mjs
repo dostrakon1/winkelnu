@@ -24,6 +24,7 @@ const expected = [
   '0020_hierarchical_catalog_browsing.sql',
   '0021_search_feedback_learning_signals.sql',
   '0022_product_attribute_evidence.sql',
+  '0023_gifting_foundation.sql',
 ]
 
 const actual = (await readdir(resolve('supabase/migrations')))
