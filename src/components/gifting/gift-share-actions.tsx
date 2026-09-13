@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 
 type GiftShareActionsProps = {
   sharePath: string
@@ -15,6 +15,14 @@ function absoluteUrl(path: string): string {
   return new URL(path, window.location.origin).toString()
 }
 
+function subscribeToNativeShareAvailability() {
+  return () => undefined
+}
+
+function getNativeShareSnapshot(): boolean {
+  return typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+}
+
 export function GiftShareActions({
   sharePath,
   title,
@@ -22,11 +30,11 @@ export function GiftShareActions({
   whatsappLabel = 'Deel via WhatsApp',
 }: GiftShareActionsProps) {
   const [status, setStatus] = useState<ShareStatus>('idle')
-  const [nativeShareAvailable, setNativeShareAvailable] = useState(false)
-
-  useEffect(() => {
-    setNativeShareAvailable(typeof navigator.share === 'function')
-  }, [])
+  const nativeShareAvailable = useSyncExternalStore(
+    subscribeToNativeShareAvailability,
+    getNativeShareSnapshot,
+    () => false,
+  )
 
   function resetStatusLater() {
     window.setTimeout(() => setStatus('idle'), 2200)
