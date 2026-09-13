@@ -2,7 +2,8 @@ import Link from 'next/link'
 import type { GiftCatalogProductView } from '@/application/gifting/gift-catalog'
 
 type GiftProductPickerProps = {
-  shareCode: string
+  shareCode?: string
+  contextFields?: Record<string, string>
   query?: string
   products: GiftCatalogProductView[]
   addedProductKeys: string[]
@@ -19,6 +20,7 @@ function money(cents: number): string {
 
 export function GiftProductPicker({
   shareCode,
+  contextFields,
   query,
   products,
   addedProductKeys,
@@ -26,6 +28,7 @@ export function GiftProductPicker({
 }: GiftProductPickerProps) {
   const added = new Set(addedProductKeys)
   const hasQuery = Boolean(query && query.trim().length >= 2)
+  const hiddenFields = contextFields ?? (shareCode ? { shareCode } : {})
 
   return (
     <section className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-5 shadow-[var(--wn-shadow-xs)] sm:p-6">
@@ -107,7 +110,9 @@ export function GiftProductPicker({
                 </div>
 
                 <form action={addAction} className="mt-auto pt-5">
-                  <input type="hidden" name="shareCode" value={shareCode} />
+                  {Object.entries(hiddenFields).map(([name, value]) => (
+                    <input key={name} type="hidden" name={name} value={value} />
+                  ))}
                   <input type="hidden" name="productSlug" value={product.slug} />
                   <label className="block">
                     <span className="mb-1.5 block text-xs font-bold text-[var(--wn-petrol-deep)]">
