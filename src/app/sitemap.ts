@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
-import { isGiftingEnabled } from '@/application/gifting/gifting-release'
 import { resolveSiteOrigin } from '@/config/sites'
 import { categories as editorialCategoryEntries } from '@/content/categories'
 import { editorialCollections } from '@/content/collections'
@@ -20,12 +19,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...buyingGuides.map((guide) => `/koopgidsen/${guide.slug}`),
     ...editorialCollections.map((collection) => `/collecties/${collection.slug}`),
   ]
-  const giftingRoutes = isGiftingEnabled()
-    ? [{ url: `${baseUrl}/lootje-lijstje`, changeFrequency: 'monthly' as const, priority: 0.8 }]
-    : []
   const entries: MetadataRoute.Sitemap = [
     { url: baseUrl, changeFrequency: 'monthly', priority: 1 },
-    ...giftingRoutes,
+    { url: `${baseUrl}/lootje-lijstje`, changeFrequency: 'monthly', priority: 0.8 },
     ...informationRoutes.map((path) => ({ url: `${baseUrl}${path}`, changeFrequency: 'monthly' as const, priority: 0.4 })),
     ...promotionalRoutes.map((path) => ({ url: `${baseUrl}${path}`, changeFrequency: 'weekly' as const, priority: 0.8 })),
     ...editorialRoutes.map((path) => ({ url: `${baseUrl}${path}`, changeFrequency: 'monthly' as const, priority: 0.7 })),
