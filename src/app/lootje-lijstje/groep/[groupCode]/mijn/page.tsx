@@ -8,6 +8,7 @@ import {
   updateParticipantGiftListItemAction,
   updateParticipantWinkelnuProductNoteAction,
 } from '@/app/lootje-lijstje/groep/actions'
+import { canManageGiftGroup } from '@/application/gifting/access-grants'
 import {
   getGiftGroupInvite,
   getParticipantGiftGroupContext,
@@ -85,6 +86,7 @@ export default async function GiftGroupParticipantPage({
   }
 
   const { group, participant, participants, list } = context
+  const canManageGroup = await canManageGiftGroup(group.id)
   const productQuery = first(query.productZoek)?.trim().slice(0, 120)
   const [productViews, productResults] = await Promise.all([
     resolveGiftCatalogProductViews(list.items),
@@ -107,14 +109,23 @@ export default async function GiftGroupParticipantPage({
       <main id="inhoud">
         <section className="border-b border-[var(--wn-border)] bg-[image:var(--wn-gradient-welcome)]">
           <div className="wn-container py-10 sm:py-14">
-            <p className="wn-eyebrow">Mijn groep</p>
-            <h1 className="wn-heading mt-3 text-4xl sm:text-5xl">{group.name}</h1>
-            <p className="wn-body-muted mt-3 text-lg">Je doet mee als <strong className="text-[var(--wn-petrol-deep)]">{participant.displayName}</strong>.</p>
-            <div className="mt-5 flex flex-wrap gap-2 text-sm font-semibold text-[var(--wn-text-muted)]">
-              <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{occasionLabels[group.occasion]}</span>
-              <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{participants.length === 1 ? '1 deelnemer' : `${participants.length} deelnemers`}</span>
-              {group.budgetCents !== undefined ? <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">Budget {money(group.budgetCents)}</span> : null}
-              {group.eventDate ? <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{new Intl.DateTimeFormat('nl-NL', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${group.eventDate}T00:00:00Z`))}</span> : null}
+            <div className="flex flex-wrap items-start justify-between gap-5">
+              <div>
+                <p className="wn-eyebrow">Mijn groep</p>
+                <h1 className="wn-heading mt-3 text-4xl sm:text-5xl">{group.name}</h1>
+                <p className="wn-body-muted mt-3 text-lg">Je doet mee als <strong className="text-[var(--wn-petrol-deep)]">{participant.displayName}</strong>.</p>
+                <div className="mt-5 flex flex-wrap gap-2 text-sm font-semibold text-[var(--wn-text-muted)]">
+                  <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{occasionLabels[group.occasion]}</span>
+                  <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{participants.length === 1 ? '1 deelnemer' : `${participants.length} deelnemers`}</span>
+                  {group.budgetCents !== undefined ? <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">Budget {money(group.budgetCents)}</span> : null}
+                  {group.eventDate ? <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{new Intl.DateTimeFormat('nl-NL', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${group.eventDate}T00:00:00Z`))}</span> : null}
+                </div>
+              </div>
+              {canManageGroup ? (
+                <Link href={`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/beheer`} className="wn-button wn-button-secondary shrink-0">
+                  Groep beheren →
+                </Link>
+              ) : null}
             </div>
           </div>
         </section>
@@ -127,13 +138,13 @@ export default async function GiftGroupParticipantPage({
           ) : null}
 
           {group.status === 'drawn' ? (
-            <section className="mb-8 rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-deep)] p-6 text-white shadow-[var(--wn-shadow-sm)] sm:flex sm:items-center sm:justify-between sm:gap-7 sm:p-8">
+            <section className="mb-8 rounded-[var(--wn-radius-xl)] border border-white/10 bg-[image:var(--wn-gradient-card-petrol)] p-6 text-white shadow-[var(--wn-shadow-md)] sm:flex sm:items-center sm:justify-between sm:gap-7 sm:p-8">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-white/65">Lootjes getrokken ✓</p>
-                <h2 className="wn-heading mt-2 text-3xl text-white">Jouw geheime lootje staat klaar.</h2>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-white/75">Alleen jouw persoonlijke deelnemerstoegang kan jouw getrokken persoon en diens wensen openen.</p>
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-white/70">Lootjes getrokken ✓</p>
+                <h2 className="wn-display mt-2 text-3xl font-semibold tracking-[-0.03em] text-white">Jouw geheime lootje staat klaar.</h2>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-white/78">Alleen jouw persoonlijke deelnemerstoegang kan jouw getrokken persoon en diens wensen openen.</p>
               </div>
-              <Link href={`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/mijn/lootje`} className="wn-button mt-5 shrink-0 bg-white text-[var(--wn-petrol-deep)] hover:bg-[var(--wn-cream)] sm:mt-0">Onthul mijn lootje ✦</Link>
+              <Link href={`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/mijn/lootje`} className="wn-button wn-button-warm mt-5 shrink-0 shadow-[0_10px_28px_rgba(0,0,0,0.16)] sm:mt-0">Onthul mijn lootje ✦</Link>
             </section>
           ) : null}
 
