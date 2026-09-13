@@ -54,7 +54,7 @@ export function GiftDrawConfirmation({
       <span className="inline-flex rounded-full border border-[color:rgba(18,59,58,0.14)] bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[var(--wn-petrol)]">Lootjes getrokken ✓</span>
       <h2 className="wn-heading mt-4 text-2xl">De trekking staat vast.</h2>
       <p className="wn-body-muted mt-3 text-sm leading-6">
-        De geheime verdeling is veilig opgeslagen als trekking #{drawVersion}. Deelnemers krijgen hun eigen resultaat pas in L6 te zien.
+        De geheime verdeling is veilig opgeslagen als trekking #{drawVersion}. Iedere deelnemer kan nu via de eigen groepspagina uitsluitend het persoonlijke lootje openen.
       </p>
 
       <div className="mt-6 border-t border-[color:rgba(18,59,58,0.14)] pt-5">

@@ -44,10 +44,14 @@ describe('Lootje & Lijstje final acceptance hardening', () => {
 
   it('uses explicit high-contrast styling for the dark reveal surfaces', () => {
     const participantPage = source('src/app/lootje-lijstje/groep/[groupCode]/mijn/page.tsx')
+    const dashboardStyles = source('src/app/lootje-lijstje/premium-group-dashboard.css')
     const revealCard = source('src/components/gifting/gift-reveal-card.tsx')
 
+    expect(participantPage).toContain('gift-dashboard-next')
     expect(participantPage).toContain('wn-button wn-button-warm')
-    expect(participantPage).toContain('wn-display mt-2 text-3xl')
+    expect(dashboardStyles).toContain('.gift-dashboard-next {')
+    expect(dashboardStyles).toContain('background: var(--gift-petrol-deep);')
+    expect(dashboardStyles).toMatch(/\.gift-dashboard-next \.gift-kicker,[\s\S]*?\.gift-dashboard-next h2,[\s\S]*?\.gift-dashboard-next p \{[\s\S]*?color: white;/)
     expect(revealCard).toContain('wn-button wn-button-warm')
     expect(revealCard).toContain('wn-display mt-3 break-words text-5xl')
   })
