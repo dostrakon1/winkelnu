@@ -188,8 +188,8 @@ export default async function EditGiftListPage({
               <GiftRecoveryLink shareCode={shareCode} />
 
               <section className="rounded-[var(--wn-radius-lg)] border border-[var(--wn-border)] bg-[var(--wn-petrol-soft)] p-5">
-                <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Gekoppeld aan de Winkelnu-catalogus</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Winkelnu-producten blijven gekoppeld via hun productidentiteit. Titel en prijs worden als veilige fallback bewaard als een product later uit de catalogus verdwijnt.</p>
+                <p className="text-sm font-bold text-[var(--wn-petrol-deep)]">Je Winkelnu-wensen blijven herkenbaar</p>
+                <p className="mt-2 text-sm leading-6 text-[var(--wn-text-muted)]">Als je een Winkelnu-product toevoegt, bewaren we genoeg informatie om je wens herkenbaar te houden, ook als het product later verandert of verdwijnt.</p>
               </section>
 
               <GiftListDeletePanel shareCode={shareCode} />
