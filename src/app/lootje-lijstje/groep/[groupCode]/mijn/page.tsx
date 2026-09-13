@@ -126,6 +126,17 @@ export default async function GiftGroupParticipantPage({
             </div>
           ) : null}
 
+          {group.status === 'drawn' ? (
+            <section className="mb-8 rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-[var(--wn-petrol-deep)] p-6 text-white shadow-[var(--wn-shadow-sm)] sm:flex sm:items-center sm:justify-between sm:gap-7 sm:p-8">
+              <div>
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-white/65">Lootjes getrokken ✓</p>
+                <h2 className="wn-heading mt-2 text-3xl text-white">Jouw geheime lootje staat klaar.</h2>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-white/75">Alleen jouw persoonlijke deelnemerstoegang kan jouw getrokken persoon en diens wensen openen.</p>
+              </div>
+              <Link href={`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/mijn/lootje`} className="wn-button mt-5 shrink-0 bg-white text-[var(--wn-petrol-deep)] hover:bg-[var(--wn-cream)] sm:mt-0">Onthul mijn lootje ✦</Link>
+            </section>
+          ) : null}
+
           <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
             <div className="space-y-8">
               <section>
@@ -193,11 +204,11 @@ export default async function GiftGroupParticipantPage({
                   {group.status === 'drawn' ? 'Lootjes getrokken ✓' : 'Nog niet getrokken'}
                 </span>
                 <h2 className="wn-ui-heading mt-4 text-xl">
-                  {group.status === 'drawn' ? 'Je lootje is veilig bepaald.' : 'Je lootje blijft nog geheim.'}
+                  {group.status === 'drawn' ? 'Je lootje kan nu worden onthuld.' : 'Je lootje blijft nog geheim.'}
                 </h2>
                 <p className="wn-body-muted mt-3 text-sm leading-6">
                   {group.status === 'drawn'
-                    ? 'De geheime verdeling staat vast. Winkelnu onthult in L6 uitsluitend jouw eigen ontvanger en diens lijstje.'
+                    ? 'Open “Mijn lootje” om uitsluitend jouw getrokken persoon, diens wensen en jouw privé geregeld-markeringen te bekijken.'
                     : 'De groep, jouw lijstje en je no-login hersteltoegang staan klaar. Zodra de organisator trekt, wordt één geldige geheime verdeling opgeslagen.'}
                 </p>
               </section>
