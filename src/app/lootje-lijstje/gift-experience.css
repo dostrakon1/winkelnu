@@ -1,0 +1,503 @@
+.gift-experience-root {
+  --gift-bg: #fbf7ef;
+  --gift-bg-soft: #f4eee3;
+  --gift-surface: rgba(255, 255, 255, 0.9);
+  --gift-surface-strong: #ffffff;
+  --gift-petrol: #123b3a;
+  --gift-petrol-deep: #0d2e2d;
+  --gift-petrol-soft: #dfe9e4;
+  --gift-warm: #e9783d;
+  --gift-warm-soft: #f8e5d8;
+  --gift-ink: #1e2423;
+  --gift-muted: #6f726f;
+  --gift-line: rgba(18, 59, 58, 0.13);
+  --gift-shadow-sm: 0 10px 32px rgba(13, 46, 45, 0.07);
+  --gift-shadow-md: 0 18px 48px rgba(13, 46, 45, 0.1);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 9% 2%, rgba(233, 120, 61, 0.09), transparent 28rem),
+    radial-gradient(circle at 90% 8%, rgba(18, 59, 58, 0.08), transparent 31rem),
+    var(--gift-bg);
+  color: var(--gift-ink);
+}
+
+.gift-experience-content {
+  min-height: calc(100vh - 9rem);
+}
+
+.gift-experience-content > div {
+  min-height: inherit;
+  background: transparent !important;
+}
+
+/* Existing gifting pages still render the storefront shell themselves. The
+   route layout owns the premium shell, so only those direct legacy wrappers
+   are suppressed. This keeps page-level business logic untouched. */
+.gift-experience-content > div > header:first-child,
+.gift-experience-content > div > footer:last-child {
+  display: none !important;
+}
+
+.gift-shell-header {
+  position: sticky;
+  top: 0;
+  z-index: 70;
+  border-bottom: 1px solid rgba(18, 59, 58, 0.1);
+  background: rgba(251, 247, 239, 0.92);
+  box-shadow: 0 8px 30px rgba(13, 46, 45, 0.055);
+  backdrop-filter: blur(18px) saturate(1.15);
+}
+
+.gift-shell-container {
+  width: min(100% - 2rem, 74rem);
+  margin-inline: auto;
+}
+
+.gift-shell-header .gift-shell-container {
+  display: flex;
+  min-height: 4.75rem;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.gift-shell-skip {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  translate: 0 -180%;
+  border-radius: 999px;
+  background: var(--gift-petrol-deep);
+  color: white;
+  padding: 0.7rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  transition: translate 140ms ease;
+}
+
+.gift-shell-skip:focus {
+  translate: 0 0;
+}
+
+.gift-shell-brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  color: var(--gift-petrol-deep);
+}
+
+.gift-shell-mark {
+  position: relative;
+  display: inline-grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(18, 59, 58, 0.16);
+  border-radius: 0.95rem;
+  background: var(--gift-petrol-deep);
+  color: white;
+  box-shadow: 0 8px 22px rgba(13, 46, 45, 0.15);
+  font-size: 1.08rem;
+  font-weight: 900;
+  letter-spacing: -0.08em;
+}
+
+.gift-shell-mark-dot {
+  position: absolute;
+  right: 0.33rem;
+  top: 0.3rem;
+  width: 0.46rem;
+  height: 0.46rem;
+  border: 2px solid var(--gift-petrol-deep);
+  border-radius: 999px;
+  background: var(--gift-warm);
+}
+
+.gift-shell-brand-copy {
+  display: grid;
+  line-height: 1.05;
+}
+
+.gift-shell-brand-copy strong {
+  font-size: 0.98rem;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+}
+
+.gift-shell-brand-copy span {
+  margin-top: 0.28rem;
+  color: var(--gift-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.gift-shell-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+  padding: 0.28rem;
+  border: 1px solid rgba(18, 59, 58, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.gift-shell-nav a {
+  min-height: 2.35rem;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.55rem 0.9rem;
+  color: rgba(13, 46, 45, 0.68);
+  font-size: 0.8rem;
+  font-weight: 800;
+  transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.gift-shell-nav a:hover {
+  background: var(--gift-petrol-soft);
+  color: var(--gift-petrol-deep);
+}
+
+.gift-shell-nav a[aria-current='page'] {
+  background: var(--gift-petrol-deep);
+  color: white;
+  box-shadow: 0 5px 14px rgba(13, 46, 45, 0.14);
+}
+
+.gift-shell-exit {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(18, 59, 58, 0.14);
+  border-radius: 999px;
+  background: white;
+  color: var(--gift-petrol-deep);
+  padding: 0.68rem 1rem;
+  font-size: 0.78rem;
+  font-weight: 850;
+  box-shadow: 0 5px 16px rgba(13, 46, 45, 0.05);
+  transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.gift-shell-exit:hover {
+  border-color: rgba(18, 59, 58, 0.28);
+  background: var(--gift-petrol-soft);
+  transform: translateY(-1px);
+}
+
+.gift-shell-exit-short {
+  display: none;
+}
+
+.gift-shell-footer {
+  border-top: 1px solid var(--gift-line);
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.gift-shell-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-block: 2rem;
+}
+
+.gift-shell-footer-brand {
+  color: var(--gift-petrol-deep);
+  font-weight: 850;
+  letter-spacing: -0.02em;
+}
+
+.gift-shell-footer p {
+  margin-top: 0.32rem;
+  max-width: 34rem;
+  color: var(--gift-muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.gift-shell-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 1rem;
+  color: var(--gift-muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.gift-shell-footer nav a:hover {
+  color: var(--gift-petrol-deep);
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+
+/* Scoped refinement of the existing Winkelnu primitives. */
+.gift-experience-root .wn-heading {
+  text-wrap: balance;
+}
+
+.gift-experience-root .wn-body-muted {
+  color: rgba(30, 36, 35, 0.68);
+}
+
+.gift-experience-root .wn-button {
+  min-height: 3.05rem;
+  box-shadow: 0 7px 18px rgba(13, 46, 45, 0.08);
+}
+
+.gift-experience-root .wn-button:hover {
+  transform: translateY(-1px);
+}
+
+.gift-experience-root .wn-button-primary {
+  background: var(--gift-petrol-deep);
+}
+
+.gift-experience-root .wn-button-primary:hover {
+  background: #153f3e;
+}
+
+.gift-experience-root .wn-button-secondary {
+  border-color: rgba(18, 59, 58, 0.16);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.gift-experience-root .wn-input {
+  border-color: rgba(18, 59, 58, 0.14);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.gift-experience-root main section.rounded-\[var\(--wn-radius-xl\)\] {
+  box-shadow: var(--gift-shadow-sm);
+}
+
+/* Premium gifting primitives used by the next UX upgrade steps. */
+.gift-surface {
+  border: 1px solid var(--gift-line);
+  border-radius: 1.6rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: var(--gift-surface);
+  box-shadow: var(--gift-shadow-sm);
+}
+
+.gift-surface-soft {
+  background: rgba(223, 233, 228, 0.62);
+}
+
+.gift-surface-dark {
+  border-color: rgba(255, 255, 255, 0.09);
+  background: var(--gift-petrol-deep);
+  color: white;
+  box-shadow: var(--gift-shadow-md);
+}
+
+.gift-surface-warm {
+  background: rgba(248, 229, 216, 0.76);
+}
+
+.gift-kicker {
+  color: var(--gift-warm);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+}
+
+.gift-section-heading h2 {
+  margin-top: 0.55rem;
+  color: var(--gift-ink);
+  font-family: var(--wn-font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.gift-section-heading > p:last-child {
+  margin-top: 0.75rem;
+  max-width: 42rem;
+  color: var(--gift-muted);
+  line-height: 1.7;
+}
+
+.gift-status-pill {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.42rem 0.72rem;
+  font-size: 0.72rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.gift-status-pill-neutral {
+  border-color: var(--gift-line);
+  background: white;
+  color: var(--gift-muted);
+}
+
+.gift-status-pill-success {
+  background: #e5f1e9;
+  color: #315f43;
+}
+
+.gift-status-pill-warm {
+  background: var(--gift-warm-soft);
+  color: #8a4a1d;
+}
+
+.gift-status-pill-dark {
+  background: var(--gift-petrol-deep);
+  color: white;
+}
+
+.gift-progress {
+  overflow-x: auto;
+  padding-block: 0.25rem;
+  scrollbar-width: none;
+}
+
+.gift-progress::-webkit-scrollbar {
+  display: none;
+}
+
+.gift-progress ol {
+  display: flex;
+  min-width: max-content;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+}
+
+.gift-progress li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-right: 2.3rem;
+  color: var(--gift-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.gift-progress li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0.55rem;
+  width: 1.2rem;
+  height: 1px;
+  background: rgba(18, 59, 58, 0.2);
+}
+
+.gift-progress-dot {
+  display: inline-grid;
+  width: 1.65rem;
+  height: 1.65rem;
+  place-items: center;
+  border: 1px solid var(--gift-line);
+  border-radius: 999px;
+  background: white;
+  font-size: 0.66rem;
+  font-weight: 900;
+}
+
+.gift-progress li[data-state='done'] {
+  color: var(--gift-petrol);
+}
+
+.gift-progress li[data-state='done'] .gift-progress-dot {
+  border-color: transparent;
+  background: var(--gift-petrol-soft);
+  color: var(--gift-petrol-deep);
+}
+
+.gift-progress li[data-state='current'] {
+  color: var(--gift-petrol-deep);
+}
+
+.gift-progress li[data-state='current'] .gift-progress-dot {
+  border-color: var(--gift-petrol-deep);
+  background: var(--gift-petrol-deep);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(18, 59, 58, 0.08);
+}
+
+@media (max-width: 767px) {
+  .gift-shell-header .gift-shell-container {
+    min-height: 4.25rem;
+    gap: 0.7rem;
+  }
+
+  .gift-shell-brand-copy span {
+    display: none;
+  }
+
+  .gift-shell-nav {
+    display: none;
+  }
+
+  .gift-shell-exit {
+    margin-left: auto;
+    min-height: 2.5rem;
+    padding-inline: 0.8rem;
+  }
+
+  .gift-shell-exit-long {
+    display: none;
+  }
+
+  .gift-shell-exit-short {
+    display: inline;
+  }
+
+  .gift-shell-footer-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .gift-shell-footer nav {
+    justify-content: flex-start;
+  }
+
+  .gift-experience-root .wn-button:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .gift-shell-container {
+    width: min(100% - 1.25rem, 74rem);
+  }
+
+  .gift-shell-mark {
+    width: 2.45rem;
+    height: 2.45rem;
+    border-radius: 0.82rem;
+  }
+
+  .gift-shell-brand-copy strong {
+    font-size: 0.88rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gift-shell-skip,
+  .gift-shell-nav a,
+  .gift-shell-exit {
+    transition: none;
+  }
+}
