@@ -91,8 +91,11 @@ export default async function GiftGroupInvitePage({
                 <div className="gift-join-card text-center">
                   <p className="gift-kicker">Deelname gesloten</p>
                   <h2 className="mt-2 font-[var(--wn-font-display)] text-3xl font-semibold tracking-[-0.04em] text-[var(--gift-petrol-deep)]">Deze groep is niet meer open.</h2>
-                  <p className="mt-3 text-sm leading-7 text-[var(--gift-muted)]">De organisator kan je vertellen of de trekking al is gestart of de groep vol is.</p>
-                  <Link href="/lootje-lijstje" className="wn-button wn-button-secondary mt-6 w-full">Naar Lootje &amp; Lijstje</Link>
+                  <p className="mt-3 text-sm leading-7 text-[var(--gift-muted)]">De organisator kan je vertellen of de trekking al is gestart of de groep vol is. Wil je zelf lootjes trekken? Start dan gratis een eigen groep.</p>
+                  <div className="mt-6 flex flex-col gap-3">
+                    <Link href="/lootje-lijstje/groep/nieuw" className="wn-button wn-button-primary w-full">Start mijn eigen groep</Link>
+                    <Link href="/lootje-lijstje" className="wn-button wn-button-secondary w-full">Naar Lootje &amp; Lijstje</Link>
+                  </div>
                 </div>
               )}
             </section>

@@ -103,6 +103,20 @@ export default async function SharedGiftListPage({ params }: { params: Promise<{
             </div>
             <Link href="/zoeken" className="wn-button wn-button-primary">Cadeau zoeken →</Link>
           </div>
+
+          <aside className="mt-5 overflow-hidden rounded-[1.5rem] border border-[rgba(233,120,61,0.24)] bg-[var(--gift-petrol-deep)] p-6 text-[#fff7ec] shadow-[var(--gift-shadow-sm)] sm:p-8" aria-label="Zelf Lootje & Lijstje gebruiken">
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+              <div className="max-w-2xl">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#ffb889]">✦ Ook iets te vieren?</p>
+                <h2 className="mt-2 font-[var(--wn-font-display)] text-3xl font-semibold tracking-[-0.035em] text-[#fff7ec]">Maak je eigen lijstje of start een lootjesgroep.</h2>
+                <p className="mt-3 text-sm leading-7 text-[#f4e7d8]/75">Geen account nodig. Maak een lijstje voor jezelf of regel meteen een groep en deel de uitnodiging met familie, vrienden of collega’s.</p>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+                <Link href="/lootje-lijstje/lijstje/nieuw" className="wn-button wn-button-warm w-full justify-center sm:w-auto">Maak mijn lijstje</Link>
+                <Link href="/lootje-lijstje/groep/nieuw" className="wn-button wn-button-secondary w-full justify-center border-white/20 bg-white/10 text-white hover:bg-white/15 sm:w-auto">Start een groep</Link>
+              </div>
+            </div>
+          </aside>
         </section>
       </main>
     </div>
