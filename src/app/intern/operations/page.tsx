@@ -74,6 +74,7 @@ export default async function InternalOperationsPage({ searchParams }: { searchP
           <Link href="/intern/operations" aria-current="page" className="rounded-lg border border-cyan-800 bg-cyan-950/35 px-3 py-2 text-cyan-200">Partner operations</Link>
           <Link href="/intern/operations/search" className="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 hover:border-slate-500 hover:text-white">Search learning</Link>
           <Link href="/intern/operations/campaigns" className="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 hover:border-orange-700 hover:text-orange-200">Campagnes</Link>
+          <Link href="/intern/operations/gifting" className="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 hover:border-violet-700 hover:text-violet-200">Lootje & Lijstje</Link>
         </nav>
       </div>
       <InternalOperationsDashboard

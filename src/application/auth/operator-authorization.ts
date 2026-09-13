@@ -2,6 +2,7 @@ export type OperatorRole = 'owner' | 'operator' | 'read_only'
 
 export type OperatorPermission =
   | 'read_operations'
+  | 'read_gifting_insights'
   | 'retry_feed'
   | 'pause_feed'
   | 'resume_feed'
@@ -9,8 +10,16 @@ export type OperatorPermission =
   | 'manage_operators'
 
 const permissions: Record<OperatorRole, readonly OperatorPermission[]> = {
-  owner: ['read_operations', 'retry_feed', 'pause_feed', 'resume_feed', 'activate_partner', 'manage_operators'],
-  operator: ['read_operations', 'retry_feed', 'pause_feed', 'resume_feed'],
+  owner: [
+    'read_operations',
+    'read_gifting_insights',
+    'retry_feed',
+    'pause_feed',
+    'resume_feed',
+    'activate_partner',
+    'manage_operators',
+  ],
+  operator: ['read_operations', 'read_gifting_insights', 'retry_feed', 'pause_feed', 'resume_feed'],
   read_only: ['read_operations'],
 }
 
