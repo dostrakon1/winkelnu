@@ -1,24 +1,20 @@
 import type { ReactNode } from 'react'
 import { notFound } from 'next/navigation'
 import { isGiftingEnabled } from '@/application/gifting/gifting-release'
+import { GiftExperienceFooter } from '@/components/gifting/gift-experience-footer'
+import { GiftExperienceHeader } from '@/components/gifting/gift-experience-header'
+import './gift-experience.css'
 
 export const dynamic = 'force-dynamic'
 
 export default function GiftLayout({ children }: { children: ReactNode }) {
-  if (!isGiftingEnabled()) {
-    const rawFlag = process.env.WINKELNU_GIFTING_ENABLED
-    const trimmedSecret = process.env.WINKELNU_GIFT_SESSION_SECRET?.trim()
+  if (!isGiftingEnabled()) notFound()
 
-    console.warn('[gifting-release-diagnostic]', {
-      flagPresent: rawFlag !== undefined,
-      flagExactTrue: rawFlag === 'true',
-      secretPresent: Boolean(trimmedSecret),
-      secretBytes: trimmedSecret ? Buffer.byteLength(trimmedSecret, 'utf8') : 0,
-      secretAtLeast32Bytes: Boolean(trimmedSecret && Buffer.byteLength(trimmedSecret, 'utf8') >= 32),
-    })
-
-    notFound()
-  }
-
-  return children
+  return (
+    <div className="gift-experience-root">
+      <GiftExperienceHeader />
+      <div className="gift-experience-content">{children}</div>
+      <GiftExperienceFooter />
+    </div>
+  )
 }
