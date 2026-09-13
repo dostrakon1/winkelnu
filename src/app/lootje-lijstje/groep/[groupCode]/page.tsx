@@ -4,8 +4,6 @@ import { notFound } from 'next/navigation'
 import { joinGiftGroupAction } from '@/app/lootje-lijstje/groep/actions'
 import { getGiftGroupInvite, getParticipantGiftGroupContext } from '@/application/gifting/gift-groups'
 import { GiftGroupJoinForm } from '@/components/gifting/gift-group-join-form'
-import { WinkelnuFooter } from '@/components/storefront/winkelnu-footer'
-import { WinkelnuHeader } from '@/components/storefront/winkelnu-header'
 
 export const metadata: Metadata = {
   title: 'Doe mee met Lootje & Lijstje',
@@ -47,51 +45,60 @@ export default async function GiftGroupInvitePage({
   const error = first(query.fout)
 
   return (
-    <div className="min-h-screen bg-[var(--wn-cream)] text-[var(--wn-ink)]">
-      <WinkelnuHeader />
+    <div className="min-h-screen text-[var(--gift-ink)]">
       <main id="inhoud">
-        <section className="border-b border-[var(--wn-border)] bg-[image:var(--wn-gradient-welcome)]">
-          <div className="wn-container py-12 sm:py-16">
-            <p className="wn-eyebrow">Je bent uitgenodigd</p>
-            <h1 className="wn-heading mt-3 max-w-3xl text-4xl sm:text-5xl">{group.name}</h1>
-            <div className="mt-5 flex flex-wrap gap-2 text-sm font-semibold text-[var(--wn-text-muted)]">
-              <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{occasionLabels[group.occasion]}</span>
-              <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">{participantCount === 1 ? '1 deelnemer' : `${participantCount} deelnemers`}</span>
-              {group.budgetCents !== undefined ? <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">Budget {money(group.budgetCents)}</span> : null}
-              {group.eventDate ? (
-                <span className="rounded-full border border-[var(--wn-border)] bg-white/70 px-3 py-1.5">
-                  {new Intl.DateTimeFormat('nl-NL', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${group.eventDate}T00:00:00Z`))}
-                </span>
-              ) : null}
+        <section className="gift-shell-container py-8 sm:py-12 lg:py-16">
+          {error ? (
+            <div role="alert" className="mb-4 rounded-[1.1rem] border border-[#d9a99f] bg-[#fff3ef] p-4 text-sm font-semibold leading-6 text-[#7f2d23]">
+              {error}
             </div>
-          </div>
-        </section>
+          ) : null}
 
-        <section className="wn-container py-10 sm:py-14">
-          <div className="mx-auto max-w-3xl">
-            {error ? (
-              <div role="alert" className="mb-6 rounded-xl border border-[#d9a99f] bg-[#fff3ef] p-4 text-sm font-semibold leading-6 text-[#7f2d23]">{error}</div>
-            ) : null}
+          <div className="gift-invite-shell">
+            <section className="gift-invite-card" aria-labelledby="invite-title">
+              <p className="gift-kicker text-[#ffb889]">Je bent uitgenodigd</p>
+              <h1 id="invite-title">{group.name}</h1>
+              <p className="relative z-[1] mt-4 max-w-xl text-sm leading-7 text-white/70">
+                Doe mee met de groep, maak daarna je eigen verlanglijstje en wacht tot de organisator de lootjes trekt.
+              </p>
 
-            {participantContext ? (
-              <div className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-7 text-center shadow-[var(--wn-shadow-sm)] sm:p-9">
-                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--wn-petrol-soft)] text-xl text-[var(--wn-petrol)]" aria-hidden="true">✓</span>
-                <h2 className="wn-heading mt-4 text-3xl">Je doet al mee.</h2>
-                <p className="wn-body-muted mt-3">Je bent in deze browser bekend als <strong className="text-[var(--wn-petrol-deep)]">{participantContext.participant.displayName}</strong>.</p>
-                <Link href={`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/mijn`} className="wn-button wn-button-primary mt-6">Naar mijn groep →</Link>
+              <div className="gift-invite-meta">
+                <span>{occasionLabels[group.occasion]}</span>
+                <span>{participantCount === 1 ? '1 deelnemer' : `${participantCount} deelnemers`}</span>
+                {group.budgetCents !== undefined ? <span>Budget {money(group.budgetCents)}</span> : null}
+                {group.eventDate ? (
+                  <span>{new Intl.DateTimeFormat('nl-NL', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${group.eventDate}T00:00:00Z`))}</span>
+                ) : null}
               </div>
-            ) : joinable ? (
-              <GiftGroupJoinForm action={joinGiftGroupAction} groupCode={groupCode} />
-            ) : (
-              <div className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-7 text-center shadow-[var(--wn-shadow-sm)] sm:p-9">
-                <h2 className="wn-heading text-3xl">De groep is niet meer open voor nieuwe deelnemers.</h2>
-                <p className="wn-body-muted mt-3">De organisator kan je vertellen of de trekking al is gestart of de groep vol is.</p>
+
+              <div className="relative z-[1] mt-8 border-t border-white/10 pt-5 text-xs font-semibold leading-6 text-white/55">
+                Alleen deelnemers met hun eigen persoonlijke toegang kunnen later hun getrokken persoon zien.
               </div>
-            )}
+            </section>
+
+            <section aria-label="Deelnemen aan groep">
+              {participantContext ? (
+                <div className="gift-join-card text-center">
+                  <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-[var(--gift-petrol-soft)] text-lg font-black text-[var(--gift-petrol)]" aria-hidden="true">✓</span>
+                  <p className="gift-kicker mt-5">Je bent al binnen</p>
+                  <h2 className="mt-2 font-[var(--wn-font-display)] text-3xl font-semibold tracking-[-0.04em] text-[var(--gift-petrol-deep)]">Welkom terug.</h2>
+                  <p className="mt-3 text-sm leading-7 text-[var(--gift-muted)]">Je bent in deze browser bekend als <strong className="text-[var(--gift-petrol-deep)]">{participantContext.participant.displayName}</strong>.</p>
+                  <Link href={`/lootje-lijstje/groep/${encodeURIComponent(groupCode)}/mijn`} className="wn-button wn-button-primary mt-6 w-full">Naar mijn groep →</Link>
+                </div>
+              ) : joinable ? (
+                <GiftGroupJoinForm action={joinGiftGroupAction} groupCode={groupCode} />
+              ) : (
+                <div className="gift-join-card text-center">
+                  <p className="gift-kicker">Deelname gesloten</p>
+                  <h2 className="mt-2 font-[var(--wn-font-display)] text-3xl font-semibold tracking-[-0.04em] text-[var(--gift-petrol-deep)]">Deze groep is niet meer open.</h2>
+                  <p className="mt-3 text-sm leading-7 text-[var(--gift-muted)]">De organisator kan je vertellen of de trekking al is gestart of de groep vol is.</p>
+                  <Link href="/lootje-lijstje" className="wn-button wn-button-secondary mt-6 w-full">Naar Lootje &amp; Lijstje</Link>
+                </div>
+              )}
+            </section>
           </div>
         </section>
       </main>
-      <WinkelnuFooter />
     </div>
   )
 }

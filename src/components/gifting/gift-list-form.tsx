@@ -14,12 +14,20 @@ function amount(cents: number | undefined): string {
 
 export function GiftListForm({ action, submitLabel, shareCode, list }: GiftListFormProps) {
   return (
-    <form action={action} className="space-y-6">
+    <form action={action} className="gift-premium-form">
       {shareCode ? <input type="hidden" name="shareCode" value={shareCode} /> : null}
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-[var(--wn-petrol-deep)]">Jouw naam</span>
+      {!shareCode ? (
+        <div className="gift-premium-form-header">
+          <p className="gift-kicker">Mijn lijstje</p>
+          <h2>Begin met de basis.</h2>
+          <p>Na deze stap voeg je pas de echte wensen toe. Je kunt je lijstje later altijd aanpassen.</p>
+        </div>
+      ) : null}
+
+      <div className="gift-premium-form-grid">
+        <label className="gift-premium-field">
+          <span className="gift-premium-field-label"><span>Jouw naam</span></span>
           <input
             name="displayName"
             required
@@ -32,8 +40,8 @@ export function GiftListForm({ action, submitLabel, shareCode, list }: GiftListF
           />
         </label>
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-[var(--wn-petrol-deep)]">Waarvoor is het lijstje?</span>
+        <label className="gift-premium-field">
+          <span className="gift-premium-field-label"><span>Waarvoor is het lijstje?</span></span>
           <select name="occasion" defaultValue={list?.occasion ?? 'sinterklaas'} className="wn-input">
             <option value="sinterklaas">Sinterklaas</option>
             <option value="kerst">Kerst / Secret Santa</option>
@@ -41,53 +49,75 @@ export function GiftListForm({ action, submitLabel, shareCode, list }: GiftListF
             <option value="anders">Iets anders</option>
           </select>
         </label>
-      </div>
 
-      <label className="block">
-        <span className="mb-2 block text-sm font-bold text-[var(--wn-petrol-deep)]">Titel <span className="font-normal text-[var(--wn-text-muted)]">(optioneel)</span></span>
-        <input
-          name="title"
-          maxLength={100}
-          defaultValue={list?.title}
-          className="wn-input"
-          placeholder="Bijvoorbeeld Mijn Sinterklaaslijstje"
-        />
-      </label>
-
-      <div className="grid gap-5 sm:grid-cols-3">
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-[var(--wn-petrol-deep)]">Vanaf € <span className="font-normal text-[var(--wn-text-muted)]">(optioneel)</span></span>
+        <label className="gift-premium-field gift-premium-field-wide">
+          <span className="gift-premium-field-label">
+            <span>Titel</span>
+            <small>optioneel</small>
+          </span>
           <input
-            name="budgetMin"
-            inputMode="decimal"
-            defaultValue={amount(list?.budgetMinCents)}
+            name="title"
+            maxLength={100}
+            defaultValue={list?.title}
             className="wn-input"
-            placeholder="10"
+            placeholder="Bijvoorbeeld Mijn Sinterklaaslijstje"
           />
         </label>
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-[var(--wn-petrol-deep)]">Tot € <span className="font-normal text-[var(--wn-text-muted)]">(optioneel)</span></span>
-          <input
-            name="budgetMax"
-            inputMode="decimal"
-            defaultValue={amount(list?.budgetMaxCents)}
-            className="wn-input"
-            placeholder="50"
-          />
+        <label className="gift-premium-field">
+          <span className="gift-premium-field-label">
+            <span>Budget vanaf</span>
+            <small>optioneel</small>
+          </span>
+          <div className="relative">
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-bold text-[var(--wn-text-muted)]">€</span>
+            <input
+              name="budgetMin"
+              inputMode="decimal"
+              defaultValue={amount(list?.budgetMinCents)}
+              className="wn-input pl-9"
+              placeholder="10"
+            />
+          </div>
         </label>
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-[var(--wn-petrol-deep)]">Datum <span className="font-normal text-[var(--wn-text-muted)]">(optioneel)</span></span>
+        <label className="gift-premium-field">
+          <span className="gift-premium-field-label">
+            <span>Budget tot</span>
+            <small>optioneel</small>
+          </span>
+          <div className="relative">
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-bold text-[var(--wn-text-muted)]">€</span>
+            <input
+              name="budgetMax"
+              inputMode="decimal"
+              defaultValue={amount(list?.budgetMaxCents)}
+              className="wn-input pl-9"
+              placeholder="50"
+            />
+          </div>
+        </label>
+
+        <label className="gift-premium-field gift-premium-field-wide">
+          <span className="gift-premium-field-label">
+            <span>Datum</span>
+            <small>optioneel</small>
+          </span>
           <input name="eventDate" type="date" defaultValue={list?.eventDate} className="wn-input" />
         </label>
       </div>
 
-      <p className="text-sm leading-6 text-[var(--wn-text-muted)]">Geen account nodig. Je krijgt straks een geheime beheer-toegang voor dit lijstje.</p>
+      <div className="gift-premium-help">
+        <strong className="text-[var(--gift-petrol-deep)]">Geen account nodig.</strong><br />
+        Je krijgt na het aanmaken een geheime beheer-toegang. De link die je met anderen deelt is alleen om je wensen te bekijken.
+      </div>
 
-      <button type="submit" className="wn-button wn-button-primary w-full sm:w-auto">
-        {submitLabel}
-      </button>
+      <div className="gift-premium-form-actions">
+        <button type="submit" className="wn-button wn-button-primary">
+          {submitLabel}
+        </button>
+        {!shareCode ? <span>Je kunt alles later wijzigen</span> : null}
+      </div>
     </form>
   )
 }
