@@ -1,12 +1,17 @@
 'use client'
 
 import { useState, useSyncExternalStore } from 'react'
+import {
+  recordGiftingInteraction,
+  type GiftingInsightSurface,
+} from '@/components/gifting/gifting-insight-beacon'
 
 type GiftShareActionsProps = {
   sharePath: string
   title: string
   copyLabel?: string
   whatsappLabel?: string
+  sourceSurface?: Extract<GiftingInsightSurface, 'group_management' | 'standalone_list_editor'>
 }
 
 type ShareStatus = 'idle' | 'copied' | 'error'
@@ -23,11 +28,16 @@ function getNativeShareSnapshot(): boolean {
   return typeof navigator !== 'undefined' && typeof navigator.share === 'function'
 }
 
+function inferredShareSurface(sharePath: string): Extract<GiftingInsightSurface, 'group_management' | 'standalone_list_editor'> {
+  return sharePath.includes('/lootje-lijstje/groep/') ? 'group_management' : 'standalone_list_editor'
+}
+
 export function GiftShareActions({
   sharePath,
   title,
   copyLabel = 'Kopieer lijstje-link',
   whatsappLabel = 'Deel via WhatsApp',
+  sourceSurface,
 }: GiftShareActionsProps) {
   const [status, setStatus] = useState<ShareStatus>('idle')
   const nativeShareAvailable = useSyncExternalStore(
@@ -35,6 +45,7 @@ export function GiftShareActions({
     getNativeShareSnapshot,
     () => false,
   )
+  const interactionSurface = sourceSurface ?? inferredShareSurface(sharePath)
 
   function resetStatusLater() {
     window.setTimeout(() => setStatus('idle'), 2200)
@@ -44,6 +55,7 @@ export function GiftShareActions({
     try {
       if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable')
       await navigator.clipboard.writeText(absoluteUrl(sharePath))
+      recordGiftingInteraction('share_link_copied', interactionSurface)
       setStatus('copied')
       resetStatusLater()
     } catch {
@@ -61,6 +73,7 @@ export function GiftShareActions({
         text: title,
         url: absoluteUrl(sharePath),
       })
+      recordGiftingInteraction('native_share_invoked', interactionSurface)
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return
       setStatus('error')
@@ -70,6 +83,7 @@ export function GiftShareActions({
 
   function shareWhatsApp() {
     const text = `${title}\n\n${absoluteUrl(sharePath)}`
+    recordGiftingInteraction('whatsapp_share_clicked', interactionSurface)
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer')
   }
 

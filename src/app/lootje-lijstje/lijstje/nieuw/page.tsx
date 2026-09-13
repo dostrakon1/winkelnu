@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createGiftListAction } from '@/app/lootje-lijstje/actions'
 import { GiftListForm } from '@/components/gifting/gift-list-form'
+import { GiftingInsightBeacon } from '@/components/gifting/gifting-insight-beacon'
 
 export const metadata: Metadata = {
   title: 'Nieuw verlanglijstje',
@@ -19,6 +20,7 @@ export default async function NewGiftListPage({
 
   return (
     <div className="min-h-screen text-[var(--gift-ink)]">
+      <GiftingInsightBeacon eventType="list_create_form_viewed" sourceSurface="list_create" />
       <main id="inhoud">
         <section className="gift-onboarding-hero">
           <div className="gift-shell-container gift-onboarding-hero-inner">

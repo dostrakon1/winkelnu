@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { joinGiftGroupAction } from '@/app/lootje-lijstje/groep/actions'
 import { getGiftGroupInvite, getParticipantGiftGroupContext } from '@/application/gifting/gift-groups'
 import { GiftGroupJoinForm } from '@/components/gifting/gift-group-join-form'
+import { GiftingInsightBeacon } from '@/components/gifting/gifting-insight-beacon'
 
 export const metadata: Metadata = {
   title: 'Doe mee met Lootje & Lijstje',
@@ -46,6 +47,7 @@ export default async function GiftGroupInvitePage({
 
   return (
     <div className="min-h-screen text-[var(--gift-ink)]">
+      <GiftingInsightBeacon eventType="group_invite_viewed" sourceSurface="group_invite" />
       <main id="inhoud">
         <section className="gift-shell-container py-8 sm:py-12 lg:py-16">
           {error ? (
