@@ -26,10 +26,12 @@ describe('Lootje & Lijstje GI5 health and retention', () => {
 
   it('records only aggregate rate-limit rejection actions', () => {
     const migration = source('supabase/migrations/0034_gifting_insights_health_retention.sql')
+    const metricCalls = [...migration.matchAll(/increment_gifting_daily_metric\(([\s\S]*?)\);/g)].map((match) => match[1])
 
     expect(migration).toContain("'rate_limit_rejected'")
     expect(migration).toContain("'action'")
-    expect(migration).not.toMatch(/increment_gifting_daily_metric\([\s\S]{0,300}p_bucket_key/)
+    expect(metricCalls.length).toBeGreaterThan(0)
+    expect(metricCalls.some((call) => call.includes('p_bucket_key'))).toBe(false)
   })
 
   it('checks draw integrity, expiry consistency and participant limits without exposing records', () => {
