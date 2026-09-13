@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
 import { resolveSiteOrigin } from '@/config/sites'
-import { categories } from '@/content/categories'
+import { categories as editorialCategoryEntries } from '@/content/categories'
 import { editorialCollections } from '@/content/collections'
 import { buyingGuides } from '@/content/editorial-catalog'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const promotionalRoutes = ['/collecties/black-friday', '/collecties/cyber-monday']
   const editorialRoutes = [
     '/koopgidsen',
-    ...categories.map((category) => `/koopgidsen/categorie/${category.slug}`),
+    ...editorialCategoryEntries.map((category) => `/koopgidsen/categorie/${category.slug}`),
     ...buyingGuides.map((guide) => `/koopgidsen/${guide.slug}`),
     ...editorialCollections.map((collection) => `/collecties/${collection.slug}`),
   ]
@@ -28,13 +28,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (!isPublicCatalogEnabled()) return entries
 
   const catalog = await createStorefrontCatalogService()
-  const [categories, products] = await Promise.all([
+  const [catalogCategories, products] = await Promise.all([
     catalog.listCategories(),
     catalog.listProducts({ limit: 500 }),
   ])
   return [
     ...entries,
-    ...categories.map((category) => ({ url: `${baseUrl}/categorie/${category.slug}`, changeFrequency: 'daily' as const, priority: 0.8 })),
+    ...catalogCategories.map((category) => ({ url: `${baseUrl}/categorie/${category.slug}`, changeFrequency: 'daily' as const, priority: 0.8 })),
     ...products.map(({ product }) => ({ url: `${baseUrl}/product/${product.slug}`, changeFrequency: 'daily' as const, priority: 0.7 })),
   ]
 }
