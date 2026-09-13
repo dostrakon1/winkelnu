@@ -5,22 +5,23 @@ type GiftGroupJoinFormProps = {
 
 export function GiftGroupJoinForm({ action, groupCode }: GiftGroupJoinFormProps) {
   return (
-    <form action={action} className="rounded-[var(--wn-radius-xl)] border border-[var(--wn-border)] bg-white p-6 shadow-[var(--wn-shadow-sm)] sm:p-8">
+    <form action={action} className="gift-join-card">
       <input type="hidden" name="groupCode" value={groupCode} />
-      <p className="wn-eyebrow">Doe mee</p>
-      <h2 className="wn-heading mt-2 text-2xl sm:text-3xl">Hoe mogen we je noemen?</h2>
-      <p className="wn-body-muted mt-3 leading-7">Alleen je naam is nodig. Die is zichtbaar voor de andere deelnemers van deze groep.</p>
+      <p className="gift-kicker">Doe mee</p>
+      <h2 className="mt-2 font-[var(--wn-font-display)] text-3xl font-semibold tracking-[-0.04em] text-[var(--gift-petrol-deep)]">Hoe mogen we je noemen?</h2>
+      <p className="mt-3 text-sm leading-7 text-[var(--gift-muted)]">Alleen je naam is nodig. Die is zichtbaar voor de andere deelnemers van deze groep.</p>
 
-      <label className="mt-6 block">
-        <span className="mb-2 block text-sm font-bold text-[var(--wn-petrol-deep)]">Jouw naam</span>
+      <label className="gift-premium-field mt-6">
+        <span className="gift-premium-field-label"><span>Jouw naam</span></span>
         <input name="displayName" required minLength={2} maxLength={80} className="wn-input" placeholder="Bijvoorbeeld Dogan" autoComplete="name" />
       </label>
 
-      <div className="mt-5 rounded-[var(--wn-radius-lg)] bg-[var(--wn-petrol-soft)] p-4 text-sm leading-6 text-[var(--wn-text-muted)]">
+      <div className="gift-premium-help mt-5">
         Gebruikt iemand al dezelfde naam? Voeg dan een initiaal of andere herkenning toe, bijvoorbeeld “Dogan A.”.
       </div>
 
-      <button type="submit" className="wn-button wn-button-primary mt-6 w-full sm:w-auto">Ik doe mee →</button>
+      <button type="submit" className="wn-button wn-button-primary mt-6 w-full">Ik doe mee →</button>
+      <p className="mt-3 text-center text-xs font-semibold leading-5 text-[var(--gift-muted)]">Geen account, e-mail of telefoonnummer nodig.</p>
     </form>
   )
 }
