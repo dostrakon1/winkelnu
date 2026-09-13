@@ -7,6 +7,7 @@ import {
   grantGiftGroupParticipantAccess,
 } from '@/application/gifting/access-grants'
 import { getGiftCatalogProductBySlug } from '@/application/gifting/gift-catalog'
+import { enforceGiftingRateLimit, GiftingRateLimitError } from '@/application/gifting/gifting-rate-limit'
 import type {
   CreateGiftGroupInput,
   CreateGiftListItemInput,
@@ -41,6 +42,15 @@ function nextExpiry(): string {
 
 function active(group: GiftGroup): boolean {
   return group.status !== 'closed' && new Date(group.expiresAt).getTime() > Date.now()
+}
+
+async function applyRateLimit(action: 'create-group' | 'join-group'): Promise<void> {
+  try {
+    await enforceGiftingRateLimit(action)
+  } catch (error) {
+    if (error instanceof GiftingRateLimitError) throw new GiftGroupAccessError(error.message)
+    throw error
+  }
 }
 
 function repositoryErrorMessage(error: unknown): string {
@@ -83,6 +93,8 @@ export async function createGiftGroup(input: CreateGiftGroupInput): Promise<{
   group: GiftGroup
   participant: GiftGroupParticipant
 }> {
+  await applyRateLimit('create-group')
+
   const groupCode = createGiftShareCode()
   const repository = new SupabaseGiftGroupRepository()
   const expiresAt = nextExpiry()
@@ -122,6 +134,8 @@ export async function getGiftGroupInvite(groupCode: string): Promise<GiftGroupIn
 }
 
 export async function joinGiftGroup(groupCode: string, input: JoinGiftGroupInput): Promise<GiftGroupParticipant> {
+  await applyRateLimit('join-group')
+
   const group = await getGroupByCode(groupCode)
   if (!group || group.status !== 'draft') throw new GiftGroupAccessError('Je kunt niet meer deelnemen aan deze groep.')
 
