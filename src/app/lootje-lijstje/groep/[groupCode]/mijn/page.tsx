@@ -209,7 +209,7 @@ export default async function GiftGroupParticipantPage({
                 <p className="wn-body-muted mt-3 text-sm leading-6">
                   {group.status === 'drawn'
                     ? 'Open “Mijn lootje” om uitsluitend jouw getrokken persoon, diens wensen en jouw privé geregeld-markeringen te bekijken.'
-                    : 'De groep, jouw lijstje en je no-login hersteltoegang staan klaar. Zodra de organisator trekt, wordt één geldige geheime verdeling opgeslagen.'}
+                    : 'Je persoonlijke toegang blijft in deze browser beschikbaar. Zodra de organisator de lootjes trekt, kun je alleen jouw eigen lootje openen.'}
                 </p>
               </section>
             </aside>
