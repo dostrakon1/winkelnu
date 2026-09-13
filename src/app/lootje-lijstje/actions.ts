@@ -9,6 +9,7 @@ import {
   deleteStandaloneGiftListItem,
   GiftListAccessError,
   updateStandaloneGiftList,
+  updateStandaloneGiftListItem,
 } from '@/application/gifting/standalone-gift-lists'
 import { GiftValidationError, validateGiftListInput, validateGiftListItemInput } from '@/domain/gifting/validation'
 
@@ -20,10 +21,11 @@ function field(formData: FormData, name: string): string {
 function message(error: unknown): string {
   if (error instanceof GiftValidationError || error instanceof GiftListAccessError) return error.message
   if (error instanceof Error && error.message === 'GIFT_LIST_ITEM_LIMIT') return 'Je lijstje heeft het maximum van 100 wensen bereikt.'
+  if (error instanceof Error && error.message === 'GIFT_LIST_ITEM_NOT_FOUND') return 'Deze wens bestaat niet meer.'
   return 'Dat ging niet goed. Probeer het nog een keer.'
 }
 
-function editPath(shareCode: string, key?: 'gemaakt' | 'opgeslagen' | 'toegevoegd' | 'verwijderd', error?: string): string {
+function editPath(shareCode: string, key?: 'gemaakt' | 'opgeslagen' | 'toegevoegd' | 'bijgewerkt' | 'verwijderd', error?: string): string {
   const params = new URLSearchParams()
   if (key) params.set(key, '1')
   if (error) params.set('fout', error)
@@ -88,6 +90,26 @@ export async function addGiftListItemAction(formData: FormData): Promise<void> {
   revalidatePath(`/lootje-lijstje/lijstje/${shareCode}`)
   revalidatePath(`/lootje-lijstje/lijstje/${shareCode}/bewerken`)
   redirect(editPath(shareCode, 'toegevoegd'))
+}
+
+export async function updateGiftListItemAction(formData: FormData): Promise<void> {
+  const shareCode = field(formData, 'shareCode')
+  const itemId = field(formData, 'itemId')
+  try {
+    const input = validateGiftListItemInput({
+      itemType: field(formData, 'itemType'),
+      title: field(formData, 'title'),
+      externalUrl: field(formData, 'externalUrl'),
+      note: field(formData, 'note'),
+    })
+    await updateStandaloneGiftListItem(shareCode, itemId, input)
+  } catch (error) {
+    redirect(editPath(shareCode, undefined, message(error)))
+  }
+
+  revalidatePath(`/lootje-lijstje/lijstje/${shareCode}`)
+  revalidatePath(`/lootje-lijstje/lijstje/${shareCode}/bewerken`)
+  redirect(editPath(shareCode, 'bijgewerkt'))
 }
 
 export async function deleteGiftListItemAction(formData: FormData): Promise<void> {
