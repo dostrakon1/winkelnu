@@ -73,6 +73,7 @@ export default async function InternalOperationsPage({ searchParams }: { searchP
         <nav className="mx-auto flex max-w-7xl flex-wrap gap-2 px-5 text-sm font-semibold sm:px-8 lg:px-10" aria-label="Interne operations navigatie">
           <Link href="/intern/operations" aria-current="page" className="rounded-lg border border-cyan-800 bg-cyan-950/35 px-3 py-2 text-cyan-200">Partner operations</Link>
           <Link href="/intern/operations/search" className="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 hover:border-slate-500 hover:text-white">Search learning</Link>
+          <Link href="/intern/operations/campaigns" className="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 hover:border-orange-700 hover:text-orange-200">Campagnes</Link>
         </nav>
       </div>
       <InternalOperationsDashboard

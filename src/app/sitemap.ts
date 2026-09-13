@@ -5,12 +5,13 @@ import { editorialCollections } from '@/content/collections'
 import { buyingGuides, editorialCategories } from '@/content/editorial-catalog'
 import { createStorefrontCatalogService } from '@/infrastructure/catalog/create-storefront-catalog-service'
 
-// Live commerce URLs remain runtime-generated and are excluded until release.
+// Live commerce product URLs remain runtime-generated and are excluded until release.
 export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = resolveSiteOrigin(process.env.NEXT_PUBLIC_SITE_URL)
   const informationRoutes = ['/over-winkelnu', '/affiliate-en-vergelijking', '/privacy', '/cookies', '/disclaimer']
+  const promotionalRoutes = ['/black-friday', '/cyber-monday']
   const editorialRoutes = [
     '/koopgidsen',
     ...editorialCategories.map((category) => `/koopgidsen/categorie/${category.slug}`),
@@ -20,6 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [
     { url: baseUrl, changeFrequency: 'monthly', priority: 1 },
     ...informationRoutes.map((path) => ({ url: `${baseUrl}${path}`, changeFrequency: 'monthly' as const, priority: 0.4 })),
+    ...promotionalRoutes.map((path) => ({ url: `${baseUrl}${path}`, changeFrequency: 'weekly' as const, priority: 0.8 })),
     ...editorialRoutes.map((path) => ({ url: `${baseUrl}${path}`, changeFrequency: 'monthly' as const, priority: 0.7 })),
   ]
   if (!isPublicCatalogEnabled()) return entries
