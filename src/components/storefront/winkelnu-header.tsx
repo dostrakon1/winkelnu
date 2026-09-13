@@ -22,12 +22,31 @@ function MenuIcon({ className = '' }: { className?: string }) {
   )
 }
 
-export function WinkelnuHeader() {
+export type WinkelnuHeaderTheme = 'default' | 'black-friday'
+
+export function WinkelnuHeader({ theme = 'default' }: { theme?: WinkelnuHeaderTheme } = {}) {
   const catalogEnabled = isPublicCatalogEnabled()
+  const isBlackFriday = theme === 'black-friday'
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[image:var(--wn-gradient-market)] text-white shadow-[0_10px_30px_rgba(7,20,20,0.13)]">
+    <header
+      className={`relative sticky top-0 z-50 border-b text-white shadow-[0_10px_30px_rgba(7,20,20,0.13)] ${
+        isBlackFriday
+          ? 'border-[#f0a168]/18 bg-[linear-gradient(100deg,#050908_0%,#0b1b19_42%,#17302d_72%,#3c1f12_100%)]'
+          : 'border-white/10 bg-[image:var(--wn-gradient-market)]'
+      }`}
+    >
       <SeasonalCampaignBar />
+
+      {isBlackFriday ? (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <span className="absolute -left-10 top-1/2 h-24 w-40 -translate-y-1/2 rounded-full bg-[#ef7338]/8 blur-3xl" />
+          <span className="absolute right-[18%] top-3 h-1.5 w-1.5 rounded-full bg-[#ffd2ad] shadow-[0_0_22px_8px_rgba(239,115,56,0.22)]" />
+          <span className="absolute right-[43%] bottom-3 h-1 w-1 rounded-full bg-[#f4bd85] shadow-[0_0_18px_7px_rgba(244,189,133,0.18)]" />
+          <span className="absolute left-[41%] top-5 h-1 w-1 rounded-full bg-white/70 shadow-[0_0_16px_6px_rgba(255,255,255,0.12)]" />
+        </div>
+      ) : null}
+
       <a
         href="#inhoud"
         className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:m-3 focus:rounded-lg focus:bg-white focus:p-3 focus:text-[var(--wn-petrol)]"
@@ -35,7 +54,7 @@ export function WinkelnuHeader() {
         Direct naar inhoud
       </a>
 
-      <div className="wn-container py-3.5">
+      <div className="wn-container relative py-3.5">
         <div className="relative flex items-center justify-between gap-5">
           <WinkelnuBrand inverse size="header" />
 
@@ -54,7 +73,11 @@ export function WinkelnuHeader() {
             <form
               action="/zoeken"
               method="get"
-              className="hidden min-w-[15rem] max-w-sm flex-1 items-center rounded-full border border-white/24 bg-[rgba(255,250,242,0.96)] p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.10)] lg:flex xl:max-w-md"
+              className={`hidden min-w-[15rem] max-w-sm flex-1 items-center rounded-full p-1.5 lg:flex xl:max-w-md ${
+                isBlackFriday
+                  ? 'border border-[#f0a168]/28 bg-[#fffaf2] shadow-[0_8px_28px_rgba(0,0,0,0.18)]'
+                  : 'border border-white/24 bg-[rgba(255,250,242,0.96)] shadow-[0_8px_24px_rgba(0,0,0,0.10)]'
+              }`}
             >
               <label htmlFor="winkelnu-header-search" className="sr-only">
                 Zoek een product, merk of categorie
@@ -69,7 +92,11 @@ export function WinkelnuHeader() {
               />
               <button
                 type="submit"
-                className="min-h-10 rounded-full bg-[var(--wn-warm)] px-4 py-2 text-xs font-bold text-white shadow-[0_6px_16px_rgba(159,72,35,0.20)] transition hover:-translate-y-px hover:bg-[#f1844c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-petrol-deep)] motion-reduce:transform-none"
+                className={`min-h-10 rounded-full px-4 py-2 text-xs font-bold text-white transition hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-petrol-deep)] motion-reduce:transform-none ${
+                  isBlackFriday
+                    ? 'bg-[#ef7338] shadow-[0_6px_18px_rgba(239,115,56,0.30)] hover:bg-[#f1844c]'
+                    : 'bg-[var(--wn-warm)] shadow-[0_6px_16px_rgba(159,72,35,0.20)] hover:bg-[#f1844c]'
+                }`}
               >
                 Zoeken
               </button>
@@ -81,14 +108,24 @@ export function WinkelnuHeader() {
               <Link
                 href="/zoeken"
                 aria-label="Zoeken"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/18 bg-white/10 text-white transition hover:bg-white/16 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-warm)]"
+                className={`inline-flex h-11 w-11 items-center justify-center rounded-full border text-white transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--wn-warm)] ${
+                  isBlackFriday
+                    ? 'border-[#f0a168]/28 bg-white/8 hover:bg-[#ef7338]/20'
+                    : 'border-white/18 bg-white/10 hover:bg-white/16'
+                }`}
               >
                 <SearchIcon className="h-5 w-5" />
               </Link>
             ) : null}
 
             <details className="relative">
-              <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full border border-white/18 bg-white/10 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-white/16 marker:content-none">
+              <summary
+                className={`flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-semibold text-white transition marker:content-none ${
+                  isBlackFriday
+                    ? 'border-[#f0a168]/28 bg-white/8 hover:bg-[#ef7338]/20'
+                    : 'border-white/18 bg-white/10 hover:bg-white/16'
+                }`}
+              >
                 <MenuIcon className="h-5 w-5" />
                 <span className="hidden sm:inline">Menu</span>
               </summary>
