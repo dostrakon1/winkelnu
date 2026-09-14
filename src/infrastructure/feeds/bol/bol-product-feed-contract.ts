@@ -9,7 +9,11 @@ export type BolProductFeedFile = {
 
 export interface BolProductFeedTransport {
   listFiles(): Promise<BolProductFeedFile[]>
-  openLines(fileName: string): Promise<AsyncIterable<string>>
+
+  downloadFile(
+    fileName: string,
+    destinationPath: string,
+  ): Promise<void>
 }
 
 export type BolProductFeedMappingProfile = {
