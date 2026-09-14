@@ -9,6 +9,7 @@ import { SupabaseImportOrchestrationRepository } from '@/infrastructure/catalog/
 import { SupabaseProductionCatalogRepository } from '@/infrastructure/catalog/supabase-production-catalog-repository'
 import { SupabaseTaxonomyDatabaseBridge } from '@/infrastructure/catalog/supabase-taxonomy-database-bridge'
 import { registerDaisyconJsonAdapter, mapDaisyconStandardProductRecord } from '@/infrastructure/feeds/daisycon/register-daisycon-adapter'
+import { registerProductionBolAdapter } from '@/infrastructure/feeds/bol/register-production-bol-adapter'
 import { PartnerFeedAdapterRegistry } from '@/infrastructure/feeds/partner-adapter-registry'
 
 export function createProductionImportWorker() {
@@ -21,6 +22,7 @@ export function createProductionImportWorker() {
   const discovery = new SupabaseDueFeedDiscoveryRepository()
   const adapters = new PartnerFeedAdapterRegistry()
   registerDaisyconJsonAdapter(adapters, { mapRecord: mapDaisyconStandardProductRecord })
+  registerProductionBolAdapter(adapters)
 
   const composition = new ProductionImportCompositionService(affiliateRegistry, adapters, catalog, taxonomyBridge)
   const orchestration = new ImportOrchestrationService(orchestrationRepository)
