@@ -60,7 +60,7 @@ describe('Bol product-feed mapping', () => {
     expect(parsed.searchParams.get('t')).toBe('url')
     expect(parsed.searchParams.get('s')).toBe('1542789')
     expect(parsed.searchParams.get('url')).toBe(productUrl)
-    expect(parsed.searchParams.get('f')).toBe('pf')
+    expect(parsed.searchParams.get('f')).toBe('PF')
     expect(parsed.searchParams.get('subid')).toBe(
       '9300000116791172',
     )

@@ -1,4 +1,5 @@
 import type { FeedCandidate } from '@/domain/catalog/feed'
+import { buildBolAffiliateTrackingUrl } from './bol-affiliate-tracking'
 
 export type BolProductFeedRecord = Record<string, string | undefined>
 
@@ -76,20 +77,13 @@ export function buildBolAffiliateUrl(input: {
   siteId: string
   subId?: string
 }): string {
-  const url = new URL('https://partner.bol.com/click/click')
-
-  url.searchParams.set('p', '1')
-  url.searchParams.set('t', 'url')
-  url.searchParams.set('s', input.siteId)
-  url.searchParams.set('url', input.productUrl)
-  url.searchParams.set('f', 'pf')
-  url.searchParams.set('name', 'winkelnu')
-
-  if (input.subId) {
-    url.searchParams.set('subid', input.subId)
-  }
-
-  return url.toString()
+  return buildBolAffiliateTrackingUrl({
+    siteId: input.siteId,
+    productUrl: input.productUrl,
+    name: 'winkelnu',
+    subId: input.subId,
+    format: 'PF',
+  })
 }
 
 export function mapBolProductRecord(
