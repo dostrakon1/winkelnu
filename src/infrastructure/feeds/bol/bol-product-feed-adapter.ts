@@ -108,8 +108,14 @@ export class BolProductFeedAdapter implements FeedAdapter {
         break
       }
 
+      const record = result.value
+
+      if (!record['OfferNL.sellingPrice']?.trim()) {
+        continue
+      }
+
       items.push(
-        mapBolProductRecord(result.value, {
+        mapBolProductRecord(record, {
           sourceKey: this.sourceKey,
           siteId: this.options.siteId,
           importedAt,

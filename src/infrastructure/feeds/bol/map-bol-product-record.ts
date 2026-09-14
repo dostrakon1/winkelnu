@@ -15,11 +15,25 @@ function optionalText(value: string | undefined): string | undefined {
 }
 
 function normalizeEuroAmount(value: string | undefined): string {
-  const cleaned = value?.trim().replace(',', '.') ?? ''
+  const cleaned = value?.trim() ?? ''
   if (!cleaned) return ''
 
-  const numeric = Number(cleaned)
-  return Number.isFinite(numeric) ? numeric.toFixed(2) : cleaned
+  let normalized = cleaned
+
+  if (/^\d{1,3}(?:,\d{3})+\.\d{1,2}$/.test(cleaned)) {
+    normalized = cleaned.replace(/,/g, '')
+  } else if (/^\d+,\d{1,2}$/.test(cleaned)) {
+    normalized = cleaned.replace(',', '.')
+  }
+
+  if (!/^\d+(?:\.\d{1,2})?$/.test(normalized)) {
+    return cleaned
+  }
+
+  const numeric = Number(normalized)
+  return Number.isFinite(numeric)
+    ? numeric.toFixed(2)
+    : cleaned
 }
 
 function normalizeAvailability(value: string | undefined): string | undefined {

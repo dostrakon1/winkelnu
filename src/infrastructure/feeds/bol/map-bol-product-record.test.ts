@@ -42,6 +42,26 @@ describe('Bol product-feed mapping', () => {
     expect(candidate.description).not.toContain('<p>')
   })
 
+  it('normalizes Bol prices with thousands separators', () => {
+    const candidate = mapBolProductRecord(
+      {
+        productId: '9300000172637440',
+        title: 'Bongo test',
+        productPageUrlNL:
+          'https://www.bol.com/nl/nl/p/bongo-test/9300000172637440/',
+        'OfferNL.sellingPrice': '5,399.90',
+        'OfferNL.isDeliverable': 'Y',
+      },
+      {
+        sourceKey: 'bol:product-feed:nl',
+        siteId: '1542789',
+        importedAt: '2026-09-14T20:30:00.000Z',
+      },
+    )
+
+    expect(candidate.price.amount).toBe('5399.90')
+  })
+
   it('builds a Bol product-feed affiliate URL', () => {
     const productUrl =
       'https://www.bol.com/nl/nl/p/test-product/9300000116791172/'

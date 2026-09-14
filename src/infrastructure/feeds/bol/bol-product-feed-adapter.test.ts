@@ -26,7 +26,7 @@ function makeRow(index: number): string {
     `https://www.bol.com/nl/nl/p/test-product-${index}/${productId}/`,
     `https://media.s-bol.com/test-${index}.jpg`,
     'Testmerk',
-    `${10 + index}.00`,
+    index === 8 ? '' : `${10 + index}.00`,
     '0.00',
     'Y',
     'Test Category',
@@ -52,7 +52,7 @@ function makeFeed(): string {
   ]
 
   const rows = Array.from(
-    { length: 7 },
+    { length: 8 },
     (_, index) => makeRow(index + 1),
   )
 
@@ -111,6 +111,13 @@ describe('BolProductFeedAdapter', () => {
       expect(
         new Set(items.map((item) => item.merchantProductId)).size,
       ).toBe(7)
+
+      expect(
+        items.some(
+          (item) =>
+            item.merchantProductId === '9300000000000008',
+        ),
+      ).toBe(false)
 
       expect(items[2]?.title).toBe('Test | product "3"')
       expect(items[0]?.price.amount).toBe('11.00')
