@@ -33,6 +33,7 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.114.0",
+    "basic-ftp": "^6.2.1",
     "csv-parse": "^7.0.2",
     "next": "^16.0.0",
     "react": "^19.0.0",
