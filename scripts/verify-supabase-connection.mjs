@@ -16,7 +16,7 @@ const tables = [
   'merchants', 'categories', 'products', 'offers', 'feed_sources', 'import_runs', 'import_rejects',
   'product_match_reviews', 'affiliate_click_events', 'affiliate_networks', 'merchant_affiliate_integrations',
   'feed_import_orchestration', 'gift_lists', 'gift_list_items', 'gift_groups', 'gift_group_participants',
-  'gift_group_exclusions', 'gift_group_assignments', 'gift_item_reservations',
+  'gift_group_exclusions', 'gift_group_assignments', 'gift_item_reservations', 'measurement_events',
 ]
 
 const failures = []
