@@ -13,13 +13,11 @@ function getFooterBrowseHref(category: (typeof editorialCategories)[number]) {
 type FooterLink = {
   href: string
   label: string
-  emphasis?: boolean
 }
 
-function FooterLinkItem({ href, label, emphasis = false }: FooterLink) {
-  const className = emphasis
-    ? 'font-semibold text-[#ffb889] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-4 focus-visible:ring-offset-transparent'
-    : 'text-white/80 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-4 focus-visible:ring-offset-transparent'
+function FooterLinkItem({ href, label }: FooterLink) {
+  const className =
+    'text-white/80 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-4 focus-visible:ring-offset-transparent'
 
   if (href.startsWith('mailto:')) {
     return (
@@ -39,6 +37,22 @@ function FooterLinkItem({ href, label, emphasis = false }: FooterLink) {
 function FooterLinkList({ links }: { links: FooterLink[] }) {
   return (
     <div className="mt-4 flex flex-col items-start gap-3 text-sm leading-6">
+      {links.map((link) => (
+        <FooterLinkItem key={`${link.href}-${link.label}`} {...link} />
+      ))}
+    </div>
+  )
+}
+
+function DiscoverFooterLinks({ links }: { links: FooterLink[] }) {
+  return (
+    <div className="mt-4 flex flex-col items-start gap-3 text-sm leading-6">
+      <Link
+        href="/lootje-lijstje"
+        className="font-semibold text-[#ffb889] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-4 focus-visible:ring-offset-transparent"
+      >
+        ✦ Lootje &amp; Lijstje
+      </Link>
       {links.map((link) => (
         <FooterLinkItem key={`${link.href}-${link.label}`} {...link} />
       ))}
@@ -66,7 +80,6 @@ export function WinkelnuFooter() {
   const popularCategories = editorialCategories.slice(0, 5)
 
   const discoverLinks: FooterLink[] = [
-    { href: '/lootje-lijstje', label: '✦ Lootje & Lijstje', emphasis: true },
     { href: '/koopgidsen', label: 'Alle koopgidsen' },
     ...(catalogEnabled ? [{ href: '/zoeken', label: 'Producten vergelijken' }] : []),
   ]
@@ -109,7 +122,7 @@ export function WinkelnuFooter() {
             <div className="hidden gap-x-8 gap-y-10 md:grid md:grid-cols-2 lg:grid-cols-4">
               <nav aria-label="Footer ontdekken">
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-warm)]">Ontdekken</p>
-                <FooterLinkList links={discoverLinks} />
+                <DiscoverFooterLinks links={discoverLinks} />
               </nav>
 
               <nav aria-label="Footer populaire categorieën">
@@ -147,7 +160,7 @@ export function WinkelnuFooter() {
 
           <div className="mt-9 md:hidden">
             <MobileFooterGroup title="Ontdekken">
-              <FooterLinkList links={discoverLinks} />
+              <DiscoverFooterLinks links={discoverLinks} />
             </MobileFooterGroup>
 
             <MobileFooterGroup title="Populaire categorieën">
@@ -183,7 +196,7 @@ export function WinkelnuFooter() {
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <p>© {year} Winkelnu.nl · Een initiatief van Akflow · KvK {operator.chamberOfCommerce}</p>
               <p className="max-w-2xl lg:text-right">
-                Winkelnu kan een vergoeding ontvangen wanneer je via een uitgaande link een aankoop doet.{' '}
+                Winkelnu kan een vergoeding ontvangen via uitgaande links.{' '}
                 <Link href="/affiliate-en-vergelijking" className="underline underline-offset-4 transition-colors hover:text-white">
                   Meer over affiliate links →
                 </Link>
