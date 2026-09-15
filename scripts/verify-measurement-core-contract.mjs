@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-const migration = await readFile(resolve('supabase/migrations/0035_measurement_core_v1.sql'), 'utf8')
+const migration = await readFile(resolve('supabase/migrations/0036_measurement_core_v1.sql'), 'utf8')
 const contract = await readFile(resolve('src/application/measurement/measurement-core.ts'), 'utf8')
 const route = await readFile(resolve('src/app/api/measurement/events/route.ts'), 'utf8')
 const footer = await readFile(resolve('src/components/storefront/winkelnu-footer.tsx'), 'utf8')
