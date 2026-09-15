@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
 import { editorialCategories } from '@/content/editorial-catalog'
@@ -18,7 +19,7 @@ type FooterLink = {
 function FooterLinkItem({ href, label, emphasis = false }: FooterLink) {
   const className = emphasis
     ? 'font-semibold text-[#ffb889] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-4 focus-visible:ring-offset-transparent'
-    : 'text-white/78 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-4 focus-visible:ring-offset-transparent'
+    : 'text-white/80 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-4 focus-visible:ring-offset-transparent'
 
   if (href.startsWith('mailto:')) {
     return (
@@ -45,7 +46,7 @@ function FooterLinkList({ links }: { links: FooterLink[] }) {
   )
 }
 
-function MobileFooterGroup({ title, children }: { title: string; children: React.ReactNode }) {
+function MobileFooterGroup({ title, children }: { title: string; children: ReactNode }) {
   return (
     <details className="group border-t border-white/12 last:border-b">
       <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-sm font-bold uppercase tracking-[0.14em] text-[var(--wn-warm)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/70 [&::-webkit-details-marker]:hidden">
@@ -87,7 +88,7 @@ export function WinkelnuFooter() {
     <>
       <GiftCollectionDiscoveryBridge />
       <footer className="bg-[image:var(--wn-gradient-evening)] text-white">
-        <div className="wn-container py-12 sm:py-16 lg:py-18">
+        <div className="wn-container py-12 sm:py-16 lg:py-20">
           <div className="grid gap-10 lg:grid-cols-[1.05fr_2.15fr] lg:gap-16 xl:gap-20">
             <div className="max-w-xl">
               <WinkelnuBrand inverse />
@@ -118,7 +119,7 @@ export function WinkelnuFooter() {
                     <Link
                       key={category.slug}
                       href={getFooterBrowseHref(category)}
-                      className="text-white/78 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-4 focus-visible:ring-offset-transparent"
+                      className="text-white/80 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-4 focus-visible:ring-offset-transparent"
                     >
                       {category.title}
                     </Link>
@@ -155,7 +156,7 @@ export function WinkelnuFooter() {
                   <Link
                     key={category.slug}
                     href={getFooterBrowseHref(category)}
-                    className="text-white/78 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                    className="text-white/80 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
                   >
                     {category.title}
                   </Link>
