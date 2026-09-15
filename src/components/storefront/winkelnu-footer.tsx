@@ -62,11 +62,12 @@ function DiscoverFooterLinks({ links }: { links: FooterLink[] }) {
 
 function MobileFooterGroup({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <details className="group border-t border-white/12 last:border-b">
+    <details name="winkelnu-footer-sections" className="group border-t border-white/12 last:border-b">
       <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-sm font-bold uppercase tracking-[0.14em] text-[var(--wn-warm)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/70 [&::-webkit-details-marker]:hidden">
         <span>{title}</span>
-        <span aria-hidden="true" className="text-xl font-normal leading-none text-white/70 transition-transform duration-200 group-open:rotate-45">
-          +
+        <span aria-hidden="true" className="flex size-6 items-center justify-center text-xl font-normal leading-none text-white/70">
+          <span className="group-open:hidden">+</span>
+          <span className="hidden group-open:inline">−</span>
         </span>
       </summary>
       <div className="pb-5">{children}</div>
@@ -101,8 +102,8 @@ export function WinkelnuFooter() {
     <>
       <GiftCollectionDiscoveryBridge />
       <footer className="bg-[image:var(--wn-gradient-evening)] text-white">
-        <div className="wn-container py-12 sm:py-16 lg:py-20">
-          <div className="grid gap-10 lg:grid-cols-[1.05fr_2.15fr] lg:gap-16 xl:gap-20">
+        <div className="wn-container py-12 sm:py-14 lg:py-16">
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_2.4fr] lg:gap-12 xl:gap-16">
             <div className="max-w-xl">
               <WinkelnuBrand inverse />
               <p className="wn-display mt-5 text-2xl font-semibold tracking-[-0.025em] sm:text-[1.7rem]">
@@ -119,14 +120,14 @@ export function WinkelnuFooter() {
               </Link>
             </div>
 
-            <div className="hidden gap-x-8 gap-y-10 md:grid md:grid-cols-2 lg:grid-cols-4">
+            <div className="hidden gap-x-8 gap-y-10 md:grid md:grid-cols-2 lg:grid-cols-[0.9fr_1.2fr_0.8fr_1.1fr] lg:gap-x-6 xl:gap-x-8">
               <nav aria-label="Footer ontdekken">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-warm)]">Ontdekken</p>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-warm)] lg:whitespace-nowrap lg:tracking-[0.12em]">Ontdekken</p>
                 <DiscoverFooterLinks links={discoverLinks} />
               </nav>
 
               <nav aria-label="Footer populaire categorieën">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-warm)]">Populaire categorieën</p>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-warm)] lg:whitespace-nowrap lg:tracking-[0.12em]">Populaire categorieën</p>
                 <div className="mt-4 flex flex-col items-start gap-3 text-sm leading-6">
                   {popularCategories.map((category) => (
                     <Link
@@ -147,18 +148,18 @@ export function WinkelnuFooter() {
               </nav>
 
               <nav aria-label="Footer Winkelnu">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-warm)]">Winkelnu</p>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-warm)] lg:whitespace-nowrap lg:tracking-[0.12em]">Winkelnu</p>
                 <FooterLinkList links={winkelnuLinks} />
               </nav>
 
               <nav aria-label="Footer service en juridisch">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-warm)]">Service &amp; juridisch</p>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--wn-warm)] lg:whitespace-nowrap lg:tracking-[0.12em]">Service &amp; juridisch</p>
                 <FooterLinkList links={serviceLinks} />
               </nav>
             </div>
           </div>
 
-          <div className="mt-9 md:hidden">
+          <div className="mt-6 md:hidden">
             <MobileFooterGroup title="Ontdekken">
               <DiscoverFooterLinks links={discoverLinks} />
             </MobileFooterGroup>
@@ -192,7 +193,7 @@ export function WinkelnuFooter() {
             </MobileFooterGroup>
           </div>
 
-          <div className="mt-10 border-t border-white/12 pt-6 text-xs leading-5 text-white/65 sm:mt-12">
+          <div className="mt-8 border-t border-white/12 pt-6 text-xs leading-5 text-white/65 sm:mt-10 lg:mt-8">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <p>© {year} Winkelnu.nl · Een initiatief van Akflow · KvK {operator.chamberOfCommerce}</p>
               <p className="max-w-2xl lg:text-right">
