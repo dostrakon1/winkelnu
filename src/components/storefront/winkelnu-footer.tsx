@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { isPublicCatalogEnabled } from '@/application/catalog/public-catalog-release'
+import { MeasuredExternalLink } from '@/components/analytics/measured-external-link'
 import { editorialCategories } from '@/content/editorial-catalog'
 import { operator } from '@/content/operator'
 import { GiftCollectionDiscoveryBridge } from './gift-collection-discovery-bridge'
@@ -195,7 +196,23 @@ export function WinkelnuFooter() {
 
           <div className="mt-8 border-t border-white/12 pt-6 text-xs leading-5 text-white/65 sm:mt-10 lg:mt-8">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-              <p>© {year} Winkelnu.nl · Een initiatief van Akflow · KvK {operator.chamberOfCommerce}</p>
+              <p>
+                © {year} Winkelnu.nl · Een initiatief van{' '}
+                <MeasuredExternalLink
+                  href="https://www.akflow.nl/"
+                  measurement={{
+                    eventName: 'outbound.click',
+                    eventVersion: 1,
+                    targetType: 'brand',
+                    targetKey: 'akflow',
+                    placement: 'footer',
+                  }}
+                  className="underline decoration-white/25 underline-offset-2 transition-colors hover:text-white hover:decoration-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                >
+                  Akflow
+                </MeasuredExternalLink>{' '}
+                · KvK {operator.chamberOfCommerce}
+              </p>
               <p className="max-w-2xl lg:text-right">
                 Winkelnu kan een vergoeding ontvangen via uitgaande links.{' '}
                 <Link href="/affiliate-en-vergelijking" className="underline underline-offset-4 transition-colors hover:text-white">
